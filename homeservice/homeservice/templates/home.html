@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fixzy Home Services</title>
+
+<style>
+
+body{
+margin:0;
+font-family: Arial, sans-serif;
+background:#f5f7fa;
+}
+
+/* NAVBAR */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 60px;
+background:linear-gradient(90deg,#1e3c72,#2a5298);
+color:white;
+position:sticky;
+top:0;
+}
+
+.logo{
+font-size:24px;
+font-weight:bold;
+}
+
+.logo span{
+color:#00ffd5;
+}
+
+nav ul{
+list-style:none;
+display:flex;
+gap:30px;
+}
+
+nav ul li a{
+color:white;
+text-decoration:none;
+font-size:18px;
+transition:0.3s;
+}
+
+nav ul li a:hover{
+color:#00ffd5;
+}
+
+/* HERO SECTION */
+
+.hero{
+height:90vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+background:linear-gradient(-45deg,#1e3c72,#2a5298,#4facfe,#00f2fe);
+background-size:400% 400%;
+animation:gradientBG 10s ease infinite;
+color:white;
+}
+
+@keyframes gradientBG{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.hero h1{
+font-size:50px;
+}
+
+.hero p{
+font-size:20px;
+}
+
+.btn{
+padding:12px 25px;
+background:#00ffd5;
+color:black;
+border:none;
+border-radius:25px;
+font-size:18px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.btn:hover{
+transform:scale(1.1);
+}
+
+/* SERVICES */
+
+.services{
+padding:80px;
+text-align:center;
+}
+
+.cards{
+display:flex;
+justify-content:center;
+gap:30px;
+}
+
+.card{
+padding:30px;
+border-radius:15px;
+background:white;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+transition:0.3s;
+width:200px;
+}
+
+.card:hover{
+transform:translateY(-10px);
+}
+
+/* FOOTER */
+
+footer{
+background:#1e3c72;
+color:white;
+text-align:center;
+padding:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav>
+<div class="logo">Fix<span>zy</span></div>
+
+<ul>
+<li><a href="/">Home</a></li>
+<li><a href="/services/">Services</a></li>
+<li><a href="/login/">Login</a></li>
+<li><a href="/register/">Register</a></li>
+</ul>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+<div>
+<h1>Welcome to Fixzy</h1>
+<p>All Home Services in One Place</p>
+<br>
+<button class="btn">Book Service</button>
+</div>
+</section>
+
+<!-- SERVICES -->
+
+<section class="services">
+<h2>Our Services</h2>
+<br>
+
+<div class="cards">
+
+<div class="card">
+<h3>Electrician</h3>
+<p>Professional electrical repair</p>
+</div>
+
+<div class="card">
+<h3>Plumber</h3>
+<p>Fast plumbing services</p>
+</div>
+
+<div class="card">
+<h3>Carpenter</h3>
+<p>Quality wood work</p>
+</div>
+
+<div class="card">
+<h3>Cleaning</h3>
+<p>Home cleaning experts</p>
+</div>
+
+</div>
+</section>
+
+<footer>
+<p>© 2026 Fixzy Home Services</p>
+</footer>
+
+</body>
+</html>

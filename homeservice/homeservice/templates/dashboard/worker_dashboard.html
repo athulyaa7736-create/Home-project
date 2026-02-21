@@ -1,0 +1,19 @@
+<h1>Worker Dashboard</h1>
+
+<p>Welcome {{ request.user.username }}</p>
+
+<h3>Assigned Jobs</h3>
+
+{% for job in jobs %}
+    <p>
+        Service: {{ job.service }} <br>
+        Address: {{ job.address }} <br>
+        Status: {{ job.status }}
+    </p>
+    <hr>
+{% empty %}
+    <p>No assigned jobs</p>
+{% endfor %}
+
+<a href="/logout/">Logout</a>
+
