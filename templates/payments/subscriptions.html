@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Subscriptions - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:#0f172a; }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background:var(--navy); padding:0 48px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.tb-logo { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.tb-logo-box { width:34px; height:34px; background:var(--orange); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; }
+.tb-logo-text { font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+.tb-right { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.btn-new-plan {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:9px 20px; border-radius:30px;
+  background:var(--orange); color:#fff;
+  font-size:13px; font-weight:700;
+  transition:all .25s var(--ease);
+}
+.btn-new-plan:hover { background:var(--orange-dk); transform:translateY(-1px); box-shadow:0 8px 20px rgba(249,115,22,.35); }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:8px 18px; border-radius:30px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.8); font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35); color:#fff; transform:translateX(-2px); }
+
+/* ── PAGE ── */
+.page { max-width:900px; margin:0 auto; padding:36px 24px 60px; }
+
+/* ── PAGE HEAD ── */
+.page-head { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+.ph-left { display:flex; align-items:center; gap:16px; }
+.ph-icon { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,var(--navy2),var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:22px; box-shadow:0 4px 16px rgba(15,32,64,.15); flex-shrink:0; }
+.ph-title { font-family:var(--fH); font-size:26px; font-weight:900; letter-spacing:-.8px; color:var(--navy); }
+.ph-sub { font-size:14px; color:var(--muted); margin-top:2px; }
+
+/* ── SUBSCRIPTION CARDS ── */
+.sub-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); overflow:hidden;
+  box-shadow:0 2px 12px rgba(15,32,64,.05);
+  margin-bottom:18px;
+  animation:cardUp .5s var(--ease) both;
+  transition:all .3s var(--ease);
+}
+.sub-card:nth-child(1){animation-delay:.05s}
+.sub-card:nth-child(2){animation-delay:.1s}
+.sub-card:nth-child(3){animation-delay:.15s}
+@keyframes cardUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.sub-card:hover { transform:translateY(-3px); box-shadow:0 14px 36px rgba(15,32,64,.1); }
+
+/* left accent bar */
+.sub-card.active    { border-left:4px solid #22c55e; }
+.sub-card.expired   { border-left:4px solid #ef4444; }
+.sub-card.cancelled { border-left:4px solid #94a3b8; }
+
+/* card header */
+.sc-head {
+  padding:20px 24px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px;
+}
+.sc-head-left { display:flex; align-items:center; gap:14px; }
+.sc-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.icon-active    { background:#dcfce7; color:#16a34a; }
+.icon-expired   { background:#fee2e2; color:#dc2626; }
+.icon-cancelled { background:var(--light2); color:#94a3b8; }
+.sc-plan { font-family:var(--fH); font-size:18px; font-weight:900; letter-spacing:-.3px; color:var(--navy); }
+.sc-type { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* status badges */
+.status-badge { display:inline-flex; align-items:center; gap:5px; padding:5px 13px; border-radius:20px; font-size:11px; font-weight:700; }
+.sb-active    { background:#dcfce7; color:#166534; }
+.sb-expired   { background:#fee2e2; color:#991b1b; }
+.sb-cancelled { background:var(--light2); color:#64748b; border:1px solid var(--border); }
+
+/* card body */
+.sc-body { padding:20px 24px; }
+
+/* detail grid */
+.details-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+.detail-box {
+  background:var(--light); border:1px solid var(--border);
+  border-radius:10px; padding:11px 13px;
+  transition:all .2s;
+}
+.detail-box:hover { border-color:rgba(249,115,22,.25); background:var(--orange-lt); }
+.d-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-bottom:4px; display:flex; align-items:center; gap:5px; }
+.d-lbl i { color:var(--orange); font-size:10px; }
+.d-val { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); }
+.d-val.green { color:#16a34a; }
+.d-val.red   { color:#dc2626; }
+.d-val.orange{ color:var(--orange); }
+
+/* visits progress */
+.visits-row { margin-bottom:18px; }
+.visits-lbl-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:7px; }
+.visits-lbl { font-size:12px; font-weight:600; color:var(--muted); }
+.visits-count { font-family:var(--fH); font-size:13px; font-weight:800; color:var(--navy); }
+.progress-track { height:7px; background:var(--border); border-radius:4px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--orange); border-radius:4px; transition:width .8s var(--ease); }
+.progress-fill.full { background:#ef4444; }
+.progress-fill.done { background:#22c55e; }
+
+/* action row */
+.sc-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.act-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 16px; border-radius:8px;
+  font-family:var(--fH); font-size:12px; font-weight:800;
+  transition:all .25s var(--ease); border:none; cursor:pointer;
+}
+.ab-details { background:var(--light2); color:var(--navy); border:1.5px solid var(--border); }
+.ab-details:hover { border-color:var(--orange); color:var(--orange); background:var(--orange-lt); }
+.ab-cancel { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+.ab-cancel:hover { background:#ef4444; color:#fff; border-color:#ef4444; }
+.ab-renew  { background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
+.ab-renew:hover  { background:#16a34a; color:#fff; border-color:#16a34a; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align:center; padding:72px 24px;
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); box-shadow:0 2px 12px rgba(15,32,64,.05);
+}
+.empty-icon { width:80px; height:80px; background:var(--light2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; color:var(--muted); margin:0 auto 20px; }
+.empty-title { font-family:var(--fH); font-size:22px; font-weight:900; color:var(--navy); margin-bottom:8px; }
+.empty-sub { font-size:15px; color:var(--muted); margin-bottom:28px; }
+.btn-view-plans { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; background:var(--orange); color:#fff; border-radius:30px; font-family:var(--fH); font-size:15px; font-weight:800; transition:all .25s var(--ease); }
+.btn-view-plans:hover { background:var(--orange-dk); transform:translateY(-2px); box-shadow:0 12px 28px rgba(249,115,22,.35); }
+
+/* responsive */
+@media(max-width:700px) { .topbar{padding:0 20px;} .page{padding:24px 16px 48px;} .details-grid{grid-template-columns:1fr 1fr;} }
+@media(max-width:420px) { .details-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'user_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <div class="tb-right">
+    <a href="{% url 'user_dashboard' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Dashboard
+    </a>
+    <a href="{% url 'plan_list' %}" class="btn-new-plan">
+      <i class="fas fa-plus"></i> New Plan
+    </a>
+  </div>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Page heading -->
+  <div class="page-head">
+    <div class="ph-left">
+      <div class="ph-icon"><i class="fas fa-crown"></i></div>
+      <div>
+        <div class="ph-title">My Subscriptions</div>
+        <div class="ph-sub">Manage your active and past subscription plans</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription cards -->
+  {% for sub in subscriptions %}
+  <div class="sub-card {{ sub.status }}">
+
+    <!-- Card header -->
+    <div class="sc-head">
+      <div class="sc-head-left">
+        <div class="sc-icon {% if sub.status == 'active' %}icon-active{% elif sub.status == 'expired' %}icon-expired{% else %}icon-cancelled{% endif %}">
+          <i class="fas {% if sub.status == 'active' %}fa-crown{% elif sub.status == 'expired' %}fa-clock{% else %}fa-ban{% endif %}"></i>
+        </div>
+        <div>
+          <div class="sc-plan">{{ sub.plan.name }}</div>
+          <div class="sc-type">{{ sub.plan.get_plan_type_display|default:"Subscription Plan" }}</div>
+        </div>
+      </div>
+      <div>
+        {% if sub.status == 'active' %}
+          <span class="status-badge sb-active"><i class="fas fa-circle" style="font-size:7px;"></i> Active</span>
+        {% elif sub.status == 'expired' %}
+          <span class="status-badge sb-expired"><i class="fas fa-clock"></i> Expired</span>
+        {% else %}
+          <span class="status-badge sb-cancelled"><i class="fas fa-ban"></i> Cancelled</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Card body -->
+    <div class="sc-body">
+
+      <!-- Detail grid -->
+      <div class="details-grid">
+        <div class="detail-box">
+          <div class="d-lbl"><i class="fas fa-calendar-plus"></i> Started</div>
+          <div class="d-val">{{ sub.start_date|date:"d M Y" }}</div>
+        </div>
+        <div class="detail-box">
+          <div class="d-lbl"><i class="fas fa-calendar-xmark"></i> Ends</div>
+          <div class="d-val {% if sub.status == 'expired' %}red{% elif sub.status == 'active' %}green{% endif %}">
+            {{ sub.end_date|date:"d M Y" }}
+          </div>
+        </div>
+        <div class="detail-box">
+          <div class="d-lbl"><i class="fas fa-indian-rupee-sign"></i> Paid</div>
+          <div class="d-val orange">₹{{ sub.amount_paid }}</div>
+        </div>
+        <div class="detail-box">
+          <div class="d-lbl"><i class="fas fa-screwdriver-wrench"></i> Visits</div>
+          <div class="d-val">{{ sub.visits_used }}<span style="font-size:12px;color:var(--muted);font-weight:500;">/{{ sub.total_visits_allowed }}</span></div>
+        </div>
+      </div>
+
+      <!-- Visits progress bar -->
+      <div class="visits-row">
+        <div class="visits-lbl-row">
+          <span class="visits-lbl">Visit Usage</span>
+          <span class="visits-count">{{ sub.visits_used }} of {{ sub.total_visits_allowed }} used</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill {% if sub.visits_used == sub.total_visits_allowed %}full{% elif sub.status == 'expired' %}done{% endif %}"
+               data-used="{{ sub.visits_used }}"
+               data-total="{{ sub.total_visits_allowed }}"
+               style="width:0%;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="sc-actions">
+        <a href="{% url 'subscription_detail' sub.id %}" class="act-btn ab-details">
+          <i class="fas fa-eye"></i> View Details
+        </a>
+        {% if sub.status == 'active' %}
+        <a href="{% url 'cancel_subscription' sub.id %}" class="act-btn ab-cancel">
+          <i class="fas fa-times"></i> Cancel Plan
+        </a>
+        {% elif sub.status == 'expired' %}
+        <a href="{% url 'renew_subscription' sub.id %}" class="act-btn ab-renew">
+          <i class="fas fa-rotate"></i> Renew Plan
+        </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  {% empty %}
+
+  <!-- Empty state -->
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-crown"></i></div>
+    <div class="empty-title">No Subscriptions Yet</div>
+    <div class="empty-sub">Choose a plan that suits your needs and start saving on home services today!</div>
+    <a href="{% url 'plan_list' %}" class="btn-view-plans">
+      <i class="fas fa-crown"></i> View Plans
+    </a>
+  </div>
+
+  {% endfor %}
+
+</div>
+
+<script>
+// Animate progress bars on load
+document.querySelectorAll('.progress-fill').forEach(function(bar) {
+  var used  = parseFloat(bar.getAttribute('data-used'))  || 0;
+  var total = parseFloat(bar.getAttribute('data-total')) || 1;
+  var pct   = Math.min(100, Math.round((used / total) * 100));
+  setTimeout(function() { bar.style.width = pct + '%'; }, 200);
+});
+</script>
+
+</body>
+</html>

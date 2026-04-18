@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Fixzy — Create Account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:#0f2040;--navy2:#1e3c72;--orange:#f97316;--orange-dk:#ea6c0a;
+  --orange-lt:#fff7ed;--white:#ffffff;--light:#f4f7fc;--light2:#eef2f9;
+  --muted:#64748b;--border:#e2e8f0;
+  --fH:'Cabinet Grotesk',sans-serif;--fB:'Figtree',sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:var(--fB);min-height:100vh;display:flex;background:var(--navy);overflow-x:hidden;overflow-y:auto;position:relative;}
+
+/* BG */
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:56px 56px;animation:gridMove 30s linear infinite;}
+@keyframes gridMove{from{background-position:0 0}to{background-position:56px 56px}}
+.bg-blob{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;}
+.blob-a{width:520px;height:520px;background:radial-gradient(circle,rgba(249,115,22,.13),transparent 70%);top:-120px;right:-80px;animation:bF 11s ease-in-out infinite;}
+.blob-b{width:400px;height:400px;background:radial-gradient(circle,rgba(30,60,114,.55),transparent 70%);bottom:-80px;left:-60px;animation:bF 15s ease-in-out infinite reverse;}
+.blob-c{width:280px;height:280px;background:radial-gradient(circle,rgba(249,115,22,.07),transparent 70%);top:50%;left:30%;animation:bF 8s ease-in-out infinite 2s;}
+@keyframes bF{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.1) translate(12px,-18px)}}
+
+/* LAYOUT */
+.page-wrap{position:relative;z-index:1;display:flex;width:100%;min-height:100vh;}
+
+/* LEFT PANEL */
+.left-panel{
+  width:440px;flex-shrink:0;
+  background:linear-gradient(160deg,var(--navy2) 0%,var(--navy) 100%);
+  border-right:1px solid rgba(255,255,255,.06);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:60px 44px;text-align:center;
+  position:sticky;top:0;height:100vh;align-self:flex-start;overflow:hidden;
+}
+.left-panel::before{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:36px 36px;pointer-events:none;}
+
+.lp-inner{position:relative;z-index:1;}
+
+.lp-logo{display:inline-flex;align-items:center;gap:12px;margin-bottom:44px;}
+.lp-logo-box{
+  width:50px;height:50px;background:var(--orange);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;
+  box-shadow:0 8px 24px rgba(249,115,22,.4);}
+.lp-logo-text{font-family:var(--fH);font-size:32px;font-weight:900;letter-spacing:-1.5px;color:#fff;}
+.lp-logo-text em{color:var(--orange);font-style:normal;}
+
+.lp-heading{font-family:var(--fH);font-size:34px;font-weight:900;letter-spacing:-2px;color:#fff;line-height:1.08;margin-bottom:14px;}
+.lp-heading em{color:var(--orange);font-style:normal;}
+.lp-sub{font-size:15px;color:rgba(255,255,255,.48);line-height:1.75;margin-bottom:40px;}
+
+.lp-perks{list-style:none;text-align:left;}
+.lp-perks li{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 15px;margin-bottom:9px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;font-size:14px;color:rgba(255,255,255,.72);
+  transition:all .25s;
+}
+.lp-perks li:hover{background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.25);color:#fff;transform:translateX(4px);}
+.perk-icon{width:34px;height:34px;border-radius:9px;background:rgba(249,115,22,.15);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:14px;flex-shrink:0;}
+
+.lp-divider{margin:32px 0 24px;border:none;border-top:1px solid rgba(255,255,255,.07);}
+.lp-worker-label{font-size:13px;color:rgba(255,255,255,.35);margin-bottom:12px;}
+.lp-worker-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 24px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  border-radius:40px;color:rgba(255,255,255,.72);font-size:14px;font-weight:600;
+  transition:all .25s;text-decoration:none;
+}
+.lp-worker-btn:hover{background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.4);color:#fff;transform:translateY(-2px);}
+
+/* RIGHT PANEL */
+.right-panel{
+  flex:1;display:flex;align-items:flex-start;justify-content:center;
+  padding:44px 32px;overflow-y:auto;min-height:100vh;
+}
+
+/* FORM CARD */
+.form-card{
+  background:var(--white);border-radius:26px;padding:44px 40px;
+  width:100%;max-width:500px;
+  box-shadow:0 28px 90px rgba(0,0,0,.28);
+  animation:cardUp .7s var(--ease) both;
+  border:1px solid rgba(255,255,255,.08);
+}
+@keyframes cardUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+
+/* FORM HEADER */
+.form-header{margin-bottom:28px;text-align:center;}
+.form-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;background:var(--orange-lt);border:1px solid rgba(249,115,22,.25);
+  border-radius:20px;font-size:12px;font-weight:700;color:var(--orange);
+  margin-bottom:14px;
+}
+.form-title{font-family:var(--fH);font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--navy);margin-bottom:6px;}
+.form-title span{color:var(--orange);}
+.form-sub{font-size:14px;color:var(--muted);}
+
+/* MESSAGES */
+.messages{margin-bottom:18px;}
+.alert{padding:11px 15px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.alert-error  {background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-left:4px solid #ef4444;}
+.alert-success{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-left:4px solid #22c55e;}
+
+/* FORM FIELDS */
+.form-group{margin-bottom:16px;}
+label{display:block;margin-bottom:6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--navy);}
+
+/* input wrapper for icon */
+.input-wrap{position:relative;}
+.input-wrap .i-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px;pointer-events:none;}
+.input-wrap input,.input-wrap select{padding-left:38px;}
+.input-wrap .toggle-pw{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:14px;cursor:pointer;background:none;border:none;padding:0;transition:color .2s;}
+/* ✅ All inputs inside input-wrap get left padding for icon */
+.input-wrap input,.input-wrap select,.input-wrap textarea{padding-left:38px !important;}
+.input-wrap .toggle-pw:hover{color:var(--orange);}
+
+input[type="text"],input[type="email"],input[type="password"],
+input[type="number"],input[type="tel"],select,textarea{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:14px;font-family:var(--fB);color:var(--navy);
+  background:var(--light);outline:none;appearance:none;
+  transition:all .22s var(--ease);
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--orange);background:var(--white);
+  box-shadow:0 0 0 3px rgba(249,115,22,.1);
+}
+input::placeholder{color:#94a3b8;}
+textarea{resize:vertical;min-height:80px;}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer;
+}
+
+/* password strength */
+.pw-strength{margin-top:6px;}
+.pw-bars{display:flex;gap:4px;margin-bottom:4px;}
+.pw-bar{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .3s;}
+.pw-bar.weak{background:#ef4444;}
+.pw-bar.fair{background:#f59e0b;}
+.pw-bar.good{background:#22c55e;}
+.pw-label{font-size:11px;color:#94a3b8;}
+
+.errorlist{list-style:none;margin-top:5px;}
+.errorlist li{font-size:12px;color:#dc2626;display:flex;align-items:center;gap:5px;}
+.errorlist li::before{content:'⚠';font-size:11px;}
+.helptext{font-size:11px;color:#94a3b8;margin-top:4px;line-height:1.5;}
+
+/* 2-col grid for name fields */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* SUBMIT */
+.btn-register{
+  width:100%;padding:14px;background:var(--orange);color:#fff;
+  border:none;border-radius:12px;
+  font-family:var(--fH);font-size:16px;font-weight:800;
+  cursor:pointer;transition:all .3s var(--ease);
+  margin-top:10px;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-register::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18),transparent 70%);
+  transform:translateX(-100%);transition:transform .5s;
+}
+.btn-register:hover::before{transform:translateX(100%);}
+.btn-register:hover{background:var(--orange-dk);transform:translateY(-2px);box-shadow:0 14px 36px rgba(249,115,22,.4);}
+
+/* DIVIDER */
+.or-divider{display:flex;align-items:center;gap:12px;margin:22px 0 18px;color:#94a3b8;font-size:13px;}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* LOGIN LINK */
+.login-link{text-align:center;font-size:14px;color:var(--muted);}
+.login-link a{color:var(--orange);font-weight:700;text-decoration:none;transition:color .2s;}
+.login-link a:hover{color:var(--orange-dk);text-decoration:underline;}
+
+/* terms note */
+.terms-note{font-size:11px;color:#94a3b8;text-align:center;margin-top:14px;line-height:1.6;}
+.terms-note a{color:var(--orange);text-decoration:none;}
+
+@media(max-width:900px){.left-panel{display:none;}.right-panel{padding:28px 20px;}.form-card{padding:30px 22px;}.field-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-blob blob-a"></div>
+<div class="bg-blob blob-b"></div>
+<div class="bg-blob blob-c"></div>
+
+<div class="page-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="lp-inner">
+      <div class="lp-logo">
+        <div class="lp-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+        <div class="lp-logo-text">Fix<em>zy</em></div>
+      </div>
+      <div class="lp-heading">Your home,<br><em>our expertise.</em></div>
+      <p class="lp-sub">Join thousands of happy homeowners who trust Fixzy for all their home service needs.</p>
+      <ul class="lp-perks">
+        <li><div class="perk-icon"><i class="fas fa-shield-halved"></i></div> Verified & background-checked professionals</li>
+        <li><div class="perk-icon"><i class="fas fa-bolt"></i></div> Fast booking — confirmed in minutes</li>
+        <li><div class="perk-icon"><i class="fas fa-star"></i></div> 4.9★ rated by 3,800+ customers</li>
+        <li><div class="perk-icon"><i class="fas fa-indian-rupee-sign"></i></div> Transparent pricing, no hidden charges</li>
+      </ul>
+      <hr class="lp-divider">
+      <p class="lp-worker-label">Are you a service professional?</p>
+      <a href="{% url 'worker_register' %}" class="lp-worker-btn">
+        <i class="fas fa-hard-hat"></i> Register as Worker
+      </a>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="form-card">
+
+      <div class="form-header">
+        <div class="form-badge"><i class="fas fa-user-plus"></i> New Account</div>
+        <div class="form-title">Create <span>Account</span></div>
+        <div class="form-sub">Sign up to book home services instantly</div>
+      </div>
+
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          <i class="fas {% if 'error' in message.tags %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="POST" novalidate id="regForm">
+        {% csrf_token %}
+        <input type="hidden" name="role" value="user">
+
+        {% for field in form %}
+        {% if field.name != 'role' %}
+
+          {% if field.name == 'password1' %}
+          <!-- Password with strength meter -->
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock i-icon"></i>
+              <input type="password" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     placeholder="Choose a password" autocomplete="new-password"
+                     oninput="checkStrength(this.value)">
+              <button type="button" class="toggle-pw" onclick="togglePw('{{ field.id_for_label }}',this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="pw-strength">
+              <div class="pw-bars">
+                <div class="pw-bar" id="bar1"></div>
+                <div class="pw-bar" id="bar2"></div>
+                <div class="pw-bar" id="bar3"></div>
+                <div class="pw-bar" id="bar4"></div>
+              </div>
+              <div class="pw-label" id="pw-label">Enter a password</div>
+            </div>
+            {% if field.errors %}
+              <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+          </div>
+
+          {% elif field.name == 'password2' %}
+          <!-- Confirm password -->
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">Confirm Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock-open i-icon"></i>
+              <input type="password" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     placeholder="Repeat your password" autocomplete="new-password">
+              <button type="button" class="toggle-pw" onclick="togglePw('{{ field.id_for_label }}',this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            {% if field.errors %}
+              <ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+          </div>
+
+          {% elif field.name == 'email' %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">Email Address</label>
+            <div class="input-wrap">
+              <i class="fas fa-envelope i-icon"></i>
+              <input type="email" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     placeholder="your@email.com" autocomplete="email"
+                     value="{{ field.value|default:'' }}">
+            </div>
+            {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+
+          {% elif field.name == 'username' %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">Username</label>
+            <div class="input-wrap">
+              <i class="fas fa-at i-icon"></i>
+              <input type="text" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     placeholder="Choose a username" autocomplete="username"
+                     value="{{ field.value|default:'' }}">
+            </div>
+            <div class="helptext">Letters, digits, and @/./+/-/_ only</div>
+            {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+
+          {% elif field.name == 'phone' %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">Phone Number</label>
+            <div class="input-wrap">
+              <i class="fas fa-phone i-icon"></i>
+              <input type="tel" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                     placeholder="e.g. 9876543210"
+                     value="{{ field.value|default:'' }}">
+            </div>
+            {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+
+          {% else %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+            {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+          {% endif %}
+
+        {% endif %}
+        {% endfor %}
+
+        <button type="submit" class="btn-register">
+          <i class="fas fa-user-plus"></i> Create My Account
+        </button>
+      </form>
+
+      <div class="or-divider">or</div>
+      <div class="login-link">
+        Already have an account? <a href="{% url 'login' %}">Login here</a>
+      </div>
+      <div class="terms-note">
+        By registering you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Password strength checker
+function checkStrength(val) {
+  const bars  = [1,2,3,4].map(i => document.getElementById('bar'+i));
+  const label = document.getElementById('pw-label');
+  const levels = ['weak','fair','good'];
+  bars.forEach(b => { b.className = 'pw-bar'; });
+
+  if (!val) { label.textContent = 'Enter a password'; label.style.color = '#94a3b8'; return; }
+
+  let score = 0;
+  if (val.length >= 6)  score++;
+  if (val.length >= 10) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+  const labels = ['','Weak','Fair','Good','Strong'];
+  const colors = ['','#ef4444','#f59e0b','#22c55e','#16a34a'];
+  for (let i = 0; i < score; i++) bars[i].classList.add(score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'good');
+  label.textContent = labels[score] || 'Too short';
+  label.style.color = colors[score] || '#94a3b8';
+}
+
+// Toggle password visibility
+function togglePw(fieldId, btn) {
+  const inp = document.getElementById(fieldId);
+  const icon = btn.querySelector('i');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.className = 'fas fa-eye-slash';
+  } else {
+    inp.type = 'password';
+    icon.className = 'fas fa-eye';
+  }
+}
+</script>
+
+</body>
+</html>

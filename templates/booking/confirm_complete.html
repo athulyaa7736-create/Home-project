@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Confirm Service Completion - Fixzy{% endblock %}
+
+{% block content %}
+<div class="confirm-container">
+    <div class="confirm-card">
+        <div class="confirm-header">
+            <div class="icon-wrapper">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>Confirm Service Completion</h1>
+            <p>Are you sure you want to mark this service as completed?</p>
+        </div>
+
+        <!-- Service Details Summary -->
+        <div class="service-summary">
+            <h3>Service Details</h3>
+            
+            <div class="detail-row">
+                <span class="detail-label">Service ID:</span>
+                <span class="detail-value">#{{ request.id }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Service:</span>
+                <span class="detail-value">{{ request.service.name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Customer:</span>
+                <span class="detail-value">{{ request.user.get_full_name|default:request.user.username }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{ request.created_at|date:"d M Y, h:i A" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Address:</span>
+                <span class="detail-value">{{ request.address }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Current Status:</span>
+                <span class="detail-value">
+                    <span class="status-badge status-{{ request.status }}">
+                        {{ request.get_status_display }}
+                    </span>
+                </span>
+            </div>
+
+            <!-- Subscription Info if applicable -->
+            {% if request.subscription %}
+            <div class="subscription-info">
+                <h4><i class="fas fa-crown"></i> Subscription Details</h4>
+                <div class="detail-row">
+                    <span class="detail-label">Plan:</span>
+                    <span class="detail-value">{{ request.subscription.plan.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Visits Used:</span>
+                    <span class="detail-value">{{ request.subscription.visits_used }}/{{ request.subscription.total_visits_allowed }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Remaining:</span>
+                    <span class="detail-value">{{ request.subscription.visits_remaining }} visits</span>
+                </div>
+                <div class="warning-message">
+                    <i class="fas fa-info-circle"></i>
+                    Completing this service will use one visit from the subscription.
+                    {% if request.subscription.visits_remaining <= 1 %}
+                        <strong>This will be the last visit!</strong>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Confirmation Form -->
+        <form method="post" class="confirm-form">
+            {% csrf_token %}
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-confirm">
+                    <i class="fas fa-check"></i> Yes, Mark as Completed
+                </button>
+                
+                <a href="javascript:history.back()" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .confirm-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .confirm-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .confirm-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: #e8f5e9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .icon-wrapper i {
+        font-size: 40px;
+        color: #4caf50;
+    }
+
+    .confirm-header h1 {
+        color: #1e3c72;
+        margin-bottom: 10px;
+        font-size: 28px;
+    }
+
+    .confirm-header p {
+        color: #666;
+        font-size: 16px;
+    }
+
+    .service-summary {
+        background: #f8fafc;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .service-summary h3 {
+        color: #1e3c72;
+        margin-bottom: 20px;
+        font-size: 18px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #eef2f6;
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 12px;
+        padding: 8px 0;
+        border-bottom: 1px dashed #eef2f6;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        width: 120px;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .detail-value {
+        flex: 1;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fff3e0;
+        color: #e67e22;
+    }
+
+    .status-assigned {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .status-in_progress {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .subscription-info {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e3f2fd;
+        border-radius: 10px;
+    }
+
+    .subscription-info h4 {
+        color: #1976d2;
+        margin-bottom: 15px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .subscription-info h4 i {
+        color: #ffd700;
+    }
+
+    .warning-message {
+        margin-top: 15px;
+        padding: 12px;
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        border-radius: 5px;
+        color: #856404;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .warning-message i {
+        font-size: 18px;
+        color: #ffc107;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-confirm, .btn-cancel {
+        flex: 1;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-confirm {
+        background: #4caf50;
+        color: white;
+    }
+
+    .btn-confirm:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(76,175,80,0.3);
+    }
+
+    .btn-cancel {
+        background: #eef2f6;
+        color: #666;
+    }
+
+    .btn-cancel:hover {
+        background: #e2e8f0;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .confirm-card {
+            padding: 25px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .detail-row {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-label {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    // Prevent accidental form resubmission
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+
+    // Add loading state on form submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const btn = document.querySelector('.btn-confirm');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        btn.disabled = true;
+    });
+</script>
+{% endblock %}

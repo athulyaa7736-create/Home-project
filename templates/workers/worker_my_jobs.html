@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Jobs - Fixzy Worker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:var(--text); }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── LAYOUT ── */
+.wrap { display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:260px; background:var(--navy);
+  position:fixed; height:100vh; overflow-y:auto; z-index:100;
+  display:flex; flex-direction:column;
+  border-right:1px solid rgba(255,255,255,.06);
+  transition:width .3s var(--ease);
+}
+.sidebar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.sb-head { padding:22px 22px 18px; border-bottom:1px solid rgba(255,255,255,.07); position:relative; z-index:1; }
+.sb-logo { display:flex; align-items:center; gap:10px; }
+.sb-logo-box { width:36px; height:36px; background:var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; flex-shrink:0; }
+.sb-logo-text { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.sb-logo-text em { color:var(--orange); font-style:normal; }
+.sb-nav { padding:14px 12px; flex:1; position:relative; z-index:1; }
+.sb-sec { font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,.28); padding:10px 14px 6px; }
+.nav-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:10px; margin-bottom:2px; color:rgba(255,255,255,.58); font-size:14px; font-weight:500; transition:all .22s var(--ease); }
+.nav-item i { width:18px; font-size:15px; flex-shrink:0; }
+.nav-item:hover { background:rgba(249,115,22,.1); color:#fff; transform:translateX(3px); }
+.nav-item.active { background:rgba(249,115,22,.15); color:var(--orange); font-weight:600; border-left:3px solid var(--orange); padding-left:11px; }
+.nav-divider { border:none; border-top:1px solid rgba(255,255,255,.06); margin:8px 14px; }
+.nav-item.logout { color:rgba(255,100,100,.65); }
+.nav-item.logout:hover { background:rgba(239,68,68,.1); color:#f87171; }
+.sb-footer { padding:14px 16px; border-top:1px solid rgba(255,255,255,.06); position:relative; z-index:1; }
+.sb-user { display:flex; align-items:center; gap:10px; }
+.sb-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--orange),var(--orange-dk)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--fH); font-size:15px; font-weight:900; flex-shrink:0; }
+.sb-uname { font-size:13px; font-weight:700; color:#fff; }
+.sb-urole { font-size:11px; color:rgba(255,255,255,.38); }
+
+/* ── MAIN ── */
+.main { flex:1; margin-left:260px; padding:28px 36px 60px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px 24px;
+  margin-bottom:24px; box-shadow:0 2px 10px rgba(15,32,64,.04);
+}
+.tb-left { display:flex; align-items:center; gap:14px; }
+.tb-icon { width:44px; height:44px; border-radius:12px; background:var(--orange-lt); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:20px; }
+.tb-title { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-.5px; color:var(--navy); }
+.tb-sub { font-size:13px; color:var(--muted); margin-top:1px; }
+.tb-right { display:flex; align-items:center; gap:12px; }
+.user-chip { display:flex; align-items:center; gap:10px; background:var(--light); border:1px solid var(--border); border-radius:40px; padding:6px 16px 6px 6px; }
+.uc-avatar { width:34px; height:34px; border-radius:50%; background:var(--navy); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:14px; }
+.uc-name { font-size:13px; font-weight:700; color:var(--navy); }
+.uc-email { font-size:11px; color:var(--muted); }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:9px 20px; border-radius:30px; background:var(--navy); color:#fff; font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:var(--navy2); transform:translateX(-2px); }
+
+/* ── MESSAGES ── */
+.messages { margin-bottom:20px; }
+.alert { padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500; margin-bottom:8px; display:flex; align-items:center; gap:8px; animation:alertIn .4s var(--ease) both; }
+@keyframes alertIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.alert-success { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-left:4px solid #22c55e; }
+.alert-error   { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; border-left:4px solid #ef4444; }
+
+/* ── STATS ── */
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+.stat-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:20px;
+  display:flex; align-items:center; gap:16px;
+  transition:all .3s var(--ease); position:relative; overflow:hidden;
+  animation:fadeUp .5s var(--ease) both;
+}
+.stat-card:nth-child(1){animation-delay:.1s}
+.stat-card:nth-child(2){animation-delay:.2s}
+.stat-card:nth-child(3){animation-delay:.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.stat-card::before { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--orange); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease); }
+.stat-card:hover { transform:translateY(-4px); box-shadow:0 14px 36px rgba(249,115,22,.12); }
+.stat-card:hover::before { transform:scaleX(1); }
+.stat-ic { width:50px; height:50px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.si-o { background:var(--orange-lt); color:var(--orange); }
+.si-b { background:#dbeafe; color:#1d4ed8; }
+.si-g { background:#dcfce7; color:#16a34a; }
+.stat-val { font-family:var(--fH); font-size:30px; font-weight:900; letter-spacing:-1px; color:var(--navy); }
+.stat-lbl { font-size:13px; color:var(--muted); font-weight:500; margin-top:2px; }
+
+/* ── JOBS KANBAN ── */
+.jobs-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+/* column */
+.jobs-col {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); overflow:hidden;
+  box-shadow:0 2px 12px rgba(15,32,64,.05);
+  animation:fadeUp .5s var(--ease) .35s both;
+}
+.col-head {
+  padding:18px 22px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.col-head-left { display:flex; align-items:center; gap:10px; }
+.col-head-ic {
+  width:36px; height:36px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+}
+.ch-orange { background:var(--orange-lt); color:var(--orange); }
+.ch-green  { background:#dcfce7; color:#16a34a; }
+.col-head-title { font-family:var(--fH); font-size:16px; font-weight:800; color:var(--navy); }
+.col-count {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:28px; height:24px; padding:0 8px;
+  border-radius:20px; font-size:12px; font-weight:800;
+  font-family:var(--fH);
+}
+.cc-orange { background:var(--orange); color:#fff; }
+.cc-green  { background:#16a34a; color:#fff; }
+
+.col-body { padding:16px; max-height:70vh; overflow-y:auto; }
+
+/* ── JOB CARD ── */
+.job-card {
+  background:var(--light); border:1px solid var(--border);
+  border-radius:12px; padding:18px; margin-bottom:12px;
+  border-left:4px solid var(--orange);
+  transition:all .3s var(--ease); position:relative;
+}
+.job-card.done { border-left-color:#16a34a; }
+.job-card:hover { transform:translateX(4px); box-shadow:0 6px 20px rgba(15,32,64,.1); background:var(--white); }
+.job-card:last-child { margin-bottom:0; }
+
+.jc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.jc-service { font-family:var(--fH); font-size:16px; font-weight:800; color:var(--navy); letter-spacing:-.3px; }
+
+/* status badges */
+.status-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:20px; font-size:11px; font-weight:700; }
+.sb-assigned  { background:#dbeafe; color:#1e40af; }
+.sb-progress  { background:var(--orange-lt); color:var(--orange-dk); border:1px solid rgba(249,115,22,.2); }
+.sb-completed { background:#dcfce7; color:#166534; }
+
+/* detail grid */
+.jc-details { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.jc-detail {
+  display:flex; align-items:center; gap:7px;
+  background:var(--white); border:1px solid var(--border);
+  border-radius:8px; padding:7px 10px;
+  font-size:12px; color:var(--muted); font-weight:500;
+}
+.jc-detail i { color:var(--orange); font-size:12px; width:12px; }
+.jc-detail span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* price pill */
+.price-pill {
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--navy); color:#fff;
+  border-radius:20px; padding:4px 12px;
+  font-family:var(--fH); font-size:13px; font-weight:800;
+  margin-bottom:14px;
+}
+.price-pill i { color:var(--orange); font-size:11px; }
+
+/* action row */
+.jc-actions { display:flex; gap:8px; }
+.jc-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 16px; border-radius:8px; border:none;
+  font-family:var(--fH); font-size:13px; font-weight:800;
+  cursor:pointer; transition:all .25s var(--ease);
+  position:relative; overflow:hidden;
+}
+.jc-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18),transparent 70%); transform:translateX(-100%); transition:transform .5s; }
+.jc-btn:hover::after { transform:translateX(100%); }
+.jc-btn:hover { transform:translateY(-2px); }
+.btn-view    { background:var(--light2); color:var(--navy); border:1.5px solid var(--border); }
+.btn-view:hover { border-color:var(--orange); color:var(--orange); background:var(--orange-lt); }
+.btn-start   { background:var(--orange); color:#fff; box-shadow:0 3px 12px rgba(249,115,22,.25); }
+.btn-start:hover { background:var(--orange-dk); box-shadow:0 8px 24px rgba(249,115,22,.4); }
+.btn-done    { background:#16a34a; color:#fff; box-shadow:0 3px 12px rgba(22,163,74,.2); }
+.btn-done:hover { background:#15803d; box-shadow:0 8px 24px rgba(22,163,74,.35); }
+
+/* empty state */
+.empty-state { text-align:center; padding:48px 20px; }
+.empty-icon { width:64px; height:64px; background:var(--light2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; color:var(--muted); margin:0 auto 14px; }
+.empty-title { font-family:var(--fH); font-size:16px; font-weight:800; color:var(--navy); margin-bottom:5px; }
+.empty-sub { font-size:13px; color:var(--muted); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px) {
+  .sidebar { width:68px; }
+  .sb-logo-text, .nav-item span, .sb-sec, .sb-footer .sb-uname, .sb-footer .sb-urole { display:none; }
+  .nav-item { justify-content:center; padding:13px; }
+  .sb-head { padding:16px 14px; }
+  .main { margin-left:68px; }
+}
+@media(max-width:900px) { .jobs-grid { grid-template-columns:1fr; } .stats-grid { grid-template-columns:1fr; } }
+@media(max-width:768px) {
+  .sidebar { display:none; }
+  .main { margin-left:0; padding:20px 16px 48px; }
+  .topbar { flex-direction:column; align-items:flex-start; gap:12px; }
+  .jc-details { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="sb-head">
+      <a href="{% url 'worker_dashboard' %}" class="sb-logo">
+        <div class="sb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+        <div class="sb-logo-text">Fix<em>zy</em></div>
+      </a>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Main</div>
+      <a href="{% url 'worker_dashboard' %}" class="nav-item"><i class="fas fa-house"></i><span>Dashboard</span></a>
+      <a href="{% url 'worker_my_jobs' %}" class="nav-item active"><i class="fas fa-briefcase"></i><span>My Jobs</span></a>
+      <a href="{% url 'worker_job_history' %}" class="nav-item"><i class="fas fa-clock-rotate-left"></i><span>Job History</span></a>
+      <hr class="nav-divider">
+      <div class="sb-sec">Account</div>
+      <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-pen"></i><span>Edit Profile</span></a>
+      <a href="{% url 'logout' %}" class="nav-item logout"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar">{{ request.user.first_name|slice:":1"|upper|default:request.user.username|slice:":1"|upper }}</div>
+        <div>
+          <div class="sb-uname">{{ request.user.username }}</div>
+          <div class="sb-urole">Pro Worker</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="tb-left">
+        <div class="tb-icon"><i class="fas fa-briefcase"></i></div>
+        <div>
+          <div class="tb-title">My Jobs</div>
+          <div class="tb-sub">Manage your active and completed service jobs</div>
+        </div>
+      </div>
+      <div class="tb-right">
+        <div class="user-chip">
+          <div class="uc-avatar"><i class="fas fa-user"></i></div>
+          <div>
+            <div class="uc-name">{{ request.user.username }}</div>
+            <div class="uc-email">{{ request.user.email }}</div>
+          </div>
+        </div>
+        <a href="{% url 'worker_dashboard' %}" class="btn-back">
+          <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        <i class="fas {% if 'success' in message.tags %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-ic si-o"><i class="fas fa-briefcase"></i></div>
+        <div>
+          <div class="stat-val">{{ all_jobs.count }}</div>
+          <div class="stat-lbl">Total Jobs</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ic si-b"><i class="fas fa-spinner"></i></div>
+        <div>
+          <div class="stat-val">{{ active_count }}</div>
+          <div class="stat-lbl">Active Jobs</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ic si-g"><i class="fas fa-circle-check"></i></div>
+        <div>
+          <div class="stat-val">{{ completed_count }}</div>
+          <div class="stat-lbl">Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanban columns -->
+    <div class="jobs-grid">
+
+      <!-- Active Jobs -->
+      <div class="jobs-col">
+        <div class="col-head">
+          <div class="col-head-left">
+            <div class="col-head-ic ch-orange"><i class="fas fa-play-circle"></i></div>
+            <div class="col-head-title">Active Jobs</div>
+          </div>
+          <span class="col-count cc-orange">{{ active_count }}</span>
+        </div>
+        <div class="col-body">
+          {% for job in active_jobs %}
+          <div class="job-card">
+            <div class="jc-top">
+              <span class="jc-service">{{ job.service.name }}</span>
+              {% if job.status == 'assigned' %}
+                <span class="status-badge sb-assigned"><i class="fas fa-user-check"></i> Assigned</span>
+              {% elif job.status == 'in_progress' %}
+                <span class="status-badge sb-progress"><i class="fas fa-spinner fa-spin"></i> In Progress</span>
+              {% endif %}
+            </div>
+
+            <div class="jc-details">
+              <div class="jc-detail"><i class="fas fa-user"></i><span>{{ job.user.username }}</span></div>
+              <div class="jc-detail"><i class="fas fa-calendar"></i><span>{{ job.created_at|date:"d M Y" }}</span></div>
+              <div class="jc-detail"><i class="fas fa-location-dot"></i><span>{{ job.address|truncatechars:22 }}</span></div>
+              <div class="jc-detail"><i class="fas fa-clock"></i><span>{{ job.created_at|time:"h:i A" }}</span></div>
+            </div>
+
+            <div class="price-pill"><i class="fas fa-indian-rupee-sign"></i> ₹{{ job.service.price }}</div>
+
+            <div class="jc-actions">
+              <a href="{% url 'job_details' job.id %}" class="jc-btn btn-view">
+                <i class="fas fa-eye"></i> View
+              </a>
+              {% if job.status == 'assigned' %}
+              <form method="POST" action="{% url 'update_job_status' job.id %}" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="in_progress">
+                <button type="submit" class="jc-btn btn-start">
+                  <i class="fas fa-play"></i> Start Job
+                </button>
+              </form>
+              {% endif %}
+              {% if job.status == 'in_progress' %}
+              <form method="POST" action="{% url 'update_job_status' job.id %}" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="completed">
+                <button type="submit" class="jc-btn btn-done">
+                  <i class="fas fa-check-double"></i> Mark Done
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+            <div class="empty-title">No active jobs</div>
+            <div class="empty-sub">New jobs assigned to you will appear here</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Completed Jobs -->
+      <div class="jobs-col">
+        <div class="col-head">
+          <div class="col-head-left">
+            <div class="col-head-ic ch-green"><i class="fas fa-circle-check"></i></div>
+            <div class="col-head-title">Completed Jobs</div>
+          </div>
+          <span class="col-count cc-green">{{ completed_count }}</span>
+        </div>
+        <div class="col-body">
+          {% for job in completed_jobs %}
+          <div class="job-card done">
+            <div class="jc-top">
+              <span class="jc-service">{{ job.service.name }}</span>
+              <span class="status-badge sb-completed"><i class="fas fa-circle-check"></i> Completed</span>
+            </div>
+
+            <div class="jc-details">
+              <div class="jc-detail"><i class="fas fa-user"></i><span>{{ job.user.username }}</span></div>
+              <div class="jc-detail"><i class="fas fa-calendar"></i><span>{{ job.created_at|date:"d M Y" }}</span></div>
+            </div>
+
+            <div class="price-pill"><i class="fas fa-indian-rupee-sign"></i> ₹{{ job.service.price }}</div>
+
+            <div class="jc-actions">
+              <a href="{% url 'job_details' job.id %}" class="jc-btn btn-view">
+                <i class="fas fa-eye"></i> View Details
+              </a>
+            </div>
+          </div>
+          {% empty %}
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fas fa-circle-check"></i></div>
+            <div class="empty-title">No completed jobs yet</div>
+            <div class="empty-sub">Your finished jobs will show up here</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// Auto-hide alerts after 4s
+setTimeout(() => {
+  document.querySelectorAll('.alert').forEach(a => {
+    a.style.transition = 'opacity .5s';
+    a.style.opacity = '0';
+    setTimeout(() => a.remove(), 500);
+  });
+}, 4000);
+</script>
+</body>
+</html>

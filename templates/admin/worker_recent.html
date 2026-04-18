@@ -1,0 +1,81 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1>Recent Worker Registrations</h1>
+    
+    <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
+        <h2>Last 24 Hours</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8fafd;">
+                    <th style="padding: 10px;">Worker</th>
+                    <th style="padding: 10px;">Service</th>
+                    <th style="padding: 10px;">Registered</th>
+                    <th style="padding: 10px;">Status</th>
+                    <th style="padding: 10px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for worker in recent_24h %}
+                <tr>
+                    <td style="padding: 10px;">{{ worker.user.username }}</td>
+                    <td style="padding: 10px;">{{ worker.service_type }}</td>
+                    <td style="padding: 10px;">{{ worker.created_at|timesince }} ago</td>
+                    <td style="padding: 10px;">
+                        {% if worker.verified %}
+                            <span style="color: green;">✓ Verified</span>
+                        {% else %}
+                            <span style="color: orange;">⏳ Pending</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 10px;">
+                        <a href="/admin/workers/workerprofile/{{ worker.id }}/change/" style="background: #4ecdc4; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Review</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 20px; text-align: center;">No new workers in last 24 hours</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h2 style="margin-top: 30px;">Last 7 Days</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8fafd;">
+                    <th style="padding: 10px;">Worker</th>
+                    <th style="padding: 10px;">Service</th>
+                    <th style="padding: 10px;">Registered</th>
+                    <th style="padding: 10px;">Status</th>
+                    <th style="padding: 10px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for worker in recent_7d %}
+                <tr>
+                    <td style="padding: 10px;">{{ worker.user.username }}</td>
+                    <td style="padding: 10px;">{{ worker.service_type }}</td>
+                    <td style="padding: 10px;">{{ worker.created_at|date:"d M Y" }}</td>
+                    <td style="padding: 10px;">
+                        {% if worker.verified %}
+                            <span style="color: green;">✓ Verified</span>
+                        {% else %}
+                            <span style="color: orange;">⏳ Pending</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 10px;">
+                        <a href="/admin/workers/workerprofile/{{ worker.id }}/change/" style="background: #4ecdc4; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Review</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 20px; text-align: center;">No new workers in last 7 days</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

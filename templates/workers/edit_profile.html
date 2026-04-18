@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile - Fixzy Worker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:var(--text); }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background:var(--navy); padding:0 40px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.tb-logo { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.tb-logo-box { width:34px; height:34px; background:var(--orange); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; }
+.tb-logo-text { font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+.tb-right { display:flex; align-items:center; gap:12px; position:relative; z-index:1; }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:8px 18px; border-radius:30px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.8); font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35); color:#fff; transform:translateX(-2px); }
+
+/* ── PAGE ── */
+.page { max-width:820px; margin:0 auto; padding:36px 24px 60px; }
+
+/* ── PAGE HEADER ── */
+.page-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.page-head-icon { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,var(--navy2),var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:22px; box-shadow:0 4px 16px rgba(15,32,64,.15); flex-shrink:0; }
+.page-head-title { font-family:var(--fH); font-size:26px; font-weight:900; letter-spacing:-.8px; color:var(--navy); }
+.page-head-sub { font-size:14px; color:var(--muted); margin-top:2px; }
+
+/* ── WORKER BANNER ── */
+.worker-banner {
+  background:var(--navy); border-radius:var(--r);
+  padding:26px 30px; display:flex; align-items:center; gap:22px;
+  margin-bottom:20px; position:relative; overflow:hidden;
+  border:1px solid rgba(249,115,22,.12);
+}
+.worker-banner::before { content:''; position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px); background-size:32px 32px; }
+.worker-banner::after { content:''; position:absolute; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-80px; right:-60px; pointer-events:none; }
+.worker-avatar { width:68px; height:68px; border-radius:50%; background:linear-gradient(135deg,var(--orange),var(--orange-dk)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px; font-weight:900; font-family:var(--fH); border:3px solid rgba(255,255,255,.15); flex-shrink:0; position:relative; z-index:1; box-shadow:0 8px 24px rgba(249,115,22,.3); }
+.worker-info { position:relative; z-index:1; }
+.worker-name { font-family:var(--fH); font-size:19px; font-weight:800; color:#fff; letter-spacing:-.3px; margin-bottom:4px; }
+.worker-meta { font-size:13px; color:rgba(255,255,255,.5); margin-bottom:10px; }
+.worker-badges { display:flex; gap:8px; flex-wrap:wrap; }
+.w-badge { display:inline-flex; align-items:center; gap:5px; border-radius:20px; padding:4px 11px; font-size:12px; font-weight:600; }
+.badge-pro  { background:rgba(249,115,22,.15); border:1px solid rgba(249,115,22,.3); color:var(--orange); }
+.badge-rate { background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.25); color:#22c55e; }
+
+/* ── MESSAGES ── */
+.messages { margin-bottom:20px; }
+.alert { padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500; margin-bottom:8px; display:flex; align-items:center; gap:8px; animation:alertIn .4s var(--ease) both; }
+@keyframes alertIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.alert-success { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-left:4px solid #22c55e; }
+.alert-error   { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; border-left:4px solid #ef4444; }
+
+/* error summary */
+.err-summary {
+  background:#fef2f2; border:1px solid #fecaca; border-left:4px solid #ef4444;
+  border-radius:10px; padding:14px 16px; margin-bottom:20px;
+  display:flex; align-items:flex-start; gap:12px;
+}
+.err-summary i { color:#dc2626; font-size:18px; flex-shrink:0; margin-top:1px; }
+.err-summary strong { color:#b91c1c; font-size:13px; font-family:var(--fH); }
+.err-summary ul { margin:6px 0 0 16px; }
+.err-summary ul li { color:#b91c1c; font-size:12px; margin-bottom:2px; }
+
+/* ── FORM CARD ── */
+.form-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; box-shadow:0 2px 16px rgba(15,32,64,.06); margin-bottom:0; }
+
+/* section */
+.form-section { padding:24px 28px; border-bottom:1px solid var(--border); }
+.form-section:last-of-type { border-bottom:none; }
+
+.sec-lbl { display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--orange); margin-bottom:18px; }
+.sec-lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* fields */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-group { margin-bottom:16px; }
+.form-group:last-child { margin-bottom:0; }
+
+label { display:block; margin-bottom:6px; font-size:13px; font-weight:600; color:var(--navy); }
+.req { color:var(--orange); margin-left:2px; }
+.admin-note { font-size:12px; color:#94a3b8; font-weight:400; margin-left:6px; }
+
+.input-wrap { position:relative; }
+.field-icon { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:14px; pointer-events:none; transition:color .2s; }
+.input-wrap:focus-within .field-icon { color:var(--orange); }
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="file"],
+select, textarea {
+  width:100%; padding:11px 13px 11px 38px;
+  border:1.5px solid var(--border); border-radius:10px;
+  font-size:14px; font-family:var(--fB); color:var(--navy);
+  background:var(--light); outline:none;
+  transition:all .22s var(--ease);
+  appearance:none; -webkit-appearance:none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color:var(--orange); background:var(--white);
+  box-shadow:0 0 0 3px rgba(249,115,22,.1);
+}
+input::placeholder, textarea::placeholder { color:#94a3b8; }
+input.err, select.err, textarea.err { border-color:#ef4444; background:#fff5f5; }
+
+/* file input special */
+input[type="file"] {
+  padding:9px 13px 9px 38px;
+  cursor:pointer; color:var(--muted);
+}
+input[type="file"]::-webkit-file-upload-button {
+  padding:5px 12px; border-radius:6px; border:none;
+  background:var(--orange); color:#fff; font-size:12px; font-weight:600;
+  cursor:pointer; margin-right:10px; font-family:var(--fB);
+  transition:background .2s;
+}
+input[type="file"]::-webkit-file-upload-button:hover { background:var(--orange-dk); }
+
+select {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; cursor:pointer;
+}
+
+textarea { padding-top:11px; resize:vertical; min-height:85px; line-height:1.6; }
+
+/* disabled / readonly */
+input:disabled, input[readonly] {
+  background:var(--light2); color:var(--muted);
+  cursor:not-allowed; border-color:var(--border);
+}
+
+.help-text { font-size:11px; color:#94a3b8; margin-top:5px; display:flex; align-items:center; gap:5px; }
+.help-text i { font-size:10px; color:var(--orange); }
+
+/* field errors */
+.field-errors { list-style:none; margin-top:5px; }
+.field-errors li { font-size:12px; color:#dc2626; display:flex; align-items:center; gap:5px; }
+.field-errors li::before { content:'⚠'; font-size:10px; }
+
+/* current file link */
+.current-file {
+  display:inline-flex; align-items:center; gap:6px;
+  margin-top:6px; font-size:12px; color:var(--navy2); font-weight:600;
+  background:var(--light2); border:1px solid var(--border);
+  border-radius:6px; padding:4px 10px; transition:all .2s;
+}
+.current-file:hover { border-color:var(--orange); color:var(--orange); }
+.current-file i { font-size:11px; color:var(--orange); }
+
+/* rate card (read-only) */
+.rate-card {
+  background:var(--light); border:1px solid var(--border);
+  border-radius:12px; padding:18px 20px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px;
+}
+.rate-left { display:flex; align-items:center; gap:12px; }
+.rate-icon { width:44px; height:44px; border-radius:12px; background:var(--orange-lt); border:1px solid rgba(249,115,22,.2); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:20px; }
+.rate-label { font-size:13px; color:var(--muted); }
+.rate-value { font-family:var(--fH); font-size:26px; font-weight:900; color:var(--navy); letter-spacing:-1px; }
+.rate-note { font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:5px; }
+.rate-note i { color:var(--orange); font-size:11px; }
+
+/* ── FORM FOOTER ── */
+.form-footer {
+  padding:22px 28px; border-top:1px solid var(--border);
+  background:var(--light);
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.footer-hint { font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+.footer-hint i { color:var(--orange); }
+.btn-save { display:inline-flex; align-items:center; gap:9px; padding:12px 32px; background:var(--orange); color:#fff; border:none; border-radius:10px; font-family:var(--fH); font-size:15px; font-weight:800; cursor:pointer; transition:all .3s var(--ease); position:relative; overflow:hidden; }
+.btn-save::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%); transform:translateX(-100%); transition:transform .5s; }
+.btn-save:hover::after { transform:translateX(100%); }
+.btn-save:hover { background:var(--orange-dk); transform:translateY(-2px); box-shadow:0 12px 28px rgba(249,115,22,.35); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px) {
+  .topbar { padding:0 20px; }
+  .page { padding:24px 16px 48px; }
+  .grid-2 { grid-template-columns:1fr; gap:0; }
+  .form-section { padding:20px 18px; }
+  .form-footer { padding:18px; }
+  .worker-banner { flex-direction:column; text-align:center; padding:22px 20px; }
+  .worker-badges { justify-content:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'worker_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <div class="tb-right">
+    <a href="{% url 'worker_dashboard' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Page heading -->
+  <div class="page-head">
+    <div class="page-head-icon"><i class="fas fa-user-pen"></i></div>
+    <div>
+      <div class="page-head-title">Edit Worker Profile</div>
+      <div class="page-head-sub">Update your professional details, service area and documents</div>
+    </div>
+  </div>
+
+  <!-- Worker banner -->
+  <div class="worker-banner">
+    <div class="worker-avatar">
+      {{ request.user.first_name|slice:":1"|upper|default:request.user.username|slice:":1"|upper }}
+    </div>
+    <div class="worker-info">
+      <div class="worker-name">
+        {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.username }}{% endif %}
+      </div>
+      <div class="worker-meta">{{ request.user.email }}</div>
+      <div class="worker-badges">
+        <div class="w-badge badge-pro"><i class="fas fa-hard-hat"></i> Pro Worker</div>
+        <div class="w-badge badge-rate">
+          <i class="fas fa-indian-rupee-sign"></i>
+          ₹{{ profile.hourly_rate|default:"0" }}/job
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'success' %}success{% else %}error{% endif %}">
+      <i class="fas {% if message.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Error summary -->
+  {% if form.errors %}
+  <div class="err-summary">
+    <i class="fas fa-exclamation-circle"></i>
+    <div>
+      <strong>Please fix the following errors:</strong>
+      <ul>
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}
+            <li>{{ field|title }}: {{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Form card -->
+  <div class="form-card">
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- ── PROFESSIONAL DETAILS ── -->
+      <div class="form-section">
+        <div class="sec-lbl"><i class="fas fa-briefcase"></i> Professional Details</div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Service Type <span class="req">*</span></label>
+            <div class="input-wrap">
+              <select name="service_type" class="{% if form.service_type.errors %}err{% endif %}">
+                <option value="">— Select Service Type —</option>
+                <option value="electrical" {% if form.service_type.value == 'electrical' %}selected{% endif %}>⚡ Electrical</option>
+                <option value="plumbing"   {% if form.service_type.value == 'plumbing' %}selected{% endif %}>🔧 Plumbing</option>
+                <option value="carpentry"  {% if form.service_type.value == 'carpentry' %}selected{% endif %}>🪚 Carpentry</option>
+                <option value="cleaning"   {% if form.service_type.value == 'cleaning' %}selected{% endif %}>🧹 Cleaning</option>
+                <option value="painting"   {% if form.service_type.value == 'painting' %}selected{% endif %}>🎨 Painting</option>
+                <option value="ac_repair"  {% if form.service_type.value == 'ac_repair' %}selected{% endif %}>❄️ AC Repair</option>
+              </select>
+              <i class="fas fa-briefcase field-icon"></i>
+            </div>
+            {% if form.service_type.errors %}
+              <ul class="field-errors">{% for e in form.service_type.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label>Experience (years) <span class="req">*</span></label>
+            <div class="input-wrap">
+              <input type="number" name="experience" min="0"
+                     class="{% if form.experience.errors %}err{% endif %}"
+                     value="{{ form.experience.value|default:'' }}"
+                     placeholder="e.g. 5">
+              <i class="fas fa-clock field-icon"></i>
+            </div>
+            {% if form.experience.errors %}
+              <ul class="field-errors">{% for e in form.experience.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Skills</label>
+          <div class="input-wrap">
+            <textarea name="skills" class="{% if form.skills.errors %}err{% endif %}"
+                      placeholder="e.g. Wiring, Panel Repair, Fan Installation">{{ form.skills.value|default:'' }}</textarea>
+            <i class="fas fa-star field-icon" style="top:14px;transform:none;"></i>
+          </div>
+          <div class="help-text"><i class="fas fa-info-circle"></i> Separate skills with commas</div>
+          {% if form.skills.errors %}
+            <ul class="field-errors">{% for e in form.skills.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ── SERVICE AREA ── -->
+      <div class="form-section">
+        <div class="sec-lbl"><i class="fas fa-location-dot"></i> Service Area</div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Cities / Areas</label>
+            <div class="input-wrap">
+              <input type="text" name="service_area"
+                     class="{% if form.service_area.errors %}err{% endif %}"
+                     value="{{ form.service_area.value|default:'' }}"
+                     placeholder="e.g. Mumbai, Thane">
+              <i class="fas fa-city field-icon"></i>
+            </div>
+            {% if form.service_area.errors %}
+              <ul class="field-errors">{% for e in form.service_area.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label>Pincodes</label>
+            <div class="input-wrap">
+              <input type="text" name="pincodes"
+                     class="{% if form.pincodes.errors %}err{% endif %}"
+                     value="{{ form.pincodes.value|default:'' }}"
+                     placeholder="e.g. 400001, 400002">
+              <i class="fas fa-map-pin field-icon"></i>
+            </div>
+            <div class="help-text"><i class="fas fa-info-circle"></i> Comma separated pincodes</div>
+            {% if form.pincodes.errors %}
+              <ul class="field-errors">{% for e in form.pincodes.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CONTACT PREFERENCES ── -->
+      <div class="form-section">
+        <div class="sec-lbl"><i class="fas fa-phone"></i> Contact Preferences</div>
+
+        <div class="grid-2">
+
+          <!-- Phone Number — worker sets, admin sees -->
+          <div class="form-group">
+            <label for="phone_number">Phone Number</label>
+            <div style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:var(--light);transition:all .22s var(--ease);"
+                 id="phoneWrap"
+                 onfocusin="this.style.borderColor='var(--orange)';this.style.background='var(--white)';this.style.boxShadow='0 0 0 3px rgba(249,115,22,.1)'"
+                 onfocusout="this.style.borderColor='var(--border)';this.style.background='var(--light)';this.style.boxShadow='none'">
+              <!-- Country code prefix -->
+              <div style="display:flex;align-items:center;gap:6px;padding:0 12px;background:var(--navy);color:#fff;font-size:13px;font-weight:700;font-family:var(--fH);white-space:nowrap;flex-shrink:0;">
+                <i class="fas fa-phone" style="font-size:12px;color:var(--orange);"></i>
+                +91
+              </div>
+              <input type="tel" id="phone_number" name="phone_number"
+                     value="{{ request.user.phone|default:'' }}"
+                     placeholder="98765 43210"
+                     maxlength="10"
+                     style="border:none;border-radius:0;background:transparent;padding:11px 14px;flex:1;outline:none;font-size:14px;font-family:var(--fB);color:var(--navy);"
+                     oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            </div>
+            <div class="help-text"><i class="fas fa-info-circle"></i> 10-digit mobile number</div>
+          </div>
+
+          <!-- Preferred Contact Method -->
+          <div class="form-group">
+            <label>Preferred Contact Method</label>
+            <div class="input-wrap">
+              <select name="preferred_contact_method">
+                <option value="phone"    {% if form.preferred_contact_method.value == 'phone' %}selected{% endif %}>📞 Phone Call</option>
+                <option value="whatsapp" {% if form.preferred_contact_method.value == 'whatsapp' %}selected{% endif %}>💬 WhatsApp</option>
+                <option value="both"     {% if form.preferred_contact_method.value == 'both' %}selected{% endif %}>📞 Both</option>
+              </select>
+              <i class="fas fa-comments field-icon"></i>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── DOCUMENTS ── -->
+      <div class="form-section">
+        <div class="sec-lbl"><i class="fas fa-folder-open"></i> Documents</div>
+
+        <div class="grid-2">
+          <!-- Photo -->
+          <div class="form-group">
+            <label>Profile Photo</label>
+            <div class="input-wrap">
+              <input type="file" name="photo" accept="image/*">
+              <i class="fas fa-camera field-icon"></i>
+            </div>
+            {% if profile and profile.photo %}
+              <a href="{{ profile.photo.url }}" target="_blank" class="current-file">
+                <i class="fas fa-image"></i> View current photo
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- ID Proof -->
+          <div class="form-group">
+            <label>ID Proof</label>
+            <div class="input-wrap">
+              <input type="file" name="id_proof" accept="image/*">
+              <i class="fas fa-id-card field-icon"></i>
+            </div>
+            {% if profile and profile.id_proof %}
+              <a href="{{ profile.id_proof.url }}" target="_blank" class="current-file">
+                <i class="fas fa-file-image"></i> View current ID
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Address Proof -->
+          <div class="form-group">
+            <label>Address Proof</label>
+            <div class="input-wrap">
+              <input type="file" name="address_proof" accept="image/*">
+              <i class="fas fa-house field-icon"></i>
+            </div>
+            {% if profile and profile.address_proof %}
+              <a href="{{ profile.address_proof.url }}" target="_blank" class="current-file">
+                <i class="fas fa-file-image"></i> View current proof
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Certificate -->
+          <div class="form-group">
+            <label>Certificate</label>
+            <div class="input-wrap">
+              <input type="file" name="certificate" accept="image/*">
+              <i class="fas fa-certificate field-icon"></i>
+            </div>
+            {% if profile and profile.certificate %}
+              <a href="{{ profile.certificate.url }}" target="_blank" class="current-file">
+                <i class="fas fa-file-image"></i> View certificate
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COMPENSATION ── -->
+      <div class="form-section">
+        <div class="sec-lbl"><i class="fas fa-indian-rupee-sign"></i> Compensation</div>
+
+        <div class="rate-card">
+          <div class="rate-left">
+            <div class="rate-icon"><i class="fas fa-indian-rupee-sign"></i></div>
+            <div>
+              <div class="rate-label">Your Job Rate</div>
+              <div class="rate-value">₹{{ profile.job_rate|default:"0" }}</div>
+            </div>
+          </div>
+          <div class="rate-note">
+            <i class="fas fa-lock"></i>
+            Set by admin — contact us to request a change
+          </div>
+        </div>
+        <!-- hidden field to keep value in POST -->
+        <input type="hidden" name="job_rate" value="{{ profile.job_rate|default:'0' }}">
+      </div>
+
+      <!-- ── SAVE ── -->
+      <div class="form-footer">
+        <div class="footer-hint">
+          <i class="fas fa-shield-halved"></i>
+          Your information is kept secure and private
+        </div>
+        <button type="submit" class="btn-save">
+          <i class="fas fa-floppy-disk"></i> Save Changes
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

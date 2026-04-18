@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fixzy AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  font-family:var(--fB);
+  min-height:100vh;
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;position:relative;overflow:hidden;
+}
+
+/* ── BG ── */
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:56px 56px;animation:gridMove 30s linear infinite;}
+@keyframes gridMove{from{background-position:0 0}to{background-position:56px 56px}}
+.bg-blob{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.blob-a{width:500px;height:500px;background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%);top:-120px;right:-80px;animation:bF 10s ease-in-out infinite;}
+.blob-b{width:380px;height:380px;background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%);bottom:-80px;left:-60px;animation:bF 14s ease-in-out infinite reverse;}
+@keyframes bF{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.1) translate(15px,-20px)}}
+
+/* ── CHAT CONTAINER ── */
+.chat-container{
+  position:relative;z-index:1;
+  width:100%;max-width:460px;height:720px;
+  background:var(--white);border-radius:24px;
+  box-shadow:0 32px 80px rgba(0,0,0,.35);
+  overflow:hidden;display:flex;flex-direction:column;
+  animation:cardUp .6s var(--ease) both;
+  border:1px solid rgba(255,255,255,.08);
+}
+@keyframes cardUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HEADER ── */
+.chat-header{
+  background:var(--navy);
+  padding:18px 20px;
+  display:flex;align-items:center;gap:14px;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.chat-header::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.chat-header::after{
+  content:'';position:absolute;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);
+  top:-60px;right:-40px;pointer-events:none;
+}
+.hd-avatar{
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(249,115,22,.15);border:2px solid rgba(249,115,22,.3);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--orange);font-size:22px;flex-shrink:0;
+  position:relative;z-index:1;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.3)}50%{box-shadow:0 0 0 10px rgba(249,115,22,0)}}
+.hd-info{flex:1;position:relative;z-index:1;}
+.hd-name{font-family:var(--fH);font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.hd-status{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px;display:flex;align-items:center;gap:5px;}
+.hd-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.hd-close{position:relative;z-index:1;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);text-decoration:none;transition:all .22s;font-size:14px;}
+.hd-close:hover{background:rgba(249,115,22,.2);color:var(--orange);}
+
+/* ── MESSAGES ── */
+.chat-messages{
+  flex:1;padding:20px;overflow-y:auto;
+  background:var(--light);
+  display:flex;flex-direction:column;gap:14px;
+}
+.chat-messages::-webkit-scrollbar{width:3px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--orange);border-radius:2px;}
+
+.message{display:flex;flex-direction:column;animation:msgIn .3s var(--ease) both;}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.message.ai  {align-items:flex-start;}
+.message.user{align-items:flex-end;}
+
+.msg-row{display:flex;align-items:flex-end;gap:8px;}
+.msg-ai-icon{width:28px;height:28px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:12px;flex-shrink:0;}
+
+.message-content{
+  max-width:82%;padding:12px 16px;border-radius:18px;
+  font-size:13.5px;line-height:1.6;
+}
+.ai .message-content{
+  background:var(--white);color:var(--navy);
+  border-bottom-left-radius:4px;
+  box-shadow:0 2px 10px rgba(15,32,64,.06);
+  border:1px solid var(--border);
+}
+.user .message-content{
+  background:var(--navy);color:#fff;
+  border-bottom-right-radius:4px;
+  box-shadow:0 4px 14px rgba(15,32,64,.2);
+}
+.message-time{font-size:10px;color:#94a3b8;margin-top:4px;padding:0 4px;}
+
+/* typing */
+.typing-indicator{
+  display:flex;gap:5px;padding:12px 16px;
+  background:var(--white);border-radius:18px;border-bottom-left-radius:4px;
+  border:1px solid var(--border);width:fit-content;
+}
+.typing-indicator span{
+  width:7px;height:7px;background:var(--orange);border-radius:50%;
+  animation:typing 1.4s infinite ease-in-out;
+}
+.typing-indicator span:nth-child(1){animation-delay:0s}
+.typing-indicator span:nth-child(2){animation-delay:.2s}
+.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes typing{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-8px);opacity:1}}
+
+/* escalate btn */
+.escalate-btn{
+  background:var(--orange-lt);border:1.5px solid rgba(249,115,22,.3);
+  border-radius:12px;padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:all .25s;max-width:82%;
+}
+.escalate-btn:hover{background:var(--orange);color:#fff;border-color:var(--orange);}
+.escalate-btn:hover .esc-ic{background:rgba(255,255,255,.2);color:#fff;}
+.esc-ic{width:36px;height:36px;border-radius:50%;background:rgba(249,115,22,.15);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:16px;flex-shrink:0;transition:all .25s;}
+.esc-text strong{display:block;font-family:var(--fH);font-size:13px;font-weight:800;color:var(--navy);}
+.escalate-btn:hover .esc-text strong{color:#fff;}
+.esc-text span{font-size:11px;color:var(--muted);}
+.escalate-btn:hover .esc-text span{color:rgba(255,255,255,.8);}
+
+/* ── QUICK ACTIONS ── */
+.quick-actions{
+  padding:10px 16px;background:var(--white);
+  border-top:1px solid var(--border);
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+}
+.quick-actions::-webkit-scrollbar{display:none;}
+.qa-btn{
+  padding:7px 14px;background:var(--light);
+  border:1.5px solid var(--border);border-radius:20px;
+  font-size:12px;font-weight:600;color:var(--navy);
+  cursor:pointer;white-space:nowrap;
+  transition:all .22s;font-family:var(--fB);flex-shrink:0;
+}
+.qa-btn:hover{background:var(--orange);color:#fff;border-color:var(--orange);transform:translateY(-2px);}
+
+/* ── INPUT ── */
+.chat-input{
+  padding:14px 16px;background:var(--white);
+  border-top:1px solid var(--border);
+  display:flex;gap:10px;align-items:center;
+}
+.chat-input input{
+  flex:1;padding:11px 16px;
+  border:1.5px solid var(--border);border-radius:30px;
+  font-size:14px;font-family:var(--fB);color:var(--navy);
+  background:var(--light);outline:none;transition:all .22s;
+}
+.chat-input input:focus{border-color:var(--orange);background:var(--white);box-shadow:0 0 0 3px rgba(249,115,22,.1);}
+.chat-input input::placeholder{color:#94a3b8;}
+.send-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:var(--orange);color:#fff;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  transition:all .25s var(--ease);flex-shrink:0;
+}
+.send-btn:hover{background:var(--orange-dk);transform:scale(1.08);box-shadow:0 6px 18px rgba(249,115,22,.35);}
+.send-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+/* ── MODAL ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;z-index:2000;padding:20px;}
+.modal.show{display:flex;}
+.modal-box{
+  background:var(--white);border-radius:22px;padding:36px 32px;
+  max-width:400px;width:100%;text-align:center;
+  animation:modalIn .35s var(--ease);
+  box-shadow:0 32px 80px rgba(0,0,0,.3);
+}
+@keyframes modalIn{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-ic{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--orange-lt);border:2px solid rgba(249,115,22,.25);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 18px;color:var(--orange);font-size:32px;
+}
+.modal-title{font-family:var(--fH);font-size:20px;font-weight:900;color:var(--navy);margin-bottom:6px;letter-spacing:-.3px;}
+.modal-sub{font-size:14px;color:var(--muted);margin-bottom:18px;}
+.modal-textarea{
+  width:100%;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:14px;font-family:var(--fB);color:var(--navy);
+  min-height:90px;resize:vertical;outline:none;transition:all .22s;
+  background:var(--light);
+}
+.modal-textarea:focus{border-color:var(--orange);background:var(--white);box-shadow:0 0 0 3px rgba(249,115,22,.1);}
+.modal-actions{display:flex;gap:10px;margin-top:16px;}
+.modal-btn{
+  flex:1;padding:11px;border:none;border-radius:9px;
+  font-family:var(--fH);font-size:14px;font-weight:800;
+  cursor:pointer;transition:all .25s;
+}
+.modal-btn-primary{background:var(--orange);color:#fff;}
+.modal-btn-primary:hover{background:var(--orange-dk);transform:translateY(-2px);box-shadow:0 8px 20px rgba(249,115,22,.3);}
+.modal-btn-secondary{background:var(--light2);color:var(--muted);border:1.5px solid var(--border);}
+.modal-btn-secondary:hover{border-color:var(--orange);color:var(--orange);}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-blob blob-a"></div>
+<div class="bg-blob blob-b"></div>
+
+<div class="chat-container">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="hd-avatar"><i class="fas fa-robot"></i></div>
+    <div class="hd-info">
+      <div class="hd-name">Fixzy AI Assistant
+        {% if resolved_issues %}
+        <span style="display:inline-flex;align-items:center;justify-content:center;background:#16a34a;color:#fff;border-radius:20px;font-size:10px;font-weight:800;padding:1px 8px;margin-left:6px;font-family:var(--fH);animation:pulse 2s infinite;">
+          {{ resolved_issues|length }} resolved
+        </span>
+        {% endif %}
+      </div>
+      <div class="hd-status"><span class="hd-dot"></span> Online — Ready to help</div>
+    </div>
+    <a href="{% url 'user_dashboard' %}" class="hd-close">
+      <i class="fas fa-times"></i>
+    </a>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" id="chatMessages">
+
+    <!-- ✅ Resolved issue notifications -->
+    {% for issue in resolved_issues %}
+    <div id="resolved-{{ issue.id }}" style="animation:msgIn .4s var(--ease) both;margin-bottom:4px;">
+
+      <!-- notification header bar -->
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:0 4px;">
+        <div style="width:20px;height:20px;border-radius:50%;background:#16a34a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-check" style="color:#fff;font-size:9px;"></i>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.8px;">Admin Response</span>
+        <span style="font-size:10px;color:#94a3b8;margin-left:auto;">{{ issue.resolved_at|date:"d M Y" }}</span>
+      </div>
+
+      <!-- main card -->
+      <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:16px;padding:16px;border-bottom-left-radius:4px;box-shadow:0 4px 16px rgba(22,163,74,.1);">
+
+        <!-- issue label -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+          <span style="background:#bbf7d0;color:#15803d;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;font-family:var(--fH);text-transform:uppercase;letter-spacing:.5px;">
+            <i class="fas fa-check-circle" style="margin-right:3px;"></i>Resolved
+          </span>
+          <span style="font-size:12px;color:#166534;font-weight:600;">{{ issue.reason }}</span>
+        </div>
+
+        <!-- admin note — always shown, with fallback -->
+        <div style="background:#fff;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin-bottom:10px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#16a34a;margin-bottom:6px;display:flex;align-items:center;gap:5px;">
+            <i class="fas fa-user-shield"></i> Admin Note
+          </div>
+          <div style="font-size:13px;color:#1a2e1a;line-height:1.6;font-family:var(--fB);">
+            {% if issue.resolved_message %}
+              {{ issue.resolved_message }}
+            {% else %}
+              Your issue has been reviewed and resolved by our support team. Thank you for your patience.
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- time + ok button -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:#4ade80;display:flex;align-items:center;gap:4px;">
+            <i class="fas fa-clock"></i>
+            {{ issue.resolved_at|date:"d M Y, h:i A" }}
+          </span>
+          <button onclick="markIssueSeen('{{ issue.id }}')"
+            style="padding:6px 16px;background:#16a34a;color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fH);display:flex;align-items:center;gap:5px;transition:background .2s;"
+            onmouseover="this.style.background='#15803d'"
+            onmouseout="this.style.background='#16a34a'">
+            <i class="fas fa-check"></i> Got it
+          </button>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Welcome message -->
+    <div class="message ai">
+      <div class="msg-row">
+        <div class="msg-ai-icon"><i class="fas fa-robot"></i></div>
+        <div class="message-content">
+          👋 Hi <strong>{{ request.user.username }}</strong>! I'm your Fixzy AI assistant.<br>How can I help you today?
+        </div>
+      </div>
+      <div class="message-time">Just now</div>
+    </div>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="quick-actions">
+    <button class="qa-btn" onclick="sendQuickMessage('booking status')">📅 Bookings</button>
+    <button class="qa-btn" onclick="sendQuickMessage('payment status')">💰 Payments</button>
+    <button class="qa-btn" onclick="sendQuickMessage('subscription')">👑 Subscription</button>
+    <button class="qa-btn" onclick="sendQuickMessage('schedule')">⏰ Schedule</button>
+    <button class="qa-btn" onclick="sendQuickMessage('refund')">↩️ Refund</button>
+    <button class="qa-btn" onclick="sendQuickMessage('complaint')">⚠️ Complaint</button>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Type your message…" onkeypress="handleKeyPress(event)">
+    <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+      <i class="fas fa-paper-plane"></i>
+    </button>
+  </div>
+
+</div>
+
+<!-- Escalate Modal -->
+<div class="modal" id="escalateModal">
+  <div class="modal-box">
+    <div class="modal-ic"><i class="fas fa-exclamation-triangle"></i></div>
+    <div class="modal-title">Escalate to Admin</div>
+    <div class="modal-sub">This needs human assistance. Please describe your issue:</div>
+    <textarea class="modal-textarea" id="escalateReason" placeholder="Describe your issue in detail…"></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn modal-btn-primary" onclick="submitEscalation()">
+        <i class="fas fa-paper-plane"></i> Submit
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const userName  = "{{ request.user.username }}";
+const userId    = "{{ request.user.id }}";
+const csrfToken = "{{ csrf_token }}";
+
+// ✅ Safe JSON parsing — handles missing or broken context variables
+function safeJSON(str, fallback) {
+  try { return JSON.parse(str); } catch(e) { return fallback; }
+}
+
+const userData = {
+  name:              "{{ request.user.username|escapejs }}",
+  bookings:          safeJSON('{{ bookings_json|escapejs }}', []),
+  payments:          safeJSON('{{ payments_json|escapejs }}', []),
+  subscription:      safeJSON('{{ subscription_json|escapejs }}', null),
+  totalSpent:        "{{ total_spent|default:0 }}",
+  pendingBookings:   "{{ pending_bookings_count|default:0 }}",
+  completedBookings: "{{ completed_bookings_count|default:0 }}"
+};
+
+function getTime() {
+  return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function addUserMessage(msg) {
+  const d = document.getElementById('chatMessages');
+  const el = document.createElement('div');
+  el.className = 'message user';
+  el.innerHTML = `
+    <div class="msg-row" style="justify-content:flex-end;">
+      <div class="message-content">${msg}</div>
+    </div>
+    <div class="message-time" style="text-align:right;">${getTime()}</div>`;
+  d.appendChild(el);
+  scrollBottom();
+}
+
+function addAIMessage(msg) {
+  const d = document.getElementById('chatMessages');
+  const el = document.createElement('div');
+  el.className = 'message ai';
+  el.innerHTML = `
+    <div class="msg-row">
+      <div class="msg-ai-icon"><i class="fas fa-robot"></i></div>
+      <div class="message-content">${msg.replace(/\n/g,'<br>')}</div>
+    </div>
+    <div class="message-time">${getTime()}</div>`;
+  d.appendChild(el);
+  scrollBottom();
+}
+
+function showTyping() {
+  const d = document.getElementById('chatMessages');
+  const el = document.createElement('div');
+  el.className = 'message ai'; el.id = 'typingEl';
+  el.innerHTML = `
+    <div class="msg-row">
+      <div class="msg-ai-icon"><i class="fas fa-robot"></i></div>
+      <div class="typing-indicator"><span></span><span></span><span></span></div>
+    </div>`;
+  d.appendChild(el); scrollBottom();
+}
+function hideTyping() {
+  const t = document.getElementById('typingEl');
+  if (t) t.remove();
+}
+
+function showEscalateButton() {
+  const d = document.getElementById('chatMessages');
+  const el = document.createElement('div');
+  el.className = 'message ai';
+  el.innerHTML = `
+    <div class="escalate-btn" onclick="openEscalateModal()">
+      <div class="esc-ic"><i class="fas fa-headset"></i></div>
+      <div class="esc-text">
+        <strong>Talk to a Human</strong>
+        <span>Click to escalate to our support team</span>
+      </div>
+    </div>`;
+  d.appendChild(el); scrollBottom();
+}
+
+function sendMessage() {
+  const input = document.getElementById('userInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  addUserMessage(msg);
+  input.value = '';
+  showTyping();
+  setTimeout(() => { hideTyping(); processAI(msg); }, 1400);
+}
+
+function sendQuickMessage(type) {
+  const map = {
+    'booking status': 'What is the status of my bookings?',
+    'payment status': 'Check my payment status',
+    'subscription':   'Tell me about my subscription',
+    'schedule':       'Show my upcoming schedule',
+    'refund':         'I want to request a refund',
+    'complaint':      'I have a complaint about a worker',
+  };
+  const msg = map[type] || type;
+  addUserMessage(msg);
+  showTyping();
+  setTimeout(() => { hideTyping(); processAI(msg); }, 1400);
+}
+
+function processAI(message) {
+  const m = message.toLowerCase();
+
+  // Escalate keywords
+  if (m.includes('refund') || m.includes('complaint') || m.includes('cancel') ||
+      m.includes('unhappy') || m.includes('bad service') || m.includes('problem')) {
+    addAIMessage("I understand this is important. Let me connect you with our support team who can resolve this quickly.");
+    showEscalateButton();
+    return;
+  }
+
+  // Bookings
+  if (m.includes('booking') || m.includes('status') || m.includes('service')) {
+    if (userData.bookings && userData.bookings.length > 0) {
+      let r = `📅 You have <strong>${userData.bookings.length}</strong> total bookings:\n\n`;
+      const icons = {pending:'⏳',assigned:'👤',in_progress:'🔧',completed:'✅',cancelled:'❌'};
+      userData.bookings.slice(0,5).forEach((b,i) => {
+        r += `${i+1}. ${icons[b.status]||'📅'} <strong>${b.service_name}</strong> — ${b.status_display}\n`;
+        if (b.date) r += `   📅 ${b.date}\n`;
+      });
+      if (userData.bookings.length > 5) r += `\n...and ${userData.bookings.length-5} more. Check dashboard for full list.`;
+      addAIMessage(r);
+    } else {
+      addAIMessage("📅 You don't have any bookings yet. Would you like to book a service?");
+    }
+    return;
+  }
+
+  // Payments
+  if (m.includes('payment') || m.includes('paid') || m.includes('spent')) {
+    if (userData.payments && userData.payments.length > 0) {
+      let r = `💰 <strong>Payment Summary</strong>\n\nTotal spent: <strong>₹${userData.totalSpent}</strong>\n\nRecent transactions:\n`;
+      userData.payments.slice(0,3).forEach(p => {
+        r += `${p.status==='completed'?'✅':'⏳'} ₹${p.amount} — ${p.service_name||'Service'} (${p.date})\n`;
+      });
+      addAIMessage(r);
+    } else {
+      addAIMessage("💰 You haven't made any payments yet.");
+    }
+    return;
+  }
+
+  // Subscription
+  if (m.includes('subscription') || m.includes('plan') || m.includes('member')) {
+    if (userData.subscription) {
+      const s = userData.subscription;
+      const pct = s.usage_percentage || 0;
+      const bar = '█'.repeat(Math.floor(pct/10)) + '░'.repeat(10-Math.floor(pct/10));
+      let r = `👑 <strong>Your Subscription</strong>\n\n` +
+              `Plan: <strong>${s.plan_name}</strong>\n` +
+              `Valid till: ${s.end_date}\n` +
+              `Visits: ${s.visits_used}/${s.total_visits}\n` +
+              `Usage: [${bar}] ${pct.toFixed(0)}%\n` +
+              `Days remaining: ${s.days_remaining||0}\n` +
+              `Auto-renew: ${s.auto_renew?'✅ Yes':'❌ No'}`;
+      addAIMessage(r);
+    } else {
+      addAIMessage("👑 You don't have an active subscription.\n\nCheck out our plans to save on every service booking!");
+    }
+    return;
+  }
+
+  // Schedule
+  if (m.includes('schedule') || m.includes('upcoming') || m.includes('today')) {
+    if (userData.bookings && userData.bookings.length > 0) {
+      const upcoming = userData.bookings.filter(b =>
+        ['assigned','in_progress','pending'].includes(b.status));
+      if (upcoming.length > 0) {
+        let r = `⏰ <strong>Upcoming Schedule</strong>\n\n`;
+        upcoming.slice(0,5).forEach((b,i) => {
+          r += `${i+1}. <strong>${b.service_name}</strong>\n   Status: ${b.status_display}\n`;
+          if (b.preferred_date) r += `   📅 ${b.preferred_date}${b.preferred_time?' at '+b.preferred_time:''}\n`;
+          r += '\n';
+        });
+        addAIMessage(r);
+      } else {
+        addAIMessage("⏰ You have no upcoming scheduled services.");
+      }
+    } else {
+      addAIMessage("⏰ You have no scheduled services.");
+    }
+    return;
+  }
+
+  // Greeting
+  if (m.includes('hello') || m.includes('hi') || m.includes('hey')) {
+    const h = new Date().getHours();
+    const g = h<12?'Morning':h<17?'Afternoon':'Evening';
+    addAIMessage(`Good ${g}, <strong>${userData.name}</strong>! 👋\n\nHow can I help you today? Ask about:\n• Booking status\n• Payments\n• Subscription\n• Upcoming schedule`);
+    return;
+  }
+
+  // Help
+  if (m.includes('help') || m.includes('what can you do')) {
+    addAIMessage(`I can help you with:\n\n📅 Check booking status\n💰 View payment history\n👑 Subscription details\n⏰ Upcoming schedule\n\nJust ask! For example:\n• "Show my bookings"\n• "How much have I spent?"\n• "Subscription status"`);
+    return;
+  }
+
+  // Default
+  addAIMessage(`I'm not sure about that. Try asking about:\n\n• Bookings — "show my bookings"\n• Payments — "payment history"\n• Subscription — "plan details"\n• Schedule — "upcoming services"\n\nOr click <strong>Escalate</strong> to talk to a human.`);
+}
+
+function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+function scrollBottom() {
+  const d = document.getElementById('chatMessages');
+  d.scrollTop = d.scrollHeight;
+}
+function openEscalateModal() {
+  document.getElementById('escalateModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('escalateModal').classList.remove('show');
+}
+function submitEscalation() {
+  const reason = document.getElementById('escalateReason').value.trim();
+  if (!reason) { alert('Please describe your issue'); return; }
+  fetch('/chat/escalate/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+    body: JSON.stringify({ user_id: userId, reason: reason, message: 'Escalated from AI Chat' })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      addAIMessage("✅ Your issue has been escalated to our admin team. They'll get back to you soon!");
+      closeModal();
+    } else {
+      alert('Error escalating. Please try again.');
+    }
+  })
+  .catch(() => alert('Network error. Please try again.'));
+}
+
+function markIssueSeen(issueId) {
+  fetch('/chat/mark-resolved-seen/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+    body: JSON.stringify({ issue_id: issueId })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      // Hide the resolved issue notification
+      const issueEl = document.getElementById('resolved-' + issueId);
+      if (issueEl) {
+        issueEl.style.display = 'none';
+      }
+      // Update the header badge if it exists
+      const badge = document.querySelector('.hd-name span');
+      if (badge) {
+        const currentCount = parseInt(badge.textContent.match(/\d+/)[0]) - 1;
+        if (currentCount > 0) {
+          badge.textContent = currentCount + ' resolved';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    } else {
+      console.error('Error marking issue as seen');
+    }
+  })
+  .catch(() => console.error('Network error marking issue as seen'));
+}
+</script>
+</body>
+</html>

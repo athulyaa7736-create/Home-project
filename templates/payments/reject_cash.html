@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reject Cash Payment - Fixzy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e2b4f;
+            margin-bottom: 30px;
+        }
+        
+        .logo span {
+            color: #4ecdc4;
+        }
+        
+        h2 {
+            color: #1e2b4f;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            color: #e74c3c;
+        }
+        
+        .payment-details {
+            background: #f8fafd;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eef2f7;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #1e2b4f;
+        }
+        
+        .amount {
+            color: #27ae60;
+            font-size: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eef2f7;
+            border-radius: 10px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        textarea:focus {
+            border-color: #e74c3c;
+            outline: none;
+        }
+        
+        .btn-reject {
+            width: 100%;
+            padding: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-reject:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancel {
+            width: 100%;
+            padding: 15px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .btn-cancel:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            Fix<span>zy</span>
+        </div>
+        
+        <h2>
+            <i class="fas fa-exclamation-triangle"></i>
+            Reject Cash Payment
+        </h2>
+        
+        <div class="warning">
+            <i class="fas fa-info-circle"></i>
+            <strong>Note:</strong> Rejecting a cash payment will notify the customer and admin.
+        </div>
+        
+        <div class="payment-details">
+            <div class="detail-row">
+                <span class="detail-label">Customer:</span>
+                <span class="detail-value">{{ payment.booking.user.username }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Service:</span>
+                <span class="detail-value">{{ payment.booking.service.name }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Amount:</span>
+                <span class="detail-value amount">₹{{ payment.amount }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{ payment.payment_date|date:"d M Y, h:i A" }}</span>
+            </div>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Reason for rejection <span style="color: #e74c3c;">*</span></label>
+                <textarea name="reason" placeholder="Please explain why you are rejecting this cash payment..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn-reject">
+                <i class="fas fa-times-circle"></i> Reject Payment
+            </button>
+        </form>
+        
+        <a href="{% url 'worker_dashboard' %}" class="btn-cancel">
+            <i class="fas fa-arrow-left"></i> Cancel
+        </a>
+    </div>
+</body>
+</html>

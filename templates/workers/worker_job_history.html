@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job History - Fixzy Worker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:var(--text); }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── LAYOUT ── */
+.wrap { display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:260px; background:var(--navy);
+  position:fixed; height:100vh; overflow-y:auto;
+  z-index:100; display:flex; flex-direction:column;
+  border-right:1px solid rgba(255,255,255,.06);
+  transition:width .3s var(--ease);
+}
+.sidebar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.sb-head {
+  padding:22px 22px 18px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  position:relative; z-index:1;
+}
+.sb-logo { display:flex; align-items:center; gap:10px; }
+.sb-logo-box { width:36px; height:36px; background:var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; flex-shrink:0; }
+.sb-logo-text { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.sb-logo-text em { color:var(--orange); font-style:normal; }
+
+.sb-nav { padding:14px 12px; flex:1; position:relative; z-index:1; }
+.sb-section { font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,.28); padding:10px 14px 6px; }
+.nav-item {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 14px; border-radius:10px; margin-bottom:2px;
+  color:rgba(255,255,255,.58); font-size:14px; font-weight:500;
+  transition:all .22s var(--ease); cursor:pointer;
+  position:relative; z-index:1;
+}
+.nav-item i { width:18px; font-size:15px; flex-shrink:0; }
+.nav-item:hover { background:rgba(249,115,22,.1); color:#fff; transform:translateX(3px); }
+.nav-item.active { background:rgba(249,115,22,.15); color:var(--orange); font-weight:600; border-left:3px solid var(--orange); padding-left:11px; }
+.nav-item.active i { color:var(--orange); }
+.nav-divider { border:none; border-top:1px solid rgba(255,255,255,.06); margin:8px 14px; }
+.nav-item.logout { color:rgba(255,100,100,.65); }
+.nav-item.logout:hover { background:rgba(239,68,68,.1); color:#f87171; }
+.sb-footer { padding:14px 16px; border-top:1px solid rgba(255,255,255,.06); position:relative; z-index:1; }
+.sb-user { display:flex; align-items:center; gap:10px; }
+.sb-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--orange),var(--orange-dk)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--fH); font-size:15px; font-weight:900; flex-shrink:0; }
+.sb-uname { font-size:13px; font-weight:700; color:#fff; }
+.sb-urole { font-size:11px; color:rgba(255,255,255,.38); }
+
+/* ── MAIN CONTENT ── */
+.main { flex:1; margin-left:260px; padding:28px 36px 60px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px 24px;
+  margin-bottom:24px; box-shadow:0 2px 10px rgba(15,32,64,.04);
+}
+.tb-left { display:flex; align-items:center; gap:14px; }
+.tb-icon { width:44px; height:44px; border-radius:12px; background:var(--orange-lt); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:20px; }
+.tb-title { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-.5px; color:var(--navy); }
+.tb-sub { font-size:13px; color:var(--muted); margin-top:1px; }
+.tb-right { display:flex; align-items:center; gap:10px; }
+.notif-btn {
+  position:relative; width:38px; height:38px; border-radius:10px;
+  background:var(--light); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--muted); cursor:pointer; transition:all .2s;
+}
+.notif-btn:hover { border-color:var(--orange); color:var(--orange); background:var(--orange-lt); }
+.notif-dot { position:absolute; top:6px; right:6px; width:8px; height:8px; background:#ef4444; border-radius:50%; border:1.5px solid var(--white); }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:9px 20px; border-radius:30px; background:var(--navy); color:#fff; font-size:13px; font-weight:600; transition:all .22s; border:none; cursor:pointer; }
+.btn-back:hover { background:var(--navy2); transform:translateX(-2px); }
+
+/* ── STATS ── */
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:22px; }
+.stat-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:22px 20px;
+  position:relative; overflow:hidden;
+  transition:all .3s var(--ease);
+  animation:fadeUp .6s var(--ease) both;
+}
+.stat-card:nth-child(1){animation-delay:.1s}
+.stat-card:nth-child(2){animation-delay:.2s}
+.stat-card:nth-child(3){animation-delay:.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--orange); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease); }
+.stat-card:hover { transform:translateY(-4px); box-shadow:0 14px 36px rgba(249,115,22,.12); }
+.stat-card:hover::before { transform:scaleX(1); }
+.stat-ic { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:14px; }
+.si-o { background:var(--orange-lt); color:var(--orange); }
+.si-g { background:#dcfce7; color:#16a34a; }
+.si-b { background:#dbeafe; color:#1d4ed8; }
+.stat-val { font-family:var(--fH); font-size:30px; font-weight:900; letter-spacing:-1.5px; color:var(--navy); margin-bottom:4px; }
+.stat-lbl { font-size:13px; color:var(--muted); font-weight:500; }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px 20px;
+  margin-bottom:20px; display:flex; align-items:center;
+  justify-content:space-between; flex-wrap:wrap; gap:14px;
+  animation:fadeUp .6s var(--ease) .35s both;
+}
+.filter-tabs { display:flex; gap:6px; flex-wrap:wrap; }
+.ftab {
+  padding:7px 16px; border-radius:30px; font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .22s;
+  background:var(--light); color:var(--muted); border:1.5px solid transparent;
+  font-family:var(--fB);
+}
+.ftab:hover { background:var(--orange-lt); color:var(--orange); border-color:rgba(249,115,22,.2); }
+.ftab.active { background:var(--orange); color:#fff; border-color:var(--orange); }
+
+.search-wrap {
+  display:flex; align-items:center; gap:10px;
+  background:var(--light); border:1.5px solid var(--border);
+  border-radius:30px; padding:8px 16px; transition:all .22s;
+}
+.search-wrap:focus-within { border-color:var(--orange); background:var(--white); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.search-wrap i { color:#94a3b8; font-size:14px; }
+.search-wrap input { border:none; background:transparent; outline:none; font-size:14px; font-family:var(--fB); color:var(--navy); width:200px; }
+.search-wrap input::placeholder { color:#94a3b8; }
+
+/* ── TABLE CARD ── */
+.table-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); overflow:hidden;
+  box-shadow:0 2px 12px rgba(15,32,64,.05);
+  animation:fadeUp .6s var(--ease) .45s both;
+}
+.table-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 24px; border-bottom:1px solid var(--border);
+  flex-wrap:wrap; gap:12px;
+}
+.table-head-title { font-family:var(--fH); font-size:16px; font-weight:800; color:var(--navy); display:flex; align-items:center; gap:8px; }
+.table-head-title i { color:var(--orange); }
+.export-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 18px; border-radius:30px;
+  background:var(--light); border:1.5px solid var(--border);
+  color:var(--muted); font-size:13px; font-weight:600;
+  cursor:pointer; transition:all .22s; font-family:var(--fB);
+}
+.export-btn:hover { border-color:var(--orange); color:var(--orange); background:var(--orange-lt); }
+
+/* table */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:700px; }
+thead tr { background:var(--light); }
+th {
+  text-align:left; padding:13px 16px;
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1px; color:#94a3b8; border-bottom:1px solid var(--border);
+}
+td { padding:14px 16px; border-bottom:1px solid var(--light2); font-size:14px; color:#334155; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr { transition:background .15s; }
+tbody tr:hover td { background:var(--light); }
+
+/* table cells */
+.job-id { font-family:var(--fH); font-weight:900; color:var(--orange); font-size:14px; }
+.cust-wrap { display:flex; align-items:center; gap:10px; }
+.cust-av { width:32px; height:32px; border-radius:50%; background:var(--navy); color:var(--orange); font-family:var(--fH); font-size:14px; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cust-name { font-weight:600; color:var(--navy); font-size:13px; }
+.cust-email { font-size:11px; color:#94a3b8; }
+.svc-pill { display:inline-flex; align-items:center; gap:5px; background:var(--orange-lt); border:1px solid rgba(249,115,22,.2); border-radius:20px; padding:3px 10px; font-size:12px; font-weight:700; color:var(--orange); }
+.amount-val { font-family:var(--fH); font-size:15px; font-weight:900; color:var(--navy); }
+.badge-done { display:inline-flex; align-items:center; gap:5px; background:#dcfce7; color:#166534; border-radius:20px; padding:5px 12px; font-size:12px; font-weight:700; }
+.view-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 14px; border-radius:8px;
+  background:var(--light); border:1.5px solid var(--border);
+  color:var(--muted); font-size:12px; font-weight:600;
+  transition:all .22s;
+}
+.view-btn:hover { background:var(--orange); color:#fff; border-color:var(--orange); transform:translateY(-1px); }
+
+/* empty */
+.empty-state { text-align:center; padding:56px 20px; }
+.empty-icon { width:72px; height:72px; background:var(--light2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--muted); margin:0 auto 16px; }
+.empty-title { font-family:var(--fH); font-size:18px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+.empty-sub { font-size:14px; color:var(--muted); }
+
+/* pagination */
+.pagination { display:flex; justify-content:flex-end; align-items:center; gap:6px; padding:18px 24px; border-top:1px solid var(--border); flex-wrap:wrap; }
+.pg-btn {
+  width:34px; height:34px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--white); border:1.5px solid var(--border);
+  color:var(--muted); cursor:pointer; font-size:13px; font-weight:600;
+  transition:all .22s; font-family:var(--fH);
+}
+.pg-btn:hover { border-color:var(--orange); color:var(--orange); background:var(--orange-lt); }
+.pg-btn.active { background:var(--orange); color:#fff; border-color:var(--orange); }
+
+/* result count */
+.result-lbl { font-size:13px; color:var(--muted); margin-right:auto; }
+.result-lbl strong { color:var(--navy); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px) {
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:1024px) {
+  .sidebar { width:68px; }
+  .sb-logo-text, .nav-item span, .sb-section, .sb-footer .sb-uname, .sb-footer .sb-urole { display:none; }
+  .nav-item { justify-content:center; padding:13px; }
+  .sb-head { padding:16px 14px; }
+  .main { margin-left:68px; }
+}
+@media(max-width:768px) {
+  .sidebar { display:none; }
+  .main { margin-left:0; padding:20px 16px 48px; }
+  .stats-grid { grid-template-columns:1fr; }
+  .filter-bar { flex-direction:column; align-items:stretch; }
+  .search-wrap input { width:100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="sb-head">
+      <a href="{% url 'worker_dashboard' %}" class="sb-logo">
+        <div class="sb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+        <div class="sb-logo-text">Fix<em>zy</em></div>
+      </a>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section">Main</div>
+      <a href="{% url 'worker_dashboard' %}" class="nav-item"><i class="fas fa-house"></i><span>Dashboard</span></a>
+      <a href="{% url 'worker_my_jobs' %}" class="nav-item"><i class="fas fa-briefcase"></i><span>My Jobs</span></a>
+      <a href="{% url 'worker_job_history' %}" class="nav-item active"><i class="fas fa-clock-rotate-left"></i><span>Job History</span></a>
+      <hr class="nav-divider">
+      <div class="sb-section">Account</div>
+      <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-pen"></i><span>Edit Profile</span></a>
+      <a href="{% url 'logout' %}" class="nav-item logout"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar">{{ request.user.first_name|slice:":1"|upper|default:request.user.username|slice:":1"|upper }}</div>
+        <div>
+          <div class="sb-uname">{{ request.user.get_full_name|default:request.user.username }}</div>
+          <div class="sb-urole">Pro Worker</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="tb-left">
+        <div class="tb-icon"><i class="fas fa-clock-rotate-left"></i></div>
+        <div>
+          <div class="tb-title">Job History</div>
+          <div class="tb-sub">All your completed jobs in one place</div>
+        </div>
+      </div>
+      <div class="tb-right">
+        <div class="notif-btn" id="notifBtn">
+          <i class="fas fa-bell"></i>
+          <span class="notif-dot"></span>
+        </div>
+        <a href="{% url 'worker_dashboard' %}" class="btn-back">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-ic si-o"><i class="fas fa-briefcase"></i></div>
+        <div class="stat-val">{{ total_jobs|default:"0" }}</div>
+        <div class="stat-lbl">Total Jobs Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ic si-g"><i class="fas fa-indian-rupee-sign"></i></div>
+        <div class="stat-val">₹{{ total_earned|default:"0" }}</div>
+        <div class="stat-lbl">Total Earned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-ic si-b"><i class="fas fa-star"></i></div>
+        <div class="stat-val">4.8<span style="font-size:16px;color:var(--muted);font-weight:500;">★</span></div>
+        <div class="stat-lbl">Average Rating</div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-tabs">
+        <span class="ftab active" data-filter="all">All History</span>
+        <span class="ftab" data-filter="month">This Month</span>
+        <span class="ftab" data-filter="3months">Last 3 Months</span>
+        <span class="ftab" data-filter="2026">2026</span>
+      </div>
+      <div class="search-wrap">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search by customer or service…" id="searchInput">
+      </div>
+    </div>
+
+    <!-- Table card -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-head-title"><i class="fas fa-list-check"></i> Completed Jobs</div>
+        <button class="export-btn" onclick="exportToCSV()">
+          <i class="fas fa-download"></i> Export CSV
+        </button>
+      </div>
+
+      <div class="tbl-wrap">
+        <table id="jobsTable">
+          <thead>
+            <tr>
+              <th>Job ID</th>
+              <th>Service</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in completed_jobs %}
+            <tr>
+              <td><span class="job-id">#{{ job.id }}</span></td>
+              <td><span class="svc-pill"><i class="fas fa-tools" style="font-size:10px;"></i>{{ job.service.name }}</span></td>
+              <td>
+                <div class="cust-wrap">
+                  <div class="cust-av">{{ job.user.username|slice:":1"|upper }}</div>
+                  <div>
+                    <div class="cust-name">{{ job.user.get_full_name|default:job.user.username }}</div>
+                    <div class="cust-email">{{ job.user.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td style="color:var(--muted);font-size:13px;">{{ job.created_at|date:"d M Y" }}</td>
+              <td><span class="amount-val">₹{{ job.service.price }}</span></td>
+              <td><span class="badge-done"><i class="fas fa-circle-check"></i> Completed</span></td>
+              <td>
+                <a href="{% url 'job_details' job.id %}" class="view-btn">
+                  <i class="fas fa-eye"></i> View
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <div class="empty-icon"><i class="fas fa-clock-rotate-left"></i></div>
+                  <div class="empty-title">No Job History Yet</div>
+                  <div class="empty-sub">Your completed jobs will appear here once you finish some work.</div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if completed_jobs.count > 10 %}
+      <div class="pagination">
+        <span class="result-lbl">Showing <strong>10</strong> of <strong>{{ completed_jobs.count }}</strong> jobs</span>
+        <button class="pg-btn"><i class="fas fa-chevron-left"></i></button>
+        <button class="pg-btn active">1</button>
+        <button class="pg-btn">2</button>
+        <button class="pg-btn">3</button>
+        <button class="pg-btn"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      {% endif %}
+    </div>
+
+  </main>
+</div>
+
+<script>
+// Live search
+document.getElementById('searchInput').addEventListener('input', function () {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#jobsTable tbody tr').forEach(row => {
+    if (row.querySelector('.empty-state')) return;
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+// Filter tabs
+document.querySelectorAll('.ftab').forEach(tab => {
+  tab.addEventListener('click', function () {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Notification bell
+document.getElementById('notifBtn').addEventListener('click', function () {
+  const dot = this.querySelector('.notif-dot');
+  if (dot) dot.style.display = 'none';
+});
+
+// Export CSV
+function exportToCSV() {
+  const rows = [];
+  const tbl = document.getElementById('jobsTable');
+  const hdrs = [];
+  tbl.querySelectorAll('thead th').forEach(th => hdrs.push(th.textContent.trim()));
+  rows.push(hdrs.slice(0, 6).join(','));
+  tbl.querySelectorAll('tbody tr').forEach(tr => {
+    if (tr.querySelector('.empty-state')) return;
+    const row = [];
+    tr.querySelectorAll('td').forEach((td, i) => {
+      if (i < 6) row.push('"' + td.textContent.trim().replace(/"/g, '""') + '"');
+    });
+    rows.push(row.join(','));
+  });
+  const blob = new Blob([rows.join('\n')], { type:'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'fixzy_job_history.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
+}, { threshold:0.1 });
+document.querySelectorAll('.stat-card,.filter-bar,.table-card').forEach(el => {
+  el.style.transition = 'opacity .5s var(--ease), transform .5s var(--ease)';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>

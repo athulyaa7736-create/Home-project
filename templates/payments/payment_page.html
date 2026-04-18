@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pay for Service - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.3);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family:var(--fB);
+  min-height:100vh;
+  background:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px; overflow-y:auto; position:relative;
+}
+
+/* ── BG ── */
+.bg-grid {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size:56px 56px;
+  animation:gridMove 30s linear infinite;
+}
+@keyframes gridMove { from{background-position:0 0} to{background-position:56px 56px} }
+.bg-blob { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; }
+.blob-a { width:500px;height:500px; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-100px;right:-80px; animation:bF 10s ease-in-out infinite; }
+.blob-b { width:350px;height:350px; background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%); bottom:-80px;left:-60px; animation:bF 14s ease-in-out infinite reverse; }
+@keyframes bF { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.12) translate(15px,-20px)} }
+
+/* ── CARD ── */
+.card {
+  position:relative; z-index:1;
+  background:var(--white); border-radius:24px;
+  padding:40px 38px; width:100%; max-width:480px;
+  box-shadow:0 32px 80px rgba(0,0,0,.3);
+  animation:cardUp .7s var(--ease) both;
+  border:1px solid rgba(255,255,255,.08);
+}
+@keyframes cardUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── LOGO ── */
+.logo { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:28px; }
+.logo-box { width:38px;height:38px; background:var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; }
+.logo-text { font-family:var(--fH); font-size:24px; font-weight:900; letter-spacing:-1px; color:var(--navy); }
+.logo-text em { color:var(--orange); font-style:normal; }
+
+/* ── SERVICE DETAIL BANNER ── */
+.svc-banner {
+  background:var(--navy);
+  border-radius:16px; padding:24px 22px; margin-bottom:22px;
+  position:relative; overflow:hidden; border:1px solid rgba(249,115,22,.15);
+}
+.svc-banner::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.svc-banner::after { content:''; position:absolute; width:200px;height:200px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%); top:-60px;right:-40px; pointer-events:none; }
+.svc-inner { position:relative; z-index:1; text-align:center; }
+.svc-name { font-family:var(--fH); font-size:20px; font-weight:900; color:#fff; letter-spacing:-.5px; margin-bottom:6px; }
+.svc-price { font-family:var(--fH); font-size:44px; font-weight:900; letter-spacing:-2px; color:var(--orange); line-height:1; }
+.svc-price small { font-size:16px; color:rgba(255,255,255,.4); font-weight:500; letter-spacing:0; }
+
+/* booking meta */
+.booking-rows { margin-bottom:20px; }
+.booking-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 0; border-bottom:1px solid var(--border);
+  font-size:14px;
+}
+.booking-row:last-child { border-bottom:none; }
+.br-label { color:var(--muted); }
+.br-val { font-weight:700; color:var(--navy); }
+
+/* section heading */
+.sec-head { font-family:var(--fH); font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:var(--navy); margin:20px 0 14px; }
+
+/* ── PAYMENT METHOD GRID ── */
+.method-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:4px; }
+.method-tile {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:14px 8px; border:1.5px solid var(--border); border-radius:12px;
+  cursor:pointer; background:var(--light); transition:all .25s var(--ease);
+  font-size:11px; font-weight:700; color:var(--muted); text-align:center;
+}
+.method-tile i { font-size:22px; color:var(--navy2); }
+.method-tile:hover { border-color:rgba(249,115,22,.4); background:var(--orange-lt); color:var(--navy); }
+.method-tile:hover i { color:var(--orange); }
+.method-tile.selected { border-color:var(--orange); background:var(--orange-lt); color:var(--orange); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.method-tile.selected i { color:var(--orange); }
+
+/* ── PAYMENT FORMS ── */
+.pay-form {
+  display:none; background:var(--light); border:1px solid var(--border);
+  border-radius:14px; padding:20px; margin-top:16px;
+  animation:formIn .3s var(--ease);
+}
+.pay-form.show { display:block; }
+@keyframes formIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+
+.form-title { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.form-title i { color:var(--orange); }
+
+.fg { margin-bottom:14px; }
+.fg label { display:block; margin-bottom:5px; font-size:12px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:.5px; }
+.fg input, .fg select {
+  width:100%; padding:11px 14px;
+  border:1.5px solid var(--border); border-radius:10px;
+  font-size:14px; font-family:var(--fB); color:var(--navy);
+  background:var(--white); outline:none;
+  transition:all .22s var(--ease);
+  appearance:none; -webkit-appearance:none;
+}
+.fg input:focus, .fg select:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.fg input::placeholder { color:#94a3b8; }
+.fg select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; cursor:pointer; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* cash info box */
+.cash-box { text-align:center; padding:8px 0; }
+.cash-icon-wrap { width:64px;height:64px; background:#dcfce7; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; color:#16a34a; margin:0 auto 14px; }
+.cash-title { font-family:var(--fH); font-size:16px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+.cash-sub { font-size:13px; color:var(--muted); margin-bottom:18px; line-height:1.6; }
+
+/* buttons */
+.btn-pay {
+  width:100%; padding:14px; border:none; border-radius:12px;
+  font-family:var(--fH); font-size:16px; font-weight:800;
+  cursor:pointer; transition:all .3s var(--ease);
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  position:relative; overflow:hidden; margin-bottom:10px;
+}
+.btn-pay::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%); transform:translateX(-100%); transition:transform .5s; }
+.btn-pay:hover::after { transform:translateX(100%); }
+.btn-pay:hover { transform:translateY(-2px); }
+.btn-orange { background:var(--orange); color:#fff; box-shadow:0 4px 16px rgba(249,115,22,.25); }
+.btn-orange:hover { background:var(--orange-dk); box-shadow:0 10px 28px rgba(249,115,22,.4); }
+.btn-green { background:#16a34a; color:#fff; box-shadow:0 4px 16px rgba(22,163,74,.2); }
+.btn-green:hover { background:#15803d; box-shadow:0 10px 28px rgba(22,163,74,.35); }
+
+.btn-change {
+  width:100%; padding:10px; background:transparent;
+  border:1.5px solid var(--border); border-radius:10px;
+  color:var(--muted); font-size:13px; font-weight:600; font-family:var(--fB);
+  cursor:pointer; transition:all .22s;
+}
+.btn-change:hover { border-color:var(--orange); color:var(--orange); }
+
+/* back link */
+.back-link { display:block; text-align:center; font-size:13px; color:#94a3b8; margin-top:18px; transition:color .2s; }
+.back-link:hover { color:var(--orange); }
+
+/* ── MODAL ── */
+.modal {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(6px);
+  align-items:center; justify-content:center; z-index:1000; padding:20px;
+}
+.modal.show { display:flex; }
+.modal-box {
+  background:var(--white); border-radius:24px; padding:40px 36px;
+  max-width:400px; width:100%; text-align:center;
+  animation:modalIn .35s var(--ease);
+  box-shadow:0 32px 80px rgba(0,0,0,.3);
+}
+@keyframes modalIn { from{transform:translateY(-40px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+/* processing state */
+.modal-icon {
+  width:80px; height:80px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 20px; font-size:36px; color:#fff;
+  animation:popIn .5s var(--ease);
+}
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.icon-processing { background:var(--navy); }
+.icon-success    { background:var(--orange); box-shadow:0 8px 28px rgba(249,115,22,.4); }
+
+.modal-title { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-.5px; color:var(--navy); margin-bottom:8px; }
+.modal-msg { font-size:14px; color:var(--muted); margin-bottom:16px; }
+.txn-box { background:var(--light); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-family:monospace; font-size:15px; color:var(--orange); letter-spacing:1px; margin:14px 0; font-weight:700; }
+.modal-detail { font-size:13px; color:#94a3b8; margin-bottom:20px; }
+.btn-modal { width:100%; padding:13px; background:var(--orange); color:#fff; border:none; border-radius:10px; font-family:var(--fH); font-size:15px; font-weight:800; cursor:pointer; transition:all .25s; }
+.btn-modal:hover { background:var(--orange-dk); transform:translateY(-2px); box-shadow:0 10px 28px rgba(249,115,22,.35); }
+
+/* responsive */
+@media(max-width:480px) {
+  .card { padding:28px 20px; }
+  .method-grid { grid-template-columns:repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-blob blob-a"></div>
+<div class="bg-blob blob-b"></div>
+
+<div class="card">
+
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="logo-text">Fix<em>zy</em></div>
+  </div>
+
+  <!-- Service banner -->
+  <div class="svc-banner">
+    <div class="svc-inner">
+      <div class="svc-name">{{ booking.service.name }}</div>
+      <div class="svc-price">₹{{ booking.service.price }}<small> total</small></div>
+    </div>
+  </div>
+
+  <!-- Booking meta -->
+  <div class="booking-rows">
+    <div class="booking-row">
+      <span class="br-label"><i class="fas fa-hashtag" style="color:var(--orange);margin-right:5px;"></i> Booking ID</span>
+      <span class="br-val">#{{ booking.id }}</span>
+    </div>
+    <div class="booking-row">
+      <span class="br-label"><i class="fas fa-calendar" style="color:var(--orange);margin-right:5px;"></i> Date</span>
+      <span class="br-val">{{ booking.created_at|date:"d M Y" }}</span>
+    </div>
+    <div class="booking-row">
+      <span class="br-label"><i class="fas fa-indian-rupee-sign" style="color:var(--orange);margin-right:5px;"></i> Amount Due</span>
+      <span class="br-val" style="color:var(--orange);font-size:16px;">₹{{ booking.service.price }}</span>
+    </div>
+  </div>
+
+  <!-- Payment method label -->
+  <div class="sec-head">Select Payment Method</div>
+
+  <!-- Method tiles -->
+  <div class="method-grid" id="methodGrid">
+    <div class="method-tile" onclick="selectMethod('cash')" id="m-cash">
+      <i class="fas fa-money-bill-wave"></i> Cash
+    </div>
+    <div class="method-tile" onclick="selectMethod('card')" id="m-card">
+      <i class="fas fa-credit-card"></i> Card
+    </div>
+    <div class="method-tile" onclick="selectMethod('upi')" id="m-upi">
+      <i class="fas fa-mobile-screen"></i> UPI
+    </div>
+    <div class="method-tile" onclick="selectMethod('netbanking')" id="m-netbanking">
+      <i class="fas fa-building-columns"></i> NetBanking
+    </div>
+    <div class="method-tile" onclick="selectMethod('wallet')" id="m-wallet">
+      <i class="fas fa-wallet"></i> Wallet
+    </div>
+  </div>
+
+  <!-- ── CASH FORM ── -->
+  <div class="pay-form" id="cash-form">
+    <div class="cash-box">
+      <div class="cash-icon-wrap"><i class="fas fa-money-bill-wave"></i></div>
+      <div class="cash-title">Cash on Delivery</div>
+      <div class="cash-sub">Pay ₹{{ booking.service.price }} directly to the worker<br>when the service is completed.</div>
+      <button class="btn-pay btn-green" onclick="processCashPayment()">
+        <i class="fas fa-circle-check"></i> Confirm Cash Payment
+      </button>
+      <button class="btn-change" onclick="resetMethod()"><i class="fas fa-arrow-left"></i> Change Method</button>
+    </div>
+  </div>
+
+  <!-- ── CARD FORM ── -->
+  <div class="pay-form" id="card-form">
+    <div class="form-title"><i class="fas fa-credit-card"></i> Card Payment</div>
+    <div class="fg">
+      <label>Card Number</label>
+      <input type="text" id="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
+    </div>
+    <div class="fg">
+      <label>Card Holder Name</label>
+      <input type="text" id="card_name" placeholder="Your Name">
+    </div>
+    <div class="form-row">
+      <div class="fg">
+        <label>Expiry</label>
+        <input type="text" id="card_expiry" placeholder="MM/YY" maxlength="5">
+      </div>
+      <div class="fg">
+        <label>CVV</label>
+        <input type="password" id="card_cvv" placeholder="•••" maxlength="3">
+      </div>
+    </div>
+    <button class="btn-pay btn-orange" onclick="processCardPayment()">
+      <i class="fas fa-lock"></i> Pay ₹{{ booking.service.price }} Securely
+    </button>
+    <button class="btn-change" onclick="resetMethod()"><i class="fas fa-arrow-left"></i> Change Method</button>
+  </div>
+
+  <!-- ── UPI FORM ── -->
+  <div class="pay-form" id="upi-form">
+    <div class="form-title"><i class="fas fa-mobile-screen"></i> UPI Payment</div>
+    <div class="fg">
+      <label>UPI ID</label>
+      <input type="text" id="upi_id" placeholder="username@okhdfcbank">
+    </div>
+    <button class="btn-pay btn-orange" onclick="processUPIPayment()">
+      <i class="fas fa-paper-plane"></i> Pay ₹{{ booking.service.price }}
+    </button>
+    <button class="btn-change" onclick="resetMethod()"><i class="fas fa-arrow-left"></i> Change Method</button>
+  </div>
+
+  <!-- ── NETBANKING FORM ── -->
+  <div class="pay-form" id="netbanking-form">
+    <div class="form-title"><i class="fas fa-building-columns"></i> Net Banking</div>
+    <div class="fg">
+      <label>Select Bank</label>
+      <select id="netbanking_bank">
+        <option value="">— Select Bank —</option>
+        <option value="sbi">State Bank of India</option>
+        <option value="hdfc">HDFC Bank</option>
+        <option value="icici">ICICI Bank</option>
+        <option value="axis">Axis Bank</option>
+        <option value="kotak">Kotak Bank</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Net Banking ID</label>
+      <input type="text" id="netbanking_id" placeholder="Your net banking ID">
+    </div>
+    <div class="fg">
+      <label>Password</label>
+      <input type="password" id="netbanking_password" placeholder="••••••••">
+    </div>
+    <button class="btn-pay btn-orange" onclick="processNetBanking()">
+      <i class="fas fa-shield-halved"></i> Pay ₹{{ booking.service.price }}
+    </button>
+    <button class="btn-change" onclick="resetMethod()"><i class="fas fa-arrow-left"></i> Change Method</button>
+  </div>
+
+  <!-- ── WALLET FORM ── -->
+  <div class="pay-form" id="wallet-form">
+    <div class="form-title"><i class="fas fa-wallet"></i> Wallet Payment</div>
+    <div class="fg">
+      <label>Select Wallet</label>
+      <select id="wallet_type">
+        <option value="">— Select Wallet —</option>
+        <option value="paytm">Paytm</option>
+        <option value="phonepe">PhonePe</option>
+        <option value="googlepay">Google Pay</option>
+        <option value="amazonpay">Amazon Pay</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Mobile Number</label>
+      <input type="tel" id="wallet_mobile" placeholder="10-digit mobile number" maxlength="10">
+    </div>
+    <button class="btn-pay btn-orange" onclick="processWallet()">
+      <i class="fas fa-paper-plane"></i> Pay ₹{{ booking.service.price }}
+    </button>
+    <button class="btn-change" onclick="resetMethod()"><i class="fas fa-arrow-left"></i> Change Method</button>
+  </div>
+
+  <a href="{% url 'user_dashboard' %}" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+
+</div>
+
+<!-- ── MODAL ── -->
+<div class="modal" id="modal">
+  <div class="modal-box" id="modalBox">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script>
+const bookingId = '{{ booking.id }}';
+const csrfToken = '{{ csrf_token }}';
+const amount = '{{ booking.service.price }}';
+
+function selectMethod(m) {
+  document.querySelectorAll('.method-tile').forEach(t => t.classList.remove('selected'));
+  document.getElementById('m-' + m).classList.add('selected');
+  ['cash','card','upi','netbanking','wallet'].forEach(f => {
+    document.getElementById(f + '-form').classList.remove('show');
+  });
+  document.getElementById(m + '-form').classList.add('show');
+  document.getElementById(m + '-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function resetMethod() {
+  document.querySelectorAll('.method-tile').forEach(t => t.classList.remove('selected'));
+  ['cash','card','upi','netbanking','wallet'].forEach(f => {
+    document.getElementById(f + '-form').classList.remove('show');
+  });
+}
+
+function showProcessing() {
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `
+    <div class="modal-icon icon-processing">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <div class="modal-title">Processing Payment…</div>
+    <div class="modal-msg">Please wait while we securely process your payment.</div>`;
+  document.getElementById('modal').classList.add('show');
+}
+
+function showSuccess(txnId, msg, detail) {
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `
+    <div class="modal-icon icon-success">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="modal-title">Payment Successful!</div>
+    <div class="modal-msg">${msg}</div>
+    <div class="txn-box">${txnId}</div>
+    <div class="modal-detail">${detail}</div>
+    <button class="btn-modal" onclick="goToDashboard()">
+      <i class="fas fa-house"></i> Go to Dashboard
+    </button>`;
+}
+
+function goToDashboard() { window.location.href = "{% url 'user_dashboard' %}"; }
+
+// ── CENTRAL API CALL ──
+function callPaymentAPI(method, extraData, detail) {
+  showProcessing();
+
+  const apiUrl = `/payments/api/payment/${bookingId}/`;
+
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({
+      payment_method: method,
+      ...extraData
+    })
+  })
+  .then(r => {
+    if (!r.ok) {
+      throw new Error(`HTTP ${r.status} - URL: ${apiUrl} not found. Check urls.py`);
+    }
+    return r.json();
+  })
+  .then(data => {
+    if (data.success) {
+      showSuccess(data.transaction_id, data.message, detail);
+    } else {
+      document.getElementById('modal').classList.remove('show');
+      alert('Payment failed: ' + (data.message || 'Unknown error'));
+    }
+  })
+  .catch(err => {
+    document.getElementById('modal').classList.remove('show');
+    console.error('Payment error:', err);
+    alert('Error: ' + err.message + '\n\nPlease check browser console (F12) for the exact URL and fix urls.py');
+  });
+}
+
+function processCashPayment() {
+  callPaymentAPI('cash', {}, '💵 Pay ₹' + amount + ' to the worker on completion');
+}
+
+function processCardPayment() {
+  if (!validateCard()) return;
+  const last4 = document.getElementById('card_number').value.replace(/\s/g,'').slice(-4);
+  callPaymentAPI('card', {
+    card_number: document.getElementById('card_number').value,
+    card_name:   document.getElementById('card_name').value,
+    card_expiry: document.getElementById('card_expiry').value
+  }, '💳 Card ending in ' + last4);
+}
+
+function processUPIPayment() {
+  if (!validateUPI()) return;
+  const upi = document.getElementById('upi_id').value;
+  callPaymentAPI('upi', { upi_id: upi }, '📱 ' + upi);
+}
+
+function processNetBanking() {
+  if (!validateNetBanking()) return;
+  const sel = document.getElementById('netbanking_bank');
+  callPaymentAPI('netbanking', {
+    bank: sel.value
+  }, '🏦 ' + sel.options[sel.selectedIndex].text);
+}
+
+function processWallet() {
+  if (!validateWallet()) return;
+  const sel = document.getElementById('wallet_type');
+  callPaymentAPI('wallet', {
+    wallet_type:   sel.value,
+    wallet_mobile: document.getElementById('wallet_mobile').value
+  }, '👛 ' + sel.options[sel.selectedIndex].text);
+}
+
+function validateCard() {
+  const n = document.getElementById('card_number').value.replace(/\s/g,'');
+  if (!n || n.length < 16) return alert('Enter a valid 16-digit card number'), false;
+  if (!document.getElementById('card_name').value) return alert('Enter card holder name'), false;
+  if (!/^\d{2}\/\d{2}$/.test(document.getElementById('card_expiry').value)) return alert('Enter valid expiry MM/YY'), false;
+  if (document.getElementById('card_cvv').value.length < 3) return alert('Enter valid CVV'), false;
+  return true;
+}
+function validateUPI() {
+  const u = document.getElementById('upi_id').value;
+  if (!u || !u.includes('@')) return alert('Enter valid UPI ID (e.g., name@bank)'), false;
+  return true;
+}
+function validateNetBanking() {
+  if (!document.getElementById('netbanking_bank').value) return alert('Select a bank'), false;
+  if (!document.getElementById('netbanking_id').value) return alert('Enter net banking ID'), false;
+  if (!document.getElementById('netbanking_password').value) return alert('Enter password'), false;
+  return true;
+}
+function validateWallet() {
+  if (!document.getElementById('wallet_type').value) return alert('Select a wallet'), false;
+  const m = document.getElementById('wallet_mobile').value;
+  if (!m || m.length < 10) return alert('Enter valid 10-digit mobile number'), false;
+  return true;
+}
+
+// Card auto-format
+document.getElementById('card_number').addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\D/g,'');
+  let f = '';
+  for (let i=0;i<v.length;i++) { if(i>0&&i%4===0) f+=' '; f+=v[i]; }
+  e.target.value = f;
+});
+document.getElementById('card_expiry').addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\D/g,'');
+  if (v.length>=2) e.target.value = v.slice(0,2)+'/'+v.slice(2,4);
+  else e.target.value = v;
+});
+document.getElementById('card_cvv').addEventListener('input', function(e) {
+  e.target.value = e.target.value.replace(/\D/g,'').slice(0,3);
+});
+</script>
+
+</body>
+</html>

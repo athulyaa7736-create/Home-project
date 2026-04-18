@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.25);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family: var(--fB);
+  min-height: 100vh;
+  background: var(--navy);
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ── BG ── */
+.bg-grid {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  animation: gridMove 30s linear infinite;
+}
+@keyframes gridMove { from{background-position:0 0} to{background-position:56px 56px} }
+
+.bg-blob { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; }
+.blob-a { width:500px;height:500px; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-100px;right:-80px; animation:bF 10s ease-in-out infinite; }
+.blob-b { width:350px;height:350px; background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%); bottom:-80px;left:-60px; animation:bF 14s ease-in-out infinite reverse; }
+.blob-c { width:260px;height:260px; background:radial-gradient(circle,rgba(249,115,22,.06),transparent 70%); top:40%;left:25%; animation:bF 9s ease-in-out infinite 2s; }
+@keyframes bF { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.12) translate(15px,-20px)} }
+
+/* ── PAGE WRAP ── */
+.page-wrap {
+  position: relative; z-index: 1;
+  display: flex; width: 100%; min-height: 100vh;
+}
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  width: 420px; flex-shrink: 0;
+  background: linear-gradient(160deg, var(--navy2) 0%, var(--navy) 100%);
+  border-right: 1px solid rgba(255,255,255,.06);
+  position: sticky; top: 0; align-self: flex-start;
+  height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 52px 38px; text-align: center;
+}
+.left-panel::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(249,115,22,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(249,115,22,.035) 1px,transparent 1px);
+  background-size:36px 36px;
+}
+.lp { position:relative; z-index:1; }
+
+/* logo */
+.lp-logo {
+  display:inline-flex; align-items:center; gap:12px; margin-bottom:44px;
+}
+.lp-logo-box {
+  width:46px; height:46px; background:var(--orange); border-radius:12px;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:19px;
+}
+.lp-logo-text { font-family:var(--fH); font-size:28px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.lp-logo-text em { color:var(--orange); font-style:normal; }
+
+/* big heading */
+.lp-h {
+  font-family:var(--fH); font-size:34px; font-weight:900;
+  letter-spacing:-1.5px; color:#fff; line-height:1.08; margin-bottom:14px;
+}
+.lp-h em { color:var(--orange); font-style:normal; }
+
+.lp-sub {
+  font-size:14px; color:rgba(255,255,255,.5); line-height:1.75; margin-bottom:40px;
+}
+
+/* service chips */
+.chip-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:36px;
+}
+.chip {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.07);
+  border-radius:12px; padding:12px 14px;
+  font-size:13px; color:rgba(255,255,255,.7); font-weight:500;
+  transition:all .25s;
+}
+.chip:hover { background:rgba(249,115,22,.1); border-color:rgba(249,115,22,.25); color:#fff; }
+.chip-ic {
+  width:32px; height:32px; border-radius:9px;
+  background:rgba(249,115,22,.15);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--orange); font-size:14px; flex-shrink:0;
+}
+
+/* stats row */
+.stats-row {
+  display:flex; gap:0; margin-bottom:36px;
+  border:1px solid rgba(255,255,255,.07); border-radius:14px; overflow:hidden;
+}
+.stat-box {
+  flex:1; padding:14px 10px; text-align:center;
+  border-right:1px solid rgba(255,255,255,.07);
+  transition:background .25s;
+}
+.stat-box:last-child { border-right:none; }
+.stat-box:hover { background:rgba(249,115,22,.07); }
+.stat-v { font-family:var(--fH); font-size:20px; font-weight:900; color:var(--orange); }
+.stat-l { font-size:11px; color:rgba(255,255,255,.38); margin-top:2px; }
+
+hr.lp-div { border:none; border-top:1px solid rgba(255,255,255,.07); margin:0 0 20px; }
+
+.lp-worker-lbl { font-size:12px; color:rgba(255,255,255,.3); margin-bottom:10px; }
+.lp-worker-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 22px; background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12); border-radius:40px;
+  color:rgba(255,255,255,.7); font-size:13px; font-weight:600;
+  text-decoration:none; transition:all .25s;
+}
+.lp-worker-btn:hover {
+  background:rgba(249,115,22,.14); border-color:rgba(249,115,22,.35);
+  color:#fff; transform:translateY(-2px);
+}
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding:48px 32px; min-height:100vh; overflow-y:auto;
+}
+
+/* ── FORM CARD ── */
+.card {
+  background:var(--white); border-radius:24px;
+  padding:44px 40px; width:100%; max-width:440px;
+  box-shadow:0 24px 80px rgba(0,0,0,.25);
+  animation:cardUp .7s var(--ease) both;
+  border:1px solid rgba(255,255,255,.1);
+}
+@keyframes cardUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+/* welcome header */
+.card-header { margin-bottom:30px; }
+.welcome-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--orange-lt); border:1.5px solid rgba(249,115,22,.2);
+  border-radius:20px; padding:5px 12px;
+  font-size:12px; font-weight:600; color:var(--orange);
+  margin-bottom:14px; letter-spacing:.3px;
+}
+.card-title {
+  font-family:var(--fH); font-size:26px; font-weight:900;
+  letter-spacing:-.8px; color:var(--navy); margin-bottom:6px;
+}
+.card-sub { font-size:14px; color:var(--muted); }
+
+/* messages */
+.messages { margin-bottom:20px; }
+.alert {
+  padding:11px 14px; border-radius:10px; font-size:13px;
+  font-weight:500; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.alert-error   { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; }
+.alert-success { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; }
+.alert-info    { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+
+/* form fields */
+.form-group { margin-bottom:18px; }
+label {
+  display:block; margin-bottom:6px;
+  font-size:13px; font-weight:600; color:var(--navy);
+}
+.input-wrap { position:relative; }
+.input-icon {
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:#94a3b8; font-size:15px; pointer-events:none; transition:color .2s;
+}
+.input-wrap:focus-within .input-icon { color:var(--orange); }
+
+input[type="text"],
+input[type="password"] {
+  width:100%; padding:12px 14px 12px 42px;
+  border:1.5px solid var(--border); border-radius:11px;
+  font-size:14px; font-family:var(--fB); color:var(--navy);
+  background:var(--light); outline:none;
+  transition:all .22s var(--ease);
+}
+input:focus {
+  border-color:var(--orange); background:var(--white);
+  box-shadow:0 0 0 3px rgba(249,115,22,.1);
+}
+input::placeholder { color:#94a3b8; }
+
+/* show/hide password */
+.pwd-toggle {
+  position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  color:#94a3b8; cursor:pointer; font-size:15px;
+  background:none; border:none; padding:0; transition:color .2s;
+}
+.pwd-toggle:hover { color:var(--orange); }
+
+/* forgot link */
+.forgot-row {
+  display:flex; justify-content:flex-end; margin-top:6px;
+}
+.forgot-link {
+  font-size:12px; color:var(--muted); text-decoration:none;
+  font-weight:500; transition:color .2s;
+}
+.forgot-link:hover { color:var(--orange); }
+
+/* remember me */
+.remember-row {
+  display:flex; align-items:center; gap:9px; margin-bottom:6px;
+}
+.remember-row input[type="checkbox"] {
+  width:16px; height:16px; padding:0;
+  accent-color:var(--orange); cursor:pointer;
+  border-radius:4px;
+}
+.remember-row label {
+  margin:0; font-size:13px; color:var(--muted);
+  cursor:pointer; font-weight:500;
+}
+
+/* submit button */
+.btn-login {
+  width:100%; padding:14px;
+  background:var(--orange); color:#fff;
+  border:none; border-radius:12px;
+  font-family:var(--fH); font-size:16px; font-weight:800;
+  cursor:pointer; transition:all .3s var(--ease);
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  position:relative; overflow:hidden; margin-top:6px;
+}
+.btn-login::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%);
+  transform:translateX(-100%); transition:transform .5s;
+}
+.btn-login:hover::after { transform:translateX(100%); }
+.btn-login:hover {
+  background:var(--orange-dk); transform:translateY(-2px);
+  box-shadow:0 14px 36px rgba(249,115,22,.35);
+}
+
+/* divider */
+.or-div {
+  display:flex; align-items:center; gap:12px;
+  margin:22px 0 18px; color:#94a3b8; font-size:13px;
+}
+.or-div::before,.or-div::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* bottom links */
+.register-row {
+  text-align:center; font-size:14px; color:var(--muted); margin-bottom:10px;
+}
+.register-row a { color:var(--orange); font-weight:700; text-decoration:none; }
+.register-row a:hover { color:var(--orange-dk); text-decoration:underline; }
+
+.worker-row {
+  text-align:center; font-size:13px; color:#94a3b8;
+}
+.worker-row a { color:#94a3b8; font-weight:500; text-decoration:none; transition:color .2s; }
+.worker-row a:hover { color:var(--navy); }
+
+/* trust */
+.trust-row {
+  display:flex; align-items:center; justify-content:center;
+  gap:18px; margin-top:24px; padding-top:20px;
+  border-top:1px solid var(--border);
+}
+.trust-item {
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; color:#94a3b8; font-weight:500;
+}
+.trust-item i { color:var(--orange); font-size:11px; }
+
+/* responsive */
+@media(max-width:900px) { .left-panel { display:none; } .right-panel { padding:32px 20px; } }
+@media(max-width:480px) { .card { padding:32px 22px; } }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-blob blob-a"></div>
+<div class="bg-blob blob-b"></div>
+<div class="bg-blob blob-c"></div>
+
+<div class="page-wrap">
+
+  <!-- ══ LEFT PANEL ══ -->
+  <div class="left-panel">
+    <div class="lp">
+
+      <div class="lp-logo">
+        <div class="lp-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+        <div class="lp-logo-text">Fix<em>zy</em></div>
+      </div>
+
+      <div class="lp-h">
+        Your home,<br><em>our experts.</em>
+      </div>
+      <p class="lp-sub">
+        Log in to book verified professionals for all your home service needs — fast, reliable and affordable.
+      </p>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-v">12K+</div><div class="stat-l">Customers</div></div>
+        <div class="stat-box"><div class="stat-v">4.9★</div><div class="stat-l">Rating</div></div>
+        <div class="stat-box"><div class="stat-v">500+</div><div class="stat-l">Verified Pros</div></div>
+      </div>
+
+      <!-- Service chips -->
+      <div class="chip-grid">
+        <div class="chip"><div class="chip-ic"><i class="fas fa-bolt"></i></div> Electrician</div>
+        <div class="chip"><div class="chip-ic"><i class="fas fa-faucet"></i></div> Plumber</div>
+        <div class="chip"><div class="chip-ic"><i class="fas fa-broom"></i></div> Cleaning</div>
+        <div class="chip"><div class="chip-ic"><i class="fas fa-paint-roller"></i></div> Painting</div>
+        <div class="chip"><div class="chip-ic"><i class="fas fa-snowflake"></i></div> AC Repair</div>
+        <div class="chip"><div class="chip-ic"><i class="fas fa-hammer"></i></div> Carpenter</div>
+      </div>
+
+      <hr class="lp-div">
+      <p class="lp-worker-lbl">Are you a service professional?</p>
+      <a href="{% url 'worker_register' %}" class="lp-worker-btn">
+        <i class="fas fa-hard-hat"></i> Join as Pro Worker
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ══ RIGHT PANEL ══ -->
+  <div class="right-panel">
+    <div class="card">
+
+      <div class="card-header">
+        <!-- Back button on the right, welcome badge below -->
+        <div style="position:relative; margin-bottom:18px;">
+          <a href="{% url 'home' %}" style="position:absolute; right:0; top:0; display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--light);border:1.5px solid var(--border);border-radius:20px;color:var(--muted);font-size:12px;font-weight:600;text-decoration:none;transition:all .22s;"
+             onmouseover="this.style.background='var(--orange-lt)';this.style.borderColor='rgba(249,115,22,.3)';this.style.color='var(--orange)';this.style.transform='translateX(-2px)'"
+             onmouseout="this.style.background='var(--light)';this.style.borderColor='var(--border)';this.style.color='var(--muted)';this.style.transform='none'">
+            <i class="fas fa-arrow-left" style="font-size:11px;"></i> Back to Home
+          </a>
+          <div class="welcome-badge">
+            <i class="fas fa-hand-wave"></i> Welcome back
+          </div>
+        </div>
+        <div class="card-title">Login to Fixzy</div>
+        <div class="card-sub">Enter your credentials to access your account</div>
+      </div>
+
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          <i class="fas {% if 'error' in message.tags %}fa-circle-exclamation{% elif 'success' in message.tags %}fa-circle-check{% else %}fa-circle-info{% endif %}"></i>
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'login' %}" novalidate>
+        {% csrf_token %}
+
+        <!-- Username -->
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-wrap">
+            <input type="text" id="username" name="username"
+                   required placeholder="Enter your username" autocomplete="username">
+            <i class="fas fa-user input-icon"></i>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="password" name="password"
+                   required placeholder="Enter your password" autocomplete="current-password">
+            <i class="fas fa-lock input-icon"></i>
+            <button type="button" class="pwd-toggle" id="pwdToggle" aria-label="Show password">
+              <i class="fas fa-eye" id="pwdIcon"></i>
+            </button>
+          </div>
+          <div class="forgot-row">
+            <a href="{% url 'password_reset' %}" class="forgot-link">Forgot password?</a>
+          </div>
+        </div>
+
+        <!-- Remember me -->
+        <div class="remember-row">
+          <input type="checkbox" id="remember" name="remember">
+          <label for="remember">Remember me for 30 days</label>
+        </div>
+
+        <button type="submit" class="btn-login">
+          <i class="fas fa-right-to-bracket"></i> Login
+        </button>
+      </form>
+
+      <div class="or-div">or</div>
+
+      <div class="register-row">
+        Don't have an account? <a href="{% url 'register' %}">Sign up free</a>
+      </div>
+      <div class="worker-row">
+        Want to offer services? <a href="{% url 'worker_register' %}">Register as worker →</a>
+      </div>
+
+      <div class="trust-row">
+        <div class="trust-item"><i class="fas fa-lock"></i> Secure login</div>
+        <div class="trust-item"><i class="fas fa-shield-halved"></i> Data protected</div>
+        <div class="trust-item"><i class="fas fa-bolt"></i> Instant access</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Show / hide password toggle
+const toggle = document.getElementById('pwdToggle');
+const pwdInput = document.getElementById('password');
+const pwdIcon  = document.getElementById('pwdIcon');
+
+if (toggle && pwdInput) {
+  toggle.addEventListener('click', function () {
+    const show = pwdInput.type === 'password';
+    pwdInput.type = show ? 'text' : 'password';
+    pwdIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+  });
+}
+</script>
+
+</body>
+</htmt>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: var(--fB);
+  background: var(--light);
+  min-height: 100vh;
+  color: var(--text);
+}
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--navy);
+  padding: 0 40px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.topbar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.tb-logo {
+  display:flex; align-items:center; gap:10px;
+  position:relative; z-index:1;
+}
+.tb-logo-box {
+  width:34px; height:34px; background:var(--orange); border-radius:9px;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px;
+}
+.tb-logo-text {
+  font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff;
+}
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+
+.tb-right {
+  display:flex; align-items:center; gap:12px;
+  position:relative; z-index:1;
+}
+.btn-back {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 18px; border-radius:30px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.8); font-size:13px; font-weight:600;
+  transition:all .22s; text-decoration:none;
+}
+.btn-back:hover {
+  background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35);
+  color:#fff; transform:translateX(-2px);
+}
+
+/* ── PAGE BODY ── */
+.page {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 36px 24px 60px;
+}
+
+/* ── PAGE HEADER ── */
+.page-head {
+  display:flex; align-items:center; gap:16px; margin-bottom:28px;
+}
+.page-head-icon {
+  width:52px; height:52px; border-radius:14px;
+  background:linear-gradient(135deg,var(--navy2),var(--navy));
+  display:flex; align-items:center; justify-content:center;
+  color:var(--orange); font-size:22px;
+  box-shadow:0 4px 16px rgba(15,32,64,.15);
+  flex-shrink:0;
+}
+.page-head-title {
+  font-family:var(--fH); font-size:26px; font-weight:900;
+  letter-spacing:-.8px; color:var(--navy);
+}
+.page-head-sub { font-size:14px; color:var(--muted); margin-top:2px; }
+
+/* ── AVATAR CARD ── */
+.avatar-card {
+  background:var(--navy);
+  border-radius:var(--r);
+  padding:28px 32px;
+  display:flex; align-items:center; gap:24px;
+  margin-bottom:20px;
+  position:relative; overflow:hidden;
+  border:1px solid rgba(249,115,22,.12);
+}
+.avatar-card::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.avatar-card::after {
+  content:''; position:absolute;
+  width:300px; height:300px; border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);
+  top:-80px; right:-60px; pointer-events:none;
+}
+.avatar-circle {
+  width:72px; height:72px; border-radius:50%;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:28px; font-weight:900;
+  font-family:var(--fH);
+  border:3px solid rgba(255,255,255,.15);
+  flex-shrink:0; position:relative; z-index:1;
+  box-shadow:0 8px 24px rgba(249,115,22,.3);
+}
+.avatar-info { position:relative; z-index:1; }
+.avatar-name {
+  font-family:var(--fH); font-size:20px; font-weight:800;
+  color:#fff; letter-spacing:-.3px; margin-bottom:4px;
+}
+.avatar-email { font-size:13px; color:rgba(255,255,255,.5); margin-bottom:10px; }
+.avatar-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(249,115,22,.15); border:1px solid rgba(249,115,22,.3);
+  border-radius:20px; padding:4px 12px;
+  font-size:12px; font-weight:600; color:var(--orange);
+}
+
+/* ── MESSAGES ── */
+.messages { margin-bottom:20px; }
+.alert {
+  padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500;
+  margin-bottom:8px; display:flex; align-items:center; gap:8px;
+  animation:alertIn .4s var(--ease) both;
+}
+@keyframes alertIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.alert-success { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-left:4px solid #22c55e; }
+.alert-error   { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; border-left:4px solid #ef4444; }
+
+/* ── FORM CARD ── */
+.form-card {
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  overflow:hidden;
+  box-shadow:0 2px 16px rgba(15,32,64,.06);
+}
+
+/* section header inside card */
+.form-section {
+  padding:20px 28px 0;
+}
+.form-section:first-child { padding-top:28px; }
+
+.section-lbl {
+  display:flex; align-items:center; gap:8px;
+  font-size:11px; font-weight:700; letter-spacing:2.5px;
+  text-transform:uppercase; color:var(--orange);
+  margin-bottom:18px;
+}
+.section-lbl::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+
+.form-divider {
+  height:1px; background:var(--border); margin:8px 28px 0;
+}
+
+/* ── FORM FIELDS ── */
+.form-group { margin-bottom:18px; }
+
+label {
+  display:block; margin-bottom:6px;
+  font-size:13px; font-weight:600; color:var(--navy);
+}
+
+.input-wrap { position:relative; }
+.field-icon {
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:#94a3b8; font-size:14px; pointer-events:none; transition:color .2s;
+}
+.input-wrap:focus-within .field-icon { color:var(--orange); }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  width:100%; padding:11px 14px 11px 40px;
+  border:1.5px solid var(--border); border-radius:10px;
+  font-size:14px; font-family:var(--fB); color:var(--navy);
+  background:var(--light); outline:none;
+  transition:all .22s var(--ease);
+}
+input:focus, textarea:focus {
+  border-color:var(--orange); background:var(--white);
+  box-shadow:0 0 0 3px rgba(249,115,22,.1);
+}
+input::placeholder, textarea::placeholder { color:#94a3b8; }
+
+/* disabled input */
+input:disabled {
+  background:var(--light2); color:var(--muted);
+  cursor:not-allowed; border-color:var(--border);
+}
+.field-note {
+  font-size:11px; color:#94a3b8; margin-top:5px;
+  display:flex; align-items:center; gap:5px;
+}
+.field-note i { font-size:10px; }
+
+textarea {
+  padding-top:12px; resize:vertical; min-height:90px;
+  line-height:1.6;
+}
+
+/* form row */
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+/* ── FORM FOOTER ── */
+.form-footer {
+  padding:24px 28px;
+  border-top:1px solid var(--border);
+  background:var(--light);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; flex-wrap:wrap;
+}
+.footer-hint {
+  font-size:13px; color:var(--muted);
+  display:flex; align-items:center; gap:6px;
+}
+.footer-hint i { color:var(--orange); }
+
+.btn-save {
+  display:inline-flex; align-items:center; gap:9px;
+  padding:12px 32px;
+  background:var(--orange); color:#fff;
+  border:none; border-radius:10px;
+  font-family:var(--fH); font-size:15px; font-weight:800;
+  cursor:pointer; transition:all .3s var(--ease);
+  position:relative; overflow:hidden;
+}
+.btn-save::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%);
+  transform:translateX(-100%); transition:transform .5s;
+}
+.btn-save:hover::after { transform:translateX(100%); }
+.btn-save:hover {
+  background:var(--orange-dk); transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(249,115,22,.35);
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px) {
+  .topbar { padding:0 20px; }
+  .page { padding:24px 16px 48px; }
+  .form-row { grid-template-columns:1fr; gap:0; }
+  .form-section { padding:16px 20px 0; }
+  .form-footer { padding:18px 20px; }
+  .avatar-card { padding:20px; flex-direction:column; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'user_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <div class="tb-right">
+    <a href="{% url 'user_dashboard' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Page heading -->
+  <div class="page-head">
+    <div class="page-head-icon"><i class="fas fa-user-pen"></i></div>
+    <div>
+      <div class="page-head-title">Edit Profile</div>
+      <div class="page-head-sub">Update your personal information and contact details</div>
+    </div>
+  </div>
+
+  <!-- Avatar card -->
+  <div class="avatar-card">
+    <div class="avatar-circle">
+      {{ user.first_name|slice:":1"|upper|default:user.username|slice:":1"|upper }}
+    </div>
+    <div class="avatar-info">
+      <div class="avatar-name">
+        {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+      </div>
+      <div class="avatar-email">{{ user.email }}</div>
+      <div class="avatar-badge">
+        <i class="fas fa-circle-user"></i> Customer Account
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      <i class="fas {% if 'success' in message.tags %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Form card -->
+  <div class="form-card">
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <!-- Account -->
+      <div class="form-section">
+        <div class="section-lbl"><i class="fas fa-id-card"></i> Account Info</div>
+
+        <div class="form-group">
+          <label>Username</label>
+          <div class="input-wrap">
+            <input type="text" value="{{ user.username }}" disabled>
+            <i class="fas fa-at field-icon"></i>
+          </div>
+          <div class="field-note">
+            <i class="fas fa-lock"></i> Username cannot be changed
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <div class="input-wrap">
+              <input type="text" id="first_name" name="first_name"
+                     value="{{ user.first_name }}" placeholder="First name">
+              <i class="fas fa-user field-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <div class="input-wrap">
+              <input type="text" id="last_name" name="last_name"
+                     value="{{ user.last_name }}" placeholder="Last name">
+              <i class="fas fa-user field-icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- Contact -->
+      <div class="form-section">
+        <div class="section-lbl" style="margin-top:20px;"><i class="fas fa-address-book"></i> Contact Details</div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrap">
+            <input type="email" id="email" name="email"
+                   value="{{ user.email }}" placeholder="your@email.com">
+            <i class="fas fa-envelope field-icon"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <div class="input-wrap">
+            <input type="tel" id="phone" name="phone"
+                   value="{{ user.phone }}" placeholder="e.g. 9876543210">
+            <i class="fas fa-phone field-icon"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <div class="input-wrap">
+            <textarea id="address" name="address"
+                      placeholder="Enter your full address including city and pincode">{{ user.address }}</textarea>
+            <i class="fas fa-location-dot field-icon" style="top:14px;transform:none;"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer with save -->
+      <div class="form-footer">
+        <div class="footer-hint">
+          <i class="fas fa-shield-halved"></i>
+          Your information is secure and never shared
+        </div>
+        <button type="submit" class="btn-save">
+          <i class="fas fa-floppy-disk"></i> Save Changes
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+
+</body>
+</html>

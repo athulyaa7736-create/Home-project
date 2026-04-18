@@ -1,0 +1,810 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #f0f2f5;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .payment-wrapper {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .payment-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border-radius: 20px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .payment-header h1 {
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .payment-header p {
+        opacity: 0.9;
+        font-size: 16px;
+    }
+
+    /* Summary Cards */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    .summary-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .summary-icon i {
+        font-size: 24px;
+        color: white;
+    }
+
+    .summary-label {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e3c72;
+    }
+
+    /* Worker Cards */
+    .worker-card {
+        background: white;
+        border-radius: 20px;
+        margin-bottom: 25px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .worker-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 25px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .worker-info h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .worker-info p {
+        opacity: 0.9;
+        font-size: 14px;
+    }
+
+    .worker-total {
+        background: rgba(255,255,255,0.2);
+        padding: 10px 20px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    /* Bank Details */
+    .bank-section {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eef2f6;
+    }
+
+    .bank-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #1e3c72;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .bank-title i {
+        color: #28a745;
+    }
+
+    .bank-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 15px;
+    }
+
+    .bank-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .bank-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .bank-value {
+        font-weight: 600;
+        color: #1e3c72;
+        font-size: 14px;
+    }
+
+    /* Jobs Table */
+    .jobs-table {
+        padding: 0 25px 25px 25px;
+    }
+
+    .jobs-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .jobs-table th {
+        text-align: left;
+        padding: 15px 10px;
+        color: #666;
+        font-weight: 500;
+        font-size: 13px;
+        border-bottom: 2px solid #eef2f6;
+    }
+
+    .jobs-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #eef2f6;
+        color: #1e3c72;
+    }
+
+    .job-amount {
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    /* Payment Form */
+    .payment-form-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .form-title {
+        font-size: 20px;
+        color: #1e3c72;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-title i {
+        color: #28a745;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #1e3c72;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #eef2f6;
+        border-radius: 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+
+    .payment-methods {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .method-card {
+        flex: 1;
+        min-width: 120px;
+        padding: 15px;
+        border: 2px solid #eef2f6;
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .method-card:hover {
+        border-color: #667eea;
+    }
+
+    .method-card.selected {
+        border-color: #28a745;
+        background: #f0fff4;
+    }
+
+    .method-card i {
+        font-size: 24px;
+        color: #667eea;
+        margin-bottom: 8px;
+    }
+
+    .method-card span {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #1e3c72;
+    }
+
+    .upi-field {
+        display: none;
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(102,126,234,0.3);
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(40,167,69,0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    /* Success Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 30px;
+        padding: 50px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        animation: slideUp 0.4s ease;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        background: #d4edda;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        animation: scaleIn 0.5s ease;
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+
+    .success-icon i {
+        font-size: 50px;
+        color: #28a745;
+    }
+
+    .modal h2 {
+        color: #1e3c72;
+        margin-bottom: 15px;
+        font-size: 28px;
+    }
+
+    .modal p {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
+
+    .receipt {
+        background: #f8fafc;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 25px 0;
+        text-align: left;
+    }
+
+    .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #dee2e6;
+    }
+
+    .receipt-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .receipt-label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .receipt-value {
+        font-weight: 700;
+        color: #1e3c72;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+
+    @media (max-width: 768px) {
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .bank-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-wrapper">
+    <!-- Header -->
+    <div class="payment-header">
+        <h1>💳 Process Bulk Payments</h1>
+        <p>Complete payments for selected jobs securely</p>
+    </div>
+
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+        <a href="{% url 'admin:payments_workerpayment_changelist' %}" class="btn btn-secondary">Back to Payments</a>
+    {% else %}
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-receipt"></i>
+            </div>
+            <div class="summary-label">Total Payments</div>
+            <div class="summary-value">{{ payment_count }}</div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="summary-label">Workers</div>
+            <div class="summary-value">{{ workers|length }}</div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-icon">
+                <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="summary-label">Total Amount</div>
+            <div class="summary-value">₹{{ total_amount }}</div>
+        </div>
+    </div>
+
+    <!-- Worker Cards -->
+    {% for worker_data in workers %}
+    <div class="worker-card">
+        <div class="worker-header">
+            <div class="worker-info">
+                <h3>{{ worker_data.worker.user.get_full_name|default:worker_data.worker.user.username }}</h3>
+                <p>{{ worker_data.worker.service_type }} • {{ worker_data.worker.experience }} years exp</p>
+            </div>
+            <div class="worker-total">₹{{ worker_data.total }}</div>
+        </div>
+
+        <!-- Bank Details -->
+        <div class="bank-section">
+            <div class="bank-title">
+                <i class="fas fa-university"></i>
+                Bank Account Details
+            </div>
+            <div class="bank-grid">
+                <div class="bank-item">
+                    <span class="bank-label">Account Holder</span>
+                    <span class="bank-value">{{ worker_data.worker.account_holder_name|default:"Not provided" }}</span>
+                </div>
+                <div class="bank-item">
+                    <span class="bank-label">Account Number</span>
+                    <span class="bank-value">
+                        {% if worker_data.worker.account_number %}
+                            {{ worker_data.worker.account_number|slice:"-4:" }}
+                        {% else %}
+                            Not provided
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="bank-item">
+                    <span class="bank-label">IFSC Code</span>
+                    <span class="bank-value">{{ worker_data.worker.ifsc_code|default:"Not provided" }}</span>
+                </div>
+                <div class="bank-item">
+                    <span class="bank-label">Bank Name</span>
+                    <span class="bank-value">{{ worker_data.worker.bank_name|default:"Not provided" }}</span>
+                </div>
+                <div class="bank-item">
+                    <span class="bank-label">UPI ID</span>
+                    <span class="bank-value">{{ worker_data.worker.upi_id|default:"Not provided" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs Table -->
+        <div class="jobs-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Job ID</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in worker_data.payments %}
+                    <tr>
+                        <td>#{{ payment.id }}</td>
+                        <td>#{{ payment.job.id }}</td>
+                        <td>{{ payment.job.service.name }}</td>
+                        <td>{{ payment.job.created_at|date:"d M Y" }}</td>
+                        <td class="text-right"><span class="job-amount">₹{{ payment.amount }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Payment Form -->
+    <div class="payment-form-section">
+        <div class="form-title">
+            <i class="fas fa-credit-card"></i>
+            Complete Payment
+        </div>
+
+        <form method="post" id="paymentForm">
+            {% csrf_token %}
+            <input type="hidden" name="payment_ids" value="{{ payment_ids }}">
+
+            <div class="form-group">
+                <label class="form-label">Select Payment Method</label>
+                <div class="payment-methods">
+                    <div class="method-card" onclick="selectMethod('bank')" id="method-bank">
+                        <i class="fas fa-university"></i>
+                        <span>Bank Transfer</span>
+                    </div>
+                    <div class="method-card" onclick="selectMethod('upi')" id="method-upi">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>UPI</span>
+                    </div>
+                    <div class="method-card" onclick="selectMethod('cash')" id="method-cash">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Cash</span>
+                    </div>
+                </div>
+                <input type="hidden" name="payment_method" id="selected_method" value="bank">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Transaction ID / Reference</label>
+                <input type="text" name="transaction_id" class="form-control" placeholder="Enter transaction ID" value="TXN{{ payment_ids|slice:":5" }}">
+            </div>
+
+            <div id="bank_fields" class="bank-fields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Account Number</label>
+                        <input type="text" name="account_number" class="form-control" placeholder="Enter account number">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">IFSC Code</label>
+                        <input type="text" name="ifsc_code" class="form-control" placeholder="Enter IFSC code">
+                    </div>
+                </div>
+            </div>
+
+            <div id="upi_field" class="upi-field">
+                <label class="form-label">UPI ID</label>
+                <input type="text" name="upi_id" class="form-control" placeholder="e.g., worker@okhdfcbank">
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'admin:payments_workerpayment_changelist' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-success" id="submitBtn">
+                    Complete {{ payment_count }} Payments
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Success Modal -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Payment Completed!</h2>
+        <p id="modalMessage">Payments have been processed successfully</p>
+        
+        <div class="receipt" id="receiptDetails">
+            <div class="receipt-row">
+                <span class="receipt-label">Batch ID:</span>
+                <span class="receipt-value" id="batchId">BATCH001</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Total Amount:</span>
+                <span class="receipt-value" id="totalAmount">₹{{ total_amount }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Payments:</span>
+                <span class="receipt-value" id="paymentCount">{{ payment_count }}</span>
+            </div>
+            <div class="receipt-row">
+                <span class="receipt-label">Date:</span>
+                <span class="receipt-value" id="processDate">{% now "d M Y H:i" %}</span>
+            </div>
+        </div>
+        
+        <button class="btn btn-success" onclick="closeModalAndRedirect()" style="width: 100%;">
+            View Payments
+        </button>
+    </div>
+</div>
+
+<script>
+    // Method selection
+    function selectMethod(method) {
+        // Update hidden input
+        document.getElementById('selected_method').value = method;
+        
+        // Update UI
+        document.querySelectorAll('.method-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        document.getElementById(`method-${method}`).classList.add('selected');
+        
+        // Show/hide UPI field and bank fields
+        const upiField = document.getElementById('upi_field');
+        const bankFields = document.getElementById('bank_fields');
+        
+        if (method === 'upi') {
+            upiField.style.display = 'block';
+            bankFields.style.display = 'none';
+        } else if (method === 'bank') {
+            upiField.style.display = 'none';
+            bankFields.style.display = 'block';
+        } else {
+            upiField.style.display = 'none';
+            bankFields.style.display = 'none';
+        }
+    }
+
+    // Initialize default selection
+    document.addEventListener('DOMContentLoaded', function() {
+        selectMethod('bank');
+    });
+
+    // Form submission
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+        submitBtn.disabled = true;
+        
+        // Submit to complete-payment endpoint
+        fetch('{% url "complete_payment" %}', {
+            method: 'POST',
+            body: new FormData(this),
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update modal with data
+                document.getElementById('batchId').textContent = data.batch_id;
+                document.getElementById('totalAmount').textContent = '₹' + data.total_amount;
+                document.getElementById('paymentCount').textContent = data.count;
+                document.getElementById('modalMessage').textContent = data.message;
+                document.getElementById('successModal').classList.add('active');
+            } else {
+                alert('Error: ' + data.error);
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+
+    function closeModalAndRedirect() {
+        window.location.href = '{% url "admin:payments_workerpayment_changelist" %}';
+    }
+</script>
+{% endblock %}

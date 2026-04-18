@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscription Plans - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.3);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fS: 'Instrument Serif', serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 20px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:var(--fB); background:var(--navy); min-height:100vh; color:var(--white); overflow-x:hidden; }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── BG ── */
+.bg-grid {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size:56px 56px;
+  animation:gridMove 30s linear infinite;
+}
+@keyframes gridMove { from{background-position:0 0} to{background-position:56px 56px} }
+.bg-blob { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; }
+.blob-a { width:500px;height:500px; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-100px;right:-80px; animation:bF 10s ease-in-out infinite; }
+.blob-b { width:350px;height:350px; background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%); bottom:-80px;left:-60px; animation:bF 14s ease-in-out infinite reverse; }
+.blob-c { width:280px;height:280px; background:radial-gradient(circle,rgba(249,115,22,.07),transparent 70%); top:45%;left:35%; animation:bF 9s ease-in-out infinite 2s; }
+@keyframes bF { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.12) translate(15px,-20px)} }
+
+/* ── TOPBAR ── */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:rgba(15,32,64,.88); backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:0 52px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.tb-logo { display:flex; align-items:center; gap:10px; }
+.tb-logo-box { width:34px; height:34px; background:var(--orange); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; }
+.tb-logo-text { font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:8px 20px; border-radius:30px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.8); font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35); color:#fff; transform:translateX(-2px); }
+
+/* ── PAGE ── */
+.page { position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:56px 28px 80px; }
+
+/* ── HERO HEAD ── */
+.hero-head { text-align:center; margin-bottom:64px; }
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(249,115,22,.12); border:1px solid rgba(249,115,22,.3);
+  border-radius:30px; padding:6px 16px;
+  font-size:13px; font-weight:700; color:var(--orange);
+  margin-bottom:20px; letter-spacing:.3px;
+}
+.hero-title {
+  font-family:var(--fH); font-size:clamp(36px,5vw,64px);
+  font-weight:900; letter-spacing:-2.5px; line-height:1.05;
+  color:#fff; margin-bottom:12px;
+}
+.hero-title em { font-family:var(--fS); font-style:italic; font-weight:400; color:var(--orange); }
+.hero-sub { font-size:17px; color:rgba(255,255,255,.5); max-width:480px; margin:0 auto; line-height:1.7; }
+
+/* billing toggle */
+.billing-toggle {
+  display:inline-flex; align-items:center; gap:14px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  border-radius:40px; padding:6px 8px; margin-top:28px;
+}
+.bt-label { font-size:14px; font-weight:600; color:rgba(255,255,255,.5); padding:0 8px; }
+.bt-switch {
+  width:48px; height:26px; border-radius:13px;
+  background:var(--orange); position:relative; cursor:pointer;
+  transition:background .25s;
+}
+.bt-switch::after { content:''; position:absolute; width:20px; height:20px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform .25s; box-shadow:0 2px 6px rgba(0,0,0,.2); }
+.bt-active { color:#fff; }
+
+/* save badge */
+.save-badge {
+  background:var(--orange); color:#fff;
+  border-radius:20px; padding:3px 10px;
+  font-size:11px; font-weight:800; margin-left:4px;
+}
+
+/* ── PLANS GRID ── */
+.plans-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  align-items:start;
+}
+
+/* ── PLAN CARD ── */
+.plan-card {
+  border-radius:var(--r); overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  transition:all .4s var(--ease);
+  animation:cardUp .6s var(--ease) both;
+  position:relative;
+}
+.plan-card:nth-child(1){animation-delay:.1s}
+.plan-card:nth-child(2){animation-delay:.2s}
+.plan-card:nth-child(3){animation-delay:.3s}
+@keyframes cardUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.plan-card:hover { transform:translateY(-10px); box-shadow:0 32px 70px rgba(0,0,0,.35); border-color:rgba(249,115,22,.3); }
+
+/* popular card */
+.plan-card.popular {
+  border-color:var(--orange);
+  background:rgba(249,115,22,.06);
+  transform:translateY(-8px) scale(1.02);
+}
+.plan-card.popular:hover { transform:translateY(-18px) scale(1.02); }
+
+.popular-ribbon {
+  position:absolute; top:18px; right:18px;
+  background:var(--orange); color:#fff;
+  padding:5px 14px; border-radius:20px;
+  font-size:11px; font-weight:800; letter-spacing:.5px;
+  text-transform:uppercase;
+  display:flex; align-items:center; gap:5px;
+}
+
+/* card header */
+.plan-head {
+  padding:30px 30px 24px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.plan-type { font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:10px; }
+.plan-name { font-family:var(--fH); font-size:26px; font-weight:900; letter-spacing:-.8px; color:#fff; margin-bottom:16px; }
+.plan-price-row { display:flex; align-items:flex-end; gap:6px; }
+.plan-price { font-family:var(--fH); font-size:52px; font-weight:900; letter-spacing:-3px; color:#fff; line-height:1; }
+.plan-period { font-size:14px; color:rgba(255,255,255,.45); margin-bottom:8px; }
+.plan-billed { font-size:12px; color:rgba(255,255,255,.35); margin-top:6px; }
+.plan-save { display:inline-block; background:rgba(249,115,22,.15); border:1px solid rgba(249,115,22,.3); color:var(--orange); border-radius:20px; padding:3px 10px; font-size:12px; font-weight:700; margin-top:8px; }
+
+/* card body */
+.plan-body { padding:24px 30px 30px; }
+.plan-desc { font-size:14px; color:rgba(255,255,255,.5); line-height:1.65; margin-bottom:22px; }
+
+.feature-list { list-style:none; margin-bottom:28px; }
+.feature-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:9px 0; border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:14px; color:rgba(255,255,255,.75);
+}
+.feature-item:last-child { border-bottom:none; padding-bottom:0; }
+.fi-check {
+  width:20px; height:20px; border-radius:50%;
+  background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.25);
+  display:flex; align-items:center; justify-content:center;
+  color:#22c55e; font-size:10px; flex-shrink:0; margin-top:1px;
+}
+.fi-orange .fi-check { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.3); color:var(--orange); }
+
+/* CTA button */
+.btn-subscribe {
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; padding:15px;
+  background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.15);
+  color:#fff; border-radius:12px;
+  font-family:var(--fH); font-size:16px; font-weight:800;
+  cursor:pointer; transition:all .3s var(--ease);
+  position:relative; overflow:hidden;
+}
+.btn-subscribe::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.1),transparent 70%);
+  transform:translateX(-100%); transition:transform .5s;
+}
+.btn-subscribe:hover::after { transform:translateX(100%); }
+.btn-subscribe:hover { background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.35); transform:translateY(-2px); }
+
+/* popular plan CTA */
+.plan-card.popular .btn-subscribe {
+  background:var(--orange); border-color:var(--orange); color:#fff;
+  box-shadow:0 8px 28px rgba(249,115,22,.35);
+}
+.plan-card.popular .btn-subscribe:hover { background:var(--orange-dk); box-shadow:0 16px 40px rgba(249,115,22,.5); }
+
+/* ── GUARANTEE STRIP ── */
+.guarantee {
+  margin-top:52px; text-align:center;
+  display:flex; align-items:center; justify-content:center;
+  gap:32px; flex-wrap:wrap;
+}
+.guarantee-item {
+  display:flex; align-items:center; gap:8px;
+  font-size:14px; color:rgba(255,255,255,.45); font-weight:500;
+}
+.guarantee-item i { color:var(--orange); font-size:16px; }
+
+/* ── FAQ ── */
+.faq { margin-top:72px; }
+.faq-title { font-family:var(--fH); font-size:28px; font-weight:900; letter-spacing:-1px; text-align:center; color:#fff; margin-bottom:32px; }
+.faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.faq-item {
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius:14px; padding:20px 22px; transition:all .25s;
+}
+.faq-item:hover { background:rgba(249,115,22,.06); border-color:rgba(249,115,22,.2); }
+.faq-q { font-family:var(--fH); font-size:15px; font-weight:700; color:#fff; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.faq-q i { color:var(--orange); font-size:13px; }
+.faq-a { font-size:13px; color:rgba(255,255,255,.45); line-height:1.7; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px) { .plans-grid { grid-template-columns:1fr; } .plan-card.popular { transform:none; } .faq-grid { grid-template-columns:1fr; } }
+@media(max-width:640px) { .topbar { padding:0 20px; } .page { padding:40px 16px 60px; } }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-blob blob-a"></div>
+<div class="bg-blob blob-b"></div>
+<div class="bg-blob blob-c"></div>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'user_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <a href="{% url 'user_dashboard' %}" class="btn-back">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Hero heading -->
+  <div class="hero-head">
+    <div class="hero-eyebrow"><i class="fas fa-crown"></i> Subscription Plans</div>
+    <h1 class="hero-title">
+      Simple pricing.<br><em>Big savings.</em>
+    </h1>
+    <p class="hero-sub">
+      Choose the plan that fits your home. Cancel anytime — no hidden fees, no surprises.
+    </p>
+  </div>
+
+  <!-- Plans -->
+  <div class="plans-grid">
+
+    <!-- ── BASIC PLAN — ID:1 — ₹499, 2 visits, 10%, 1 month ── -->
+    <div class="plan-card">
+      <div class="plan-head">
+        <div class="plan-type">Monthly · 1 Month</div>
+        <div class="plan-name">Basic</div>
+        <div class="plan-price-row">
+          <div class="plan-price">₹499</div>
+          <div class="plan-period">/ month</div>
+        </div>
+        <div class="plan-billed">Billed monthly · Cancel anytime</div>
+      </div>
+      <div class="plan-body">
+        <p class="plan-desc">Perfect for occasional home maintenance needs with priority support.</p>
+        <ul class="feature-list">
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> <strong>2</strong> service visits</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> Free inspection included</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> 10% discount on parts</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> Priority customer support</li>
+        </ul>
+        <a href="{% url 'plan_payment_page' 1 %}" class="btn-subscribe">
+          <i class="fas fa-bolt"></i> Get Started
+        </a>
+      </div>
+    </div>
+
+    <!-- ── STANDARD PLAN — ID:2 — ₹2999, 5 visits, 20%, 3 months, Popular ── -->
+    <div class="plan-card popular">
+      <div class="popular-ribbon"><i class="fas fa-fire"></i> Best Value</div>
+      <div class="plan-head">
+        <div class="plan-type">Quarterly · 3 Months</div>
+        <div class="plan-name">Standard</div>
+        <div class="plan-price-row">
+          <div class="plan-price">₹2,999</div>
+          <div class="plan-period">/ 3 months</div>
+        </div>
+        <div class="plan-billed">Billed ₹2,999 every 3 months</div>
+        <div class="plan-save">Save ₹498 vs Monthly · Most Popular</div>
+      </div>
+      <div class="plan-body">
+        <p class="plan-desc">Ideal for homeowners who need regular maintenance and an emergency safety net.</p>
+        <ul class="feature-list fi-orange">
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> <strong>5</strong> service visits</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> Free inspection included</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> 20% discount on parts</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> Priority customer support</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> <strong>1 emergency visit</strong></li>
+        </ul>
+        <a href="{% url 'plan_payment_page' 2 %}" class="btn-subscribe">
+          <i class="fas fa-crown"></i> Subscribe — Best Deal
+        </a>
+      </div>
+    </div>
+
+    <!-- ── PREMIUM PLAN — ID:3 — ₹4950, 10 visits, 30%, 1 year ── -->
+    <div class="plan-card">
+      <div class="plan-head">
+        <div class="plan-type">Annual · 12 Months</div>
+        <div class="plan-name">Premium</div>
+        <div class="plan-price-row">
+          <div class="plan-price">₹4,950</div>
+          <div class="plan-period">/ year</div>
+        </div>
+        <div class="plan-billed">Billed ₹4,950 per year · Best value</div>
+        <div class="plan-save">Save ₹1,038 vs Monthly</div>
+      </div>
+      <div class="plan-body">
+        <p class="plan-desc">Complete home care — maximum visits, emergency cover and full annual maintenance.</p>
+        <ul class="feature-list">
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> <strong>10</strong> service visits</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> Free inspection included</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> 30% discount on parts</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> Priority customer support</li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> <strong>3 emergency visits</strong></li>
+          <li class="feature-item"><div class="fi-check"><i class="fas fa-check"></i></div> <strong>Free annual maintenance</strong></li>
+        </ul>
+        <a href="{% url 'plan_payment_page' 3 %}" class="btn-subscribe">
+          <i class="fas fa-shield-halved"></i> Get Premium
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Guarantee strip -->
+  <div class="guarantee">
+    <div class="guarantee-item"><i class="fas fa-rotate-left"></i> Cancel anytime</div>
+    <div class="guarantee-item"><i class="fas fa-lock"></i> Secure payments</div>
+    <div class="guarantee-item"><i class="fas fa-shield-halved"></i> 30-day money back</div>
+    <div class="guarantee-item"><i class="fas fa-headset"></i> 24/7 support</div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq">
+    <div class="faq-title">Frequently Asked Questions</div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q"><i class="fas fa-circle-question"></i> Can I cancel my subscription?</div>
+        <div class="faq-a">Yes, you can cancel at any time. Your plan stays active until the end of the billing period.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><i class="fas fa-circle-question"></i> What does a service visit include?</div>
+        <div class="faq-a">A visit covers one service job (electrical, plumbing, cleaning, etc.) by a verified professional.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><i class="fas fa-circle-question"></i> How do emergency visits work?</div>
+        <div class="faq-a">Emergency visits are available 24/7 and are not counted against your monthly service visits.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q"><i class="fas fa-circle-question"></i> Can I upgrade my plan?</div>
+        <div class="faq-a">Yes, you can upgrade to a higher plan at any time. The difference is prorated automatically.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

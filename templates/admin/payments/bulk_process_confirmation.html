@@ -1,0 +1,63 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_urls %}
+
+{% block content %}
+<div style="padding: 30px; max-width: 800px; margin: 0 auto;">
+  <h1>Confirm Bulk Payment Processing</h1>
+  
+  <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+    <h3>Selected Payments ({{ payments|length }})</h3>
+    
+    <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+      <thead>
+        <tr style="background: #e9ecef;">
+          <th style="padding: 10px; text-align: left;">ID</th>
+          <th style="padding: 10px; text-align: left;">Worker</th>
+          <th style="padding: 10px; text-align: left;">Job</th>
+          <th style="padding: 10px; text-align: right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for payment in payments %}
+        <tr style="border-bottom: 1px solid #dee2e6;">
+          <td style="padding: 10px;">#{{ payment.id }}</td>
+          <td style="padding: 10px;">{{ payment.worker.user.username }}</td>
+          <td style="padding: 10px;">
+            {% if payment.job %}
+              Job #{{ payment.job.id }}
+            {% else %}
+              Bulk ({{ payment.job_count }} jobs)
+            {% endif %}
+          </td>
+          <td style="padding: 10px; text-align: right; font-weight: bold;">₹{{ payment.amount }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr style="background: #e9ecef; font-weight: bold;">
+          <td colspan="3" style="padding: 10px; text-align: right;">Total:</td>
+          <td style="padding: 10px; text-align: right; color: #28a745;">₹{{ total_amount }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  
+  <form method="post">
+    {% csrf_token %}
+    {% for payment in payments %}
+      <input type="hidden" name="_selected_action" value="{{ payment.pk|unlocalize }}">
+    {% endfor %}
+    <input type="hidden" name="action" value="mark_as_completed">
+    <input type="hidden" name="apply" value="yes">
+    
+    <div style="display: flex; gap: 15px; justify-content: center;">
+      <button type="submit" style="background: #28a745; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+        ✅ Confirm Process
+      </button>
+      <a href="{% url 'admin:payments_workerpayment_changelist' %}" style="background: #6c757d; color: white; padding: 12px 30px; border-radius: 5px; text-decoration: none; display: inline-block; font-size: 16px;">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

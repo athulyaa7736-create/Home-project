@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worker Dashboard - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); color:var(--text); }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── LAYOUT ── */
+.wrap { display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:260px; background:var(--navy);
+  position:fixed; height:100vh; overflow-y:auto; z-index:100;
+  display:flex; flex-direction:column;
+  border-right:1px solid rgba(255,255,255,.06);
+}
+.sidebar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.sb-head { padding:22px 22px 18px; border-bottom:1px solid rgba(255,255,255,.07); position:relative; z-index:1; }
+.sb-logo { display:flex; align-items:center; gap:10px; }
+.sb-logo-box { width:36px;height:36px; background:var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px; flex-shrink:0; }
+.sb-logo-text { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.sb-logo-text em { color:var(--orange); font-style:normal; }
+.sb-nav { padding:14px 12px; flex:1; position:relative; z-index:1; }
+.sb-sec { font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,.28); padding:10px 14px 6px; }
+.nav-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:10px; margin-bottom:2px; color:rgba(255,255,255,.58); font-size:14px; font-weight:500; transition:all .22s var(--ease); }
+.nav-item i { width:18px; font-size:15px; flex-shrink:0; }
+.nav-item:hover { background:rgba(249,115,22,.1); color:#fff; transform:translateX(3px); }
+.nav-item.active { background:rgba(249,115,22,.15); color:var(--orange); font-weight:600; border-left:3px solid var(--orange); padding-left:11px; }
+.nav-item.active i { color:var(--orange); }
+.nav-divider { border:none; border-top:1px solid rgba(255,255,255,.06); margin:8px 14px; }
+.nav-item.logout { color:rgba(255,100,100,.65); }
+.nav-item.logout:hover { background:rgba(239,68,68,.1); color:#f87171; }
+.sb-footer { padding:14px 16px; border-top:1px solid rgba(255,255,255,.06); position:relative; z-index:1; }
+.sb-user { display:flex; align-items:center; gap:10px; }
+.sb-avatar { width:36px;height:36px; border-radius:50%; background:linear-gradient(135deg,var(--orange),var(--orange-dk)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--fH); font-size:15px; font-weight:900; flex-shrink:0; }
+.sb-uname { font-size:13px; font-weight:700; color:#fff; }
+.sb-urole { font-size:11px; color:rgba(255,255,255,.38); }
+
+/* ── MAIN ── */
+.main { flex:1; margin-left:260px; padding:28px 32px 60px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:16px 24px;
+  margin-bottom:24px; box-shadow:0 2px 10px rgba(15,32,64,.04);
+}
+.tb-left { display:flex; align-items:center; gap:14px; }
+.tb-icon { width:44px;height:44px; border-radius:12px; background:var(--orange-lt); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:20px; }
+.tb-title { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-.5px; color:var(--navy); }
+.tb-sub { font-size:13px; color:var(--muted); margin-top:1px; }
+.user-chip { display:flex; align-items:center; gap:10px; background:var(--light); border:1px solid var(--border); border-radius:40px; padding:6px 16px 6px 6px; }
+.uc-av { width:34px;height:34px; border-radius:50%; background:var(--navy); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:14px; }
+.uc-name { font-size:13px; font-weight:700; color:var(--navy); }
+.uc-role { font-size:11px; color:var(--muted); }
+
+/* ── MESSAGES ── */
+.messages { margin-bottom:20px; }
+.alert { padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500; margin-bottom:8px; display:flex; align-items:center; gap:8px; animation:alertIn .4s var(--ease) both; }
+@keyframes alertIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.alert-success { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-left:4px solid #22c55e; }
+.alert-error   { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; border-left:4px solid #ef4444; }
+.alert-info    { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-left:4px solid #3b82f6; }
+
+/* ── VERIFICATION CARD ── */
+.verify-card {
+  border-radius:var(--r); padding:22px 26px; margin-bottom:20px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:14px;
+  border:1px solid;
+}
+.verify-card.verified   { background:#f0fdf4; border-color:#bbf7d0; }
+.verify-card.unverified { background:#fef2f2; border-color:#fecaca; }
+.verify-card.incomplete { background:#fff7ed; border-color:rgba(249,115,22,.25); }
+.vc-left { display:flex; align-items:center; gap:14px; }
+.vc-ic { width:52px;height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.vc-ic.v  { background:#dcfce7; color:#16a34a; }
+.vc-ic.u  { background:#fee2e2; color:#dc2626; }
+.vc-ic.i  { background:var(--orange-lt); color:var(--orange); }
+.vc-title { font-family:var(--fH); font-size:16px; font-weight:800; color:var(--navy); margin-bottom:4px; }
+.vc-msg   { font-size:13px; color:var(--muted); line-height:1.5; }
+.vc-badge { display:inline-flex; align-items:center; gap:6px; padding:7px 18px; border-radius:30px; font-family:var(--fH); font-size:13px; font-weight:800; }
+.vc-badge.ok  { background:#16a34a; color:#fff; }
+.vc-badge.pending { background:#ef4444; color:#fff; }
+.btn-complete-profile { display:inline-flex; align-items:center; gap:7px; padding:10px 22px; background:var(--orange); color:#fff; border-radius:30px; font-family:var(--fH); font-size:13px; font-weight:800; transition:all .25s; }
+.btn-complete-profile:hover { background:var(--orange-dk); transform:translateY(-1px); }
+
+/* ── PAYMENT NOTIFICATION ── */
+.pay-notif {
+  background:var(--navy); border-radius:var(--r);
+  padding:20px 24px; margin-bottom:16px;
+  display:flex; align-items:center; gap:16px;
+  border:1px solid rgba(249,115,22,.2);
+  position:relative; overflow:hidden;
+  animation:alertIn .5s var(--ease) both;
+}
+.pay-notif::before { content:''; position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px); background-size:28px 28px; }
+.pay-notif::after { content:''; position:absolute; width:200px;height:200px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-60px;right:-40px; pointer-events:none; }
+.pn-ic { width:50px;height:50px; border-radius:50%; background:rgba(249,115,22,.15); border:1.5px solid rgba(249,115,22,.3); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:22px; flex-shrink:0; position:relative; z-index:1; }
+.pn-body { flex:1; position:relative; z-index:1; }
+.pn-title { font-family:var(--fH); font-size:16px; font-weight:800; color:#fff; margin-bottom:4px; }
+.pn-amount { font-family:var(--fH); font-size:22px; font-weight:900; color:var(--orange); letter-spacing:-1px; }
+.pn-meta { font-size:12px; color:rgba(255,255,255,.45); margin-top:3px; }
+.btn-notif-ok { position:relative; z-index:1; display:inline-flex; align-items:center; gap:6px; padding:9px 20px; background:var(--orange); color:#fff; border:none; border-radius:30px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; }
+.btn-notif-ok:hover { background:var(--orange-dk); }
+
+/* ── STATUS CONTROLS ── */
+.status-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:22px 24px; margin-bottom:20px; box-shadow:0 2px 10px rgba(15,32,64,.04); }
+.sc-head { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.sc-head i { color:var(--orange); }
+.status-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.status-box { background:var(--light); border:1px solid var(--border); border-radius:12px; padding:18px; }
+.sb-top { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.sb-avail-dot { width:44px;height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.dot-on  { background:#dcfce7; color:#16a34a; }
+.dot-off { background:#fee2e2; color:#dc2626; }
+.sb-label { font-family:var(--fH); font-size:14px; font-weight:800; color:var(--navy); }
+.sb-status-text { font-size:12px; font-weight:600; margin-top:2px; }
+.txt-on  { color:#16a34a; }
+.txt-off { color:#dc2626; }
+.txt-orange { color:var(--orange); }
+.btn-toggle { width:100%; padding:11px; border:none; border-radius:9px; font-family:var(--fH); font-size:14px; font-weight:800; cursor:pointer; transition:all .25s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-toggle.go-offline { background:#fee2e2; color:#dc2626; }
+.btn-toggle.go-offline:hover { background:#ef4444; color:#fff; }
+.btn-toggle.go-online  { background:#dcfce7; color:#16a34a; }
+.btn-toggle.go-online:hover  { background:#16a34a; color:#fff; }
+.status-select-row { display:flex; gap:10px; align-items:center; }
+select.status-sel {
+  flex:1; padding:10px 12px; border:1.5px solid var(--border); border-radius:9px;
+  font-size:13px; font-family:var(--fB); color:var(--navy); background:var(--white);
+  outline:none; appearance:none; -webkit-appearance:none; cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 10px center; padding-right:28px;
+  transition:all .2s;
+}
+select.status-sel:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.btn-update-status { padding:10px 18px; background:var(--orange); color:#fff; border:none; border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; }
+.btn-update-status:hover { background:var(--orange-dk); }
+
+/* ── STATS ── */
+.stats-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:20px; }
+.status-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+.stat-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:18px 14px; text-align:center; transition:all .3s var(--ease); position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--orange); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease); }
+.stat-card:hover { transform:translateY(-4px); box-shadow:0 14px 36px rgba(249,115,22,.1); }
+.stat-card:hover::before { transform:scaleX(1); }
+.stat-ic { width:38px;height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; margin:0 auto 10px; }
+.si-o { background:var(--orange-lt); color:var(--orange); }
+.si-a { background:#fef9c3; color:#ca8a04; }
+.si-b { background:#dbeafe; color:#1d4ed8; }
+.si-g { background:#dcfce7; color:#16a34a; }
+.si-gg{ background:#d1fae5; color:#059669; }
+.si-m { background:#ede9fe; color:#7c3aed; }
+.stat-val { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-1px; color:var(--navy); }
+.stat-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* ── PROFILE CARD ── */
+.profile-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:20px; box-shadow:0 2px 10px rgba(15,32,64,.04); }
+.pc-head { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
+.pc-title { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); display:flex; align-items:center; gap:8px; }
+.pc-title i { color:var(--orange); }
+.btn-edit { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; background:var(--orange-lt); border:1px solid rgba(249,115,22,.25); border-radius:30px; color:var(--orange); font-family:var(--fH); font-size:12px; font-weight:800; transition:all .22s; }
+.btn-edit:hover { background:var(--orange); color:#fff; border-color:var(--orange); }
+.profile-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0; }
+.profile-section { padding:20px 22px; border-right:1px solid var(--border); }
+.profile-section:last-child { border-right:none; }
+.ps-title { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--orange); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+.ps-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.info-row { padding:8px 0; border-bottom:1px dashed var(--border); }
+.info-row:last-child { border-bottom:none; }
+.info-lbl { font-size:11px; color:#94a3b8; margin-bottom:3px; font-weight:500; }
+.info-val { font-size:13px; font-weight:700; color:var(--navy); }
+
+/* availability status badges */
+.badge-av { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+.ba-avail  { background:#dcfce7; color:#166534; }
+.ba-busy   { background:var(--orange-lt); color:var(--orange-dk); border:1px solid rgba(249,115,22,.2); }
+.ba-leave  { background:#fee2e2; color:#991b1b; }
+
+/* rating stars */
+.stars { color:#f59e0b; letter-spacing:1px; }
+
+/* ── BANK DETAILS ── */
+.bank-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:20px; box-shadow:0 2px 10px rgba(15,32,64,.04); }
+.bank-card-head { display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
+.bank-title { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); display:flex; align-items:center; gap:8px; }
+.bank-title i { color:var(--orange); }
+.btn-update-bank { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; background:var(--navy); color:#fff; border:none; border-radius:30px; font-family:var(--fH); font-size:12px; font-weight:800; cursor:pointer; transition:all .22s; }
+.btn-update-bank:hover { background:var(--navy2); }
+.bank-display { padding:20px 24px; }
+.bank-grid-4 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.bank-item { background:var(--light); border:1px solid var(--border); border-radius:10px; padding:12px 14px; transition:all .2s; }
+.bank-item:hover { border-color:rgba(249,115,22,.25); background:var(--orange-lt); }
+.bi-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-bottom:4px; }
+.bi-val { font-family:var(--fH); font-size:14px; font-weight:800; color:var(--navy); }
+.no-bank-msg { text-align:center; padding:24px; color:#ef4444; font-size:14px; font-weight:500; }
+/* bank form */
+.bank-form-wrap { display:none; padding:20px 24px; background:var(--light); border-top:1px solid var(--border); }
+.bank-form-wrap.show { display:block; }
+.bank-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.fg { margin-bottom:0; }
+.fg label { display:block; margin-bottom:5px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--navy); }
+.fg input, .fg select {
+  width:100%; padding:10px 13px; border:1.5px solid var(--border); border-radius:9px;
+  font-size:13px; font-family:var(--fB); color:var(--navy);
+  background:var(--white); outline:none; transition:all .22s; appearance:none; -webkit-appearance:none;
+}
+.fg input:focus, .fg select:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.fg input::placeholder { color:#94a3b8; }
+.fg select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:28px; cursor:pointer; }
+.bank-form-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:16px; }
+.btn-save-bank { padding:10px 24px; background:var(--orange); color:#fff; border:none; border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; }
+.btn-save-bank:hover { background:var(--orange-dk); }
+.btn-cancel-bank { padding:10px 18px; background:var(--light2); color:var(--muted); border:1.5px solid var(--border); border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:700; cursor:pointer; transition:all .25s; }
+.btn-cancel-bank:hover { border-color:var(--orange); color:var(--orange); }
+
+/* ── DOCUMENTS ── */
+.docs-section { padding:18px 24px; border-top:1px solid var(--border); }
+.docs-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--orange); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+.docs-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.docs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.doc-tile { background:var(--light); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; transition:all .2s; }
+.doc-tile:hover { border-color:rgba(249,115,22,.3); transform:translateY(-2px); }
+.doc-ic { font-size:22px; color:var(--navy2); margin-bottom:7px; }
+.doc-name { font-size:12px; color:var(--navy); font-weight:600; margin-bottom:6px; }
+.doc-link { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--orange); font-weight:700; transition:color .2s; }
+.doc-link:hover { color:var(--orange-dk); }
+
+/* ── JOBS SECTION ── */
+.jobs-section { margin-top:8px; }
+.jobs-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+.jobs-title { font-family:var(--fH); font-size:20px; font-weight:900; letter-spacing:-.5px; color:var(--navy); display:flex; align-items:center; gap:10px; }
+.jobs-title i { color:var(--orange); }
+.jobs-count { display:inline-flex; align-items:center; justify-content:center; background:var(--orange); color:#fff; border-radius:20px; padding:3px 12px; font-family:var(--fH); font-size:12px; font-weight:800; }
+.filter-row { display:flex; gap:6px; flex-wrap:wrap; }
+.filter-btn { padding:7px 14px; border:1.5px solid var(--border); background:var(--light); color:var(--muted); border-radius:30px; font-size:12px; font-weight:700; cursor:pointer; transition:all .22s; font-family:var(--fH); }
+.filter-btn:hover { border-color:rgba(249,115,22,.4); background:var(--orange-lt); color:var(--navy); }
+.filter-btn.active { background:var(--orange); border-color:var(--orange); color:#fff; }
+
+/* jobs grid */
+.jobs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(460px,1fr)); gap:18px; }
+
+/* ── JOB CARD ── */
+.job-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); overflow:hidden;
+  box-shadow:0 2px 12px rgba(15,32,64,.05);
+  transition:all .3s var(--ease);
+}
+.job-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(15,32,64,.1); }
+
+/* status top bar */
+.job-status-bar { height:4px; }
+.bar-assigned  { background:#3b82f6; }
+.bar-progress  { background:var(--orange); }
+.bar-completed { background:#22c55e; }
+.bar-pending   { background:#94a3b8; }
+
+.job-card-body { padding:22px; }
+.job-card-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+.jch-left { display:flex; align-items:center; gap:12px; }
+.job-svc-icon { width:54px;height:54px; background:var(--navy); border-radius:14px; display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:24px; flex-shrink:0; }
+.job-svc-name { font-family:var(--fH); font-size:18px; font-weight:800; color:var(--navy); letter-spacing:-.3px; }
+.job-category { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* status badges */
+.job-badge { display:inline-flex; align-items:center; gap:5px; padding:5px 13px; border-radius:20px; font-size:11px; font-weight:700; }
+.jb-assigned  { background:#dbeafe; color:#1e40af; }
+.jb-progress  { background:var(--orange-lt); color:var(--orange-dk); border:1px solid rgba(249,115,22,.2); }
+.jb-completed { background:#dcfce7; color:#166534; }
+.jb-pending   { background:var(--light2); color:#64748b; }
+
+/* customer info block */
+.cust-block { background:var(--light); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:14px; }
+.cust-block-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--orange); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.cust-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.cust-item { display:flex; align-items:flex-start; gap:7px; font-size:12px; color:var(--muted); }
+.cust-item i { color:var(--orange); font-size:11px; margin-top:2px; flex-shrink:0; }
+.cust-item span { color:var(--navy); font-weight:600; }
+.cust-note { background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px 12px; margin-top:10px; font-size:12px; color:#92400e; }
+
+/* job meta row */
+.job-meta-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.jm-box { background:var(--light); border:1px solid var(--border); border-radius:9px; padding:10px 13px; text-align:center; }
+.jm-lbl { font-size:10px; color:#94a3b8; margin-bottom:3px; }
+.jm-val { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); }
+.jm-val.green { color:#16a34a; }
+
+/* issue image */
+.issue-img-wrap { margin-bottom:14px; }
+.issue-img-lbl { font-size:11px; color:var(--muted); margin-bottom:6px; display:flex; align-items:center; gap:5px; }
+.issue-img-lbl i { color:var(--orange); }
+.issue-img { width:100%; max-height:180px; object-fit:cover; border-radius:10px; border:1px solid var(--border); }
+
+/* action buttons */
+.job-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.ja-btn { flex:1; padding:11px 14px; border:none; border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; display:flex; align-items:center; justify-content:center; gap:6px; }
+.ja-btn:hover { transform:translateY(-1px); }
+.ja-start    { background:var(--orange); color:#fff; box-shadow:0 3px 12px rgba(249,115,22,.25); }
+.ja-start:hover { background:var(--orange-dk); box-shadow:0 8px 20px rgba(249,115,22,.4); }
+.ja-complete { background:#16a34a; color:#fff; box-shadow:0 3px 12px rgba(22,163,74,.2); }
+.ja-complete:hover { background:#15803d; box-shadow:0 8px 20px rgba(22,163,74,.35); }
+.ja-reject   { background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+.ja-reject:hover { background:#ef4444; color:#fff; border-color:#ef4444; }
+
+/* cash collection */
+.cash-pending {
+  background:#fff7ed; border:2px solid var(--orange);
+  border-radius:12px; padding:18px; margin:14px 0;
+}
+.cash-pending-head { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.cash-pending-ic { width:48px;height:48px; background:var(--orange); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; flex-shrink:0; }
+.cash-pending-title { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); }
+.cash-pending-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+.cash-btns { display:flex; gap:10px; }
+.btn-cash-yes { flex:2; padding:12px; background:#16a34a; color:#fff; border:none; border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; display:flex; align-items:center; justify-content:center; gap:6px; }
+.btn-cash-yes:hover { background:#15803d; }
+.btn-cash-no  { flex:1; padding:12px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; }
+.btn-cash-no:hover { background:#ef4444; color:#fff; border-color:#ef4444; }
+
+.cash-done { background:#f0fdf4; border:2px solid #22c55e; border-radius:12px; padding:16px; margin:14px 0; display:flex; align-items:center; gap:12px; }
+.cash-done-ic { width:44px;height:44px; background:#22c55e; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; flex-shrink:0; }
+.cash-done-title { font-family:var(--fH); font-size:14px; font-weight:800; color:#15803d; }
+.cash-done-meta  { font-size:12px; color:#16a34a; margin-top:2px; }
+
+/* empty state */
+.empty-jobs { text-align:center; padding:60px 20px; background:var(--white); border:1px solid var(--border); border-radius:var(--r); }
+.empty-jobs-ic { width:72px;height:72px; background:var(--light2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--muted); margin:0 auto 16px; }
+.empty-jobs-title { font-family:var(--fH); font-size:18px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+.empty-jobs-sub { font-size:14px; color:var(--muted); }
+
+/* ── MODALS ── */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; z-index:1000; padding:20px; }
+.modal-overlay.show { display:flex; }
+.modal-box { background:var(--white); border-radius:20px; padding:32px; max-width:420px; width:100%; animation:modalIn .3s var(--ease); }
+@keyframes modalIn { from{transform:translateY(-30px);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-title { font-family:var(--fH); font-size:18px; font-weight:800; color:var(--navy); margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+.modal-title.red { color:#dc2626; }
+.modal-title i { color:var(--orange); }
+.modal-sub { font-size:13px; color:var(--muted); margin-bottom:18px; }
+.modal-fg { margin-bottom:14px; }
+.modal-fg label { display:block; margin-bottom:5px; font-size:12px; font-weight:700; color:var(--navy); }
+.modal-select, .modal-textarea {
+  width:100%; padding:10px 13px; border:1.5px solid var(--border); border-radius:9px;
+  font-size:13px; font-family:var(--fB); color:var(--navy);
+  background:var(--light); outline:none; transition:all .22s; appearance:none; -webkit-appearance:none;
+}
+.modal-select:focus, .modal-textarea:focus { border-color:var(--orange); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.modal-textarea { resize:vertical; min-height:80px; }
+.modal-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:28px; cursor:pointer; }
+.modal-actions { display:flex; gap:10px; margin-top:20px; }
+.btn-modal-confirm { flex:2; padding:11px; background:#ef4444; color:#fff; border:none; border-radius:9px; font-family:var(--fH); font-size:14px; font-weight:800; cursor:pointer; transition:all .25s; }
+.btn-modal-confirm:hover { background:#dc2626; }
+.btn-modal-cancel  { flex:1; padding:11px; background:var(--light2); color:var(--muted); border:1.5px solid var(--border); border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:700; cursor:pointer; transition:all .25s; }
+.btn-modal-cancel:hover { border-color:var(--orange); color:var(--orange); }
+
+
+/* ── NOTIFICATION ITEMS ── */
+.notif-item { padding:14px 18px; border-bottom:1px solid var(--light2); display:flex; gap:12px; align-items:flex-start; background:var(--white); }
+.notif-item.notif-unread { background:var(--orange-lt); }
+.notif-icon { width:36px; height:36px; border-radius:50%; background:var(--light2); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:14px; flex-shrink:0; }
+.notif-icon.notif-icon-unread { background:var(--orange); color:#fff; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1200px) { .stats-grid{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:1024px) {
+  .sidebar { width:68px; }
+  .sb-logo-text,.nav-item span,.sb-sec,.sb-footer .sb-uname,.sb-footer .sb-urole { display:none; }
+  .nav-item { justify-content:center; padding:13px; }
+  .sb-head { padding:16px 14px; }
+  .main { margin-left:68px; }
+  .profile-grid { grid-template-columns:1fr; }
+  .bank-grid-4 { grid-template-columns:1fr 1fr; }
+  .status-row { grid-template-columns:1fr; }
+}
+@media(max-width:768px) {
+  .sidebar { display:none; }
+  .main { margin-left:0; padding:20px 16px 48px; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  .jobs-grid { grid-template-columns:1fr; }
+  .cust-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="sb-head">
+      <a href="{% url 'worker_dashboard' %}" class="sb-logo">
+        <div class="sb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+        <div class="sb-logo-text">Fix<em>zy</em></div>
+      </a>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Main</div>
+      <a href="{% url 'worker_dashboard' %}" class="nav-item active"><i class="fas fa-house"></i><span>Dashboard</span></a>
+      <a href="{% url 'worker_my_jobs' %}" class="nav-item"><i class="fas fa-briefcase"></i><span>My Jobs</span></a>
+      <a href="{% url 'worker_job_history' %}" class="nav-item"><i class="fas fa-clock-rotate-left"></i><span>History</span></a>
+      <hr class="nav-divider">
+      <div class="sb-sec">Account</div>
+      <a href="{% url 'edit_worker_profile' %}" class="nav-item"><i class="fas fa-user-pen"></i><span>Edit Profile</span></a>
+      <a href="{% url 'logout' %}" class="nav-item logout"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar">{{ request.user.first_name|slice:":1"|upper|default:request.user.username|slice:":1"|upper }}</div>
+        <div>
+          <div class="sb-uname">{{ request.user.username }}</div>
+          <div class="sb-urole">{% if profile %}{{ profile.get_service_type_display }}{% else %}Worker{% endif %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="tb-left">
+        <div class="tb-icon"><i class="fas fa-gauge-high"></i></div>
+        <div>
+          <div class="tb-title">Worker Dashboard</div>
+          <div class="tb-sub">Manage your jobs, profile and earnings</div>
+        </div>
+      </div>
+      <!-- ✅ Right side — bell + user chip -->
+      <div style="display:flex;align-items:center;gap:12px;margin-left:auto;">
+      <div style="position:relative;">
+        <button onclick="toggleNotifPanel()" style="width:40px;height:40px;border-radius:50%;background:var(--light);border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:16px;position:relative;transition:all .22s;"
+          onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--navy)'">
+          <i class="fas fa-bell"></i>
+          {% if notif_count > 0 %}
+          <span id="notifBadge" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--orange);color:#fff;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--fH);">{{ notif_count }}</span>
+          {% endif %}
+        </button>
+        <!-- Notification Dropdown Panel -->
+        <div id="notifPanel" style="display:none;position:absolute;top:48px;right:0;width:320px;background:var(--white);border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 40px rgba(15,32,64,.15);z-index:500;overflow:hidden;">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:var(--fH);font-size:14px;font-weight:800;color:var(--navy);">Notifications</span>
+            {% if notif_count > 0 %}
+            <button onclick="markAllRead()" style="font-size:11px;color:var(--orange);background:none;border:none;cursor:pointer;font-weight:700;">Mark all read</button>
+            {% endif %}
+          </div>
+          <div style="max-height:320px;overflow-y:auto;">
+            {% for notif in notifications %}
+            <div class="notif-item {% if not notif.is_read %}notif-unread{% endif %}" id="notif-{{ notif.id }}">
+              <div class="notif-icon {% if not notif.is_read %}notif-icon-unread{% endif %}">
+                <i class="fas {% if notif.notif_type == 'job_assigned' %}fa-briefcase{% elif notif.notif_type == 'payment_sent' %}fa-indian-rupee-sign{% else %}fa-bell{% endif %}"></i>
+              </div>
+              <div style="flex:1;">
+                <div style="font-family:var(--fH);font-size:13px;font-weight:800;color:var(--navy);margin-bottom:3px;">{{ notif.title }}</div>
+                <div style="font-size:12px;color:var(--muted);line-height:1.5;">{{ notif.message }}</div>
+                <div style="font-size:10px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;justify-content:space-between;">
+                  <span>{{ notif.created_at|timesince }} ago</span>
+                  {% if not notif.is_read %}
+                  <button onclick="markOneSeen('{{ notif.id }}', document.getElementById('notif-{{ notif.id }}'))"
+                    style="padding:2px 10px;background:var(--orange);color:#fff;border:none;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--fH);">
+                    Mark read
+                  </button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;">
+              <i class="fas fa-bell-slash" style="font-size:24px;color:#cbd5e1;display:block;margin-bottom:8px;"></i>
+              No new notifications
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="user-chip">
+        <div class="uc-av"><i class="fas fa-user-tie"></i></div>
+        <div>
+          <div class="uc-name">{{ request.user.username }}</div>
+          <div class="uc-role">{% if profile %}{{ profile.get_service_type_display }}{% else %}Worker{% endif %}</div>
+        </div>
+      </div>
+      </div><!-- /tb-right wrapper -->
+    </div><!-- /topbar -->
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        <i class="fas {% if 'success' in message.tags %}fa-circle-check{% elif 'error' in message.tags %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Verification card -->
+    {% if profile %}
+      {% if profile.verified %}
+      <div class="verify-card verified">
+        <div class="vc-left">
+          <div class="vc-ic v"><i class="fas fa-circle-check"></i></div>
+          <div>
+            <div class="vc-title">Verified Worker</div>
+            <div class="vc-msg">Your profile has been verified. You can now receive job assignments.</div>
+          </div>
+        </div>
+        <span class="vc-badge ok"><i class="fas fa-check"></i> Verified</span>
+      </div>
+      {% else %}
+      <div class="verify-card unverified">
+        <div class="vc-left">
+          <div class="vc-ic u"><i class="fas fa-clock"></i></div>
+          <div>
+            <div class="vc-title">Verification Pending</div>
+            <div class="vc-msg">Your profile is awaiting admin verification. You'll receive jobs once verified.{% if not profile.job_rate or profile.job_rate == 0 %} Admin needs to set your job rate first.{% endif %}</div>
+          </div>
+        </div>
+        <span class="vc-badge pending"><i class="fas fa-clock"></i> Pending</span>
+      </div>
+      {% endif %}
+    {% else %}
+    <div class="verify-card incomplete">
+      <div class="vc-left">
+        <div class="vc-ic i"><i class="fas fa-triangle-exclamation"></i></div>
+        <div>
+          <div class="vc-title">Profile Incomplete</div>
+          <div class="vc-msg">Please complete your worker profile to start receiving jobs.</div>
+        </div>
+      </div>
+      <a href="{% url 'edit_worker_profile' %}" class="btn-complete-profile"><i class="fas fa-pen"></i> Complete Profile</a>
+    </div>
+    {% endif %}
+
+    <!-- Payment notifications -->
+    {% if payments_notifications %}
+    <div style="margin-bottom:16px;">
+      {% for payment in payments_notifications %}
+      <div class="pay-notif">
+        <div class="pn-ic"><i class="fas fa-money-bill-wave"></i></div>
+        <div class="pn-body">
+          <div class="pn-title">Payment Received! 🎉</div>
+          <div class="pn-amount">₹{{ payment.net_amount }}</div>
+          <div class="pn-meta"><i class="fas fa-calendar"></i> {{ payment.payment_date|date:"d M Y, h:i A" }}{% if payment.transaction_id %} · {{ payment.transaction_id }}{% endif %}</div>
+        </div>
+        <button class="btn-notif-ok" onclick="markPaymentAsSeen('{{ payment.id }}')">
+          <i class="fas fa-check"></i> OK
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Status controls -->
+    <div class="status-card">
+      <div class="sc-head"><i class="fas fa-toggle-on"></i> Status Controls</div>
+      <div class="status-row">
+        <!-- Availability -->
+        <div class="status-box">
+          <div class="sb-top">
+            <div class="sb-avail-dot {% if profile.available %}dot-on{% else %}dot-off{% endif %}">
+              <i class="fas {% if profile.available %}fa-check{% else %}fa-times{% endif %}"></i>
+            </div>
+            <div>
+              <div class="sb-label">Availability</div>
+              <div class="sb-status-text {% if profile.available %}txt-on{% else %}txt-off{% endif %}">
+                {% if profile.available %}🟢 Available for Work{% else %}🔴 Not Available{% endif %}
+              </div>
+            </div>
+          </div>
+          <form method="POST" action="{% url 'toggle_availability' %}" id="availForm">
+            {% csrf_token %}
+            <button type="submit" class="btn-toggle {% if profile.available %}go-offline{% else %}go-online{% endif %}">
+              <i class="fas {% if profile.available %}fa-toggle-off{% else %}fa-toggle-on{% endif %}"></i>
+              {% if profile.available %}Go Offline{% else %}Go Online{% endif %}
+            </button>
+          </form>
+        </div>
+
+         <!-- ✅ Location sharing toggle button — add to status controls section -->
+      <div class="status-box" id="locationBox">
+  <div class="sb-top">
+    <div class="sb-avail-dot" id="locDot" style="background:var(--light2);color:var(--muted);">
+      <i class="fas fa-location-dot"></i>
+    </div>
+    <div>
+      <div class="sb-label">Location Sharing</div>
+      <div class="sb-status-text" id="locStatus" style="color:var(--muted);">Off</div>
+    </div>
+  </div>
+  <button onclick="toggleLocationSharing()" id="locBtn"
+    class="btn-toggle go-online">
+    <i class="fas fa-location-dot"></i> Share Location
+  </button>
+</div>
+        <!-- Work status -->
+        <div class="status-box">
+          <div class="sb-top">
+            <div class="sb-avail-dot dot-on" style="background:var(--orange-lt);color:var(--orange);">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div>
+              <div class="sb-label">Work Status</div>
+              <div class="sb-status-text txt-orange">{{ profile.get_availability_status_display }}</div>
+            </div>
+          </div>
+          <form method="POST" action="{% url 'update_worker_status' %}" id="statusForm">
+            {% csrf_token %}
+            <div class="status-select-row">
+              <select name="status" class="status-sel">
+                <option value="available" {% if profile.availability_status == 'available' %}selected{% endif %}>🟢 Available</option>
+                <option value="busy"      {% if profile.availability_status == 'busy' %}selected{% endif %}>🟡 Busy</option>
+                <option value="on_leave"  {% if profile.availability_status == 'on_leave' %}selected{% endif %}>🔴 On Leave</option>
+                <option value="vacation"  {% if profile.availability_status == 'vacation' %}selected{% endif %}>🌴 Vacation</option>
+              </select>
+              <button type="submit" class="btn-update-status"><i class="fas fa-save"></i> Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-ic si-o"><i class="fas fa-briefcase"></i></div><div class="stat-val">{{ total_jobs|default:"0" }}</div><div class="stat-lbl">Total Jobs</div></div>
+      <div class="stat-card"><div class="stat-ic si-a"><i class="fas fa-clock"></i></div><div class="stat-val">{{ pending_jobs|default:"0" }}</div><div class="stat-lbl">Pending</div></div>
+      <div class="stat-card"><div class="stat-ic si-b"><i class="fas fa-play-circle"></i></div><div class="stat-val">{{ in_progress_jobs|default:"0" }}</div><div class="stat-lbl">In Progress</div></div>
+      <div class="stat-card"><div class="stat-ic si-g"><i class="fas fa-circle-check"></i></div><div class="stat-val">{{ completed_jobs|default:"0" }}</div><div class="stat-lbl">Completed</div></div>
+      <div class="stat-card"><div class="stat-ic si-gg"><i class="fas fa-check-double"></i></div><div class="stat-val">{{ profile.completed_jobs_count|default:"0" }}</div><div class="stat-lbl">All Time Done</div></div>
+      <div class="stat-card"><div class="stat-ic si-m"><i class="fas fa-indian-rupee-sign"></i></div><div class="stat-val">₹{{ total_earnings|default:"0" }}</div><div class="stat-lbl">Earnings</div></div>
+    </div>
+
+    <!-- Profile card -->
+    {% if profile %}
+    <div class="profile-card">
+      <div class="pc-head">
+        <div class="pc-title"><i class="fas fa-id-card"></i> My Profile Details</div>
+        <a href="{% url 'edit_worker_profile' %}" class="btn-edit"><i class="fas fa-pen"></i> Edit Profile</a>
+      </div>
+      <div class="profile-grid">
+        <!-- Basic info -->
+        <div class="profile-section">
+          <div class="ps-title"><i class="fas fa-user"></i> Basic Info</div>
+          <div class="info-row"><div class="info-lbl">Service Type</div><div class="info-val">{{ profile.get_service_type_display }}</div></div>
+          <div class="info-row"><div class="info-lbl">Experience</div><div class="info-val">{{ profile.experience }} years</div></div>
+          <div class="info-row"><div class="info-lbl">Skills</div><div class="info-val">{{ profile.skills|default:"Not specified" }}</div></div>
+          <div class="info-row"><div class="info-lbl">Service Area</div><div class="info-val">{{ profile.service_area|default:"Not specified" }}</div></div>
+          <div class="info-row"><div class="info-lbl">Pincodes</div><div class="info-val">{{ profile.pincodes|default:"All areas" }}</div></div>
+        </div>
+        <!-- Work status -->
+        <div class="profile-section">
+          <div class="ps-title"><i class="fas fa-chart-line"></i> Work Status</div>
+          <div class="info-row">
+            <div class="info-lbl">Availability</div>
+            <div class="info-val">
+              {% if profile.available %}
+                <span class="badge-av ba-avail"><i class="fas fa-circle" style="font-size:7px;"></i> Available</span>
+              {% else %}
+                <span class="badge-av ba-leave"><i class="fas fa-circle" style="font-size:7px;"></i> Offline</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-lbl">Work Status</div>
+            <div class="info-val">
+              {% if profile.availability_status == 'available' %}<span class="badge-av ba-avail">🟢 Available</span>
+              {% elif profile.availability_status == 'busy' %}<span class="badge-av ba-busy">🟡 Busy</span>
+              {% elif profile.availability_status == 'on_leave' %}<span class="badge-av ba-leave">🔴 On Leave</span>
+              {% else %}<span class="badge-av ba-leave">🌴 Vacation</span>{% endif %}
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-lbl">Daily Capacity</div>
+            <div class="info-val"><strong>{{ profile.max_jobs_per_day }}</strong> jobs/day</div>
+          </div>
+          <div class="info-row">
+            <div class="info-lbl">Today's Jobs</div>
+            <div class="info-val">
+              {{ profile.jobs_today|default:"0" }}/{{ profile.max_jobs_per_day }} used
+              {% if profile.slots_remaining_today > 0 %}
+                <span style="color:#16a34a;font-size:11px;"> — {{ profile.slots_remaining_today }} slot{{ profile.slots_remaining_today|pluralize }} left</span>
+              {% else %}
+                <span style="color:#ef4444;font-size:11px;"> — Full today</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-lbl">Resets</div>
+            <div class="info-val" style="color:var(--muted);font-size:12px;">Every day at midnight</div>
+          </div>
+        </div>
+        <!-- Financial -->
+        <div class="profile-section">
+          <div class="ps-title"><i class="fas fa-indian-rupee-sign"></i> Financial & Ratings</div>
+          <div class="info-row">
+            <div class="info-lbl">Job Rate</div>
+            <div class="info-val">{% if profile.job_rate and profile.job_rate > 0 %}<span style="color:#16a34a;font-weight:800;">₹{{ profile.job_rate }}/job</span>{% else %}<span style="color:#ef4444;">Not set by admin</span>{% endif %}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-lbl">Fixed Rate</div>
+            <div class="info-val">{% if profile.fixed_rate and profile.fixed_rate > 0 %}₹{{ profile.fixed_rate }}/job{% else %}<span style="color:#94a3b8;">Not set</span>{% endif %}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-lbl">Completed Jobs</div>
+            <div class="info-val">{{ profile.completed_jobs_count }}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-lbl">Average Rating</div>
+            <div class="info-val">
+              <span class="stars">
+                {% with r=profile.average_rating|floatformat:0 %}
+                  {% if r == '5' %}★★★★★{% elif r == '4' %}★★★★☆{% elif r == '3' %}★★★☆☆{% elif r == '2' %}★★☆☆☆{% elif r == '1' %}★☆☆☆☆{% else %}☆☆☆☆☆{% endif %}
+                {% endwith %}
+              </span>
+              ({{ profile.total_ratings }})
+            </div>
+          </div>
+          <div class="info-row"><div class="info-lbl">Member Since</div><div class="info-val">{{ profile.created_at|date:"d M Y" }}</div></div>
+        </div>
+      </div>
+
+      <!-- Documents -->
+      {% if profile.id_proof or profile.address_proof or profile.certificate %}
+      <div class="docs-section">
+        <div class="docs-title"><i class="fas fa-folder-open"></i> Documents</div>
+        <div class="docs-grid">
+          {% if profile.id_proof %}
+          <div class="doc-tile">
+            <div class="doc-ic"><i class="fas fa-id-card"></i></div>
+            <div class="doc-name">ID Proof</div>
+            <a href="{{ profile.id_proof.url }}" class="doc-link" target="_blank"><i class="fas fa-eye"></i> View</a>
+          </div>
+          {% endif %}
+          {% if profile.address_proof %}
+          <div class="doc-tile">
+            <div class="doc-ic"><i class="fas fa-house"></i></div>
+            <div class="doc-name">Address Proof</div>
+            <a href="{{ profile.address_proof.url }}" class="doc-link" target="_blank"><i class="fas fa-eye"></i> View</a>
+          </div>
+          {% endif %}
+          {% if profile.certificate %}
+          <div class="doc-tile">
+            <div class="doc-ic"><i class="fas fa-certificate"></i></div>
+            <div class="doc-name">Certificate</div>
+            <a href="{{ profile.certificate.url }}" class="doc-link" target="_blank"><i class="fas fa-eye"></i> View</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Bank details card -->
+    <div class="bank-card">
+      <div class="bank-card-head">
+        <div class="bank-title"><i class="fas fa-building-columns"></i> Payment Details</div>
+        <button class="btn-update-bank" onclick="toggleBankForm()"><i class="fas fa-pen"></i> Update Bank Details</button>
+      </div>
+      <div class="bank-display" id="bankDisplay">
+        {% if profile.account_holder_name %}
+        <div class="bank-grid-4">
+          <div class="bank-item"><div class="bi-lbl">Account Holder</div><div class="bi-val">{{ profile.account_holder_name }}</div></div>
+          <div class="bank-item"><div class="bi-lbl">Bank Name</div><div class="bi-val">{{ profile.bank_name|default:"Not provided" }}</div></div>
+          <div class="bank-item"><div class="bi-lbl">Account Number</div><div class="bi-val">{% if profile.account_number %}••••{{ profile.account_number|slice:"-4:" }}{% else %}Not provided{% endif %}</div></div>
+          <div class="bank-item"><div class="bi-lbl">IFSC Code</div><div class="bi-val">{{ profile.ifsc_code|default:"Not provided" }}</div></div>
+          <div class="bank-item"><div class="bi-lbl">UPI ID</div><div class="bi-val">{{ profile.upi_id|default:"Not provided" }}</div></div>
+          <div class="bank-item"><div class="bi-lbl">Payment Method</div><div class="bi-val">{{ profile.get_payment_method_display }}</div></div>
+        </div>
+        {% else %}
+        <div class="no-bank-msg"><i class="fas fa-exclamation-circle"></i> No bank details yet. Click "Update Bank Details" to add your payment info.</div>
+        {% endif %}
+      </div>
+      <div class="bank-form-wrap" id="bankFormWrap">
+        <form method="POST" action="{% url 'update_bank_details' %}">
+          {% csrf_token %}
+          <div class="bank-form-grid">
+            <div class="fg"><label>Account Holder Name</label><input type="text" name="account_holder_name" value="{{ profile.account_holder_name|default:'' }}" placeholder="Full name" required></div>
+            <div class="fg"><label>Bank Name</label><input type="text" name="bank_name" value="{{ profile.bank_name|default:'' }}" placeholder="e.g. HDFC Bank" required></div>
+            <div class="fg"><label>Account Number</label><input type="text" name="account_number" value="{{ profile.account_number|default:'' }}" placeholder="Account number" required></div>
+            <div class="fg"><label>IFSC Code</label><input type="text" name="ifsc_code" value="{{ profile.ifsc_code|default:'' }}" placeholder="e.g. SBIN0001234" required></div>
+            <div class="fg"><label>UPI ID</label><input type="text" name="upi_id" value="{{ profile.upi_id|default:'' }}" placeholder="username@okhdfcbank"></div>
+            <div class="fg"><label>Preferred Payment Method</label>
+              <select name="payment_method" required>
+                <option value="bank" {% if profile.payment_method == 'bank' %}selected{% endif %}>Bank Transfer</option>
+                <option value="upi"  {% if profile.payment_method == 'upi' %}selected{% endif %}>UPI</option>
+                <option value="cash" {% if profile.payment_method == 'cash' %}selected{% endif %}>Cash</option>
+              </select>
+            </div>
+          </div>
+          <div class="bank-form-actions">
+            <button type="button" class="btn-cancel-bank" onclick="toggleBankForm()">Cancel</button>
+            <button type="submit" class="btn-save-bank"><i class="fas fa-floppy-disk"></i> Save Details</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── JOBS ── -->
+    <div class="jobs-section">
+      <div class="jobs-head">
+        <div class="jobs-title">
+          <i class="fas fa-clipboard-list"></i>
+          My Assigned Jobs
+          <span class="jobs-count">{{ jobs|length }}</span>
+        </div>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterJobs('all',this)">All</button>
+          <button class="filter-btn" onclick="filterJobs('assigned',this)">Assigned</button>
+          <button class="filter-btn" onclick="filterJobs('in_progress',this)">In Progress</button>
+          <button class="filter-btn" onclick="filterJobs('completed',this)">Completed</button>
+        </div>
+      </div>
+
+      <div class="jobs-grid" id="jobsGrid">
+        {% for job in jobs %}
+        <div class="job-card" data-status="{{ job.status }}">
+
+          <!-- Status bar -->
+          <div class="job-status-bar
+            {% if job.status == 'assigned' %}bar-assigned
+            {% elif job.status == 'in_progress' %}bar-progress
+            {% elif job.status == 'completed' %}bar-completed
+            {% else %}bar-pending{% endif %}">
+          </div>
+
+          <div class="job-card-body">
+            <!-- Header -->
+            <div class="job-card-head">
+              <div class="jch-left">
+                <div class="job-svc-icon">
+                  <i class="fas {% if job.service.category == 'electrical' %}fa-bolt{% elif job.service.category == 'plumbing' %}fa-wrench{% elif job.service.category == 'carpentry' %}fa-hammer{% elif job.service.category == 'cleaning' %}fa-broom{% elif job.service.category == 'painting' %}fa-paint-roller{% elif job.service.category == 'ac_repair' %}fa-snowflake{% else %}fa-tools{% endif %}"></i>
+                </div>
+                <div>
+                  <div class="job-svc-name">{{ job.service.name }}</div>
+                  <div class="job-category"><i class="fas fa-tag" style="color:var(--orange);font-size:10px;"></i> {{ job.service.get_category_display|default:job.service.name }}</div>
+                </div>
+              </div>
+              {% if job.status == 'assigned' %}
+                <span class="job-badge jb-assigned"><i class="fas fa-user-check"></i> Assigned</span>
+              {% elif job.status == 'in_progress' %}
+                <span class="job-badge jb-progress"><i class="fas fa-spinner fa-spin" style="font-size:10px;"></i> In Progress</span>
+              {% elif job.status == 'completed' %}
+                <span class="job-badge jb-completed"><i class="fas fa-circle-check"></i> Completed</span>
+              {% else %}
+                <span class="job-badge jb-pending"><i class="fas fa-clock"></i> {{ job.get_status_display }}</span>
+              {% endif %}
+            </div>
+
+            <!-- Customer info -->
+            <div class="cust-block">
+              <div class="cust-block-title"><i class="fas fa-user-circle"></i> Customer Information</div>
+              <div class="cust-grid">
+                <div class="cust-item"><i class="fas fa-user"></i><span>{{ job.user.username }}</span></div>
+                <div class="cust-item"><i class="fas fa-phone"></i><span>{{ job.user.phone|default:"Not provided" }}</span></div>
+                <div class="cust-item"><i class="fas fa-envelope"></i><span>{{ job.user.email|default:"Not provided" }}</span></div>
+                <div class="cust-item"><i class="fas fa-location-dot"></i><span>{{ job.address }}</span></div>
+                {% if job.service_area %}
+                <div class="cust-item"><i class="fas fa-building"></i><span>{{ job.service_area }}</span></div>
+                {% endif %}
+                {% if job.preferred_date %}
+                <div class="cust-item"><i class="fas fa-calendar-check"></i><span>{{ job.preferred_date|date:"d M Y" }}{% if job.preferred_time %} at {{ job.preferred_time|time:"h:i A" }}{% endif %}</span></div>
+                {% endif %}
+              </div>
+              {% if job.notes %}
+              <div class="cust-note"><i class="fas fa-sticky-note" style="color:var(--orange);margin-right:6px;"></i>"{{ job.notes }}"</div>
+              {% endif %}
+            </div>
+
+            <!-- Meta row -->
+            <div class="job-meta-row">
+              <div class="jm-box">
+                <div class="jm-lbl">Service Amount</div>
+                <div class="jm-val green">₹{{ job.service.price }}</div>
+              </div>
+              <div class="jm-box">
+                <div class="jm-lbl">Booking Date</div>
+                <div class="jm-val">{{ job.created_at|date:"d M Y" }}</div>
+              </div>
+            </div>
+
+            <!-- Issue image -->
+            {% if job.issue_image %}
+            <div class="issue-img-wrap">
+              <div class="issue-img-lbl"><i class="fas fa-camera"></i> Issue image from customer</div>
+              <img src="{{ job.issue_image.url }}" alt="Issue" class="issue-img">
+            </div>
+            {% endif %}
+
+            <!-- Cash collection -->
+            {% if job.status == 'completed' %}
+              {% if job.safe_payment %}
+                {% if job.safe_payment.payment_method == 'cash' %}
+
+                  {% if job.safe_payment.cash_received %}
+                  <!-- ✅ Cash collected -->
+                  <div class="cash-done">
+                    <div class="cash-done-ic"><i class="fas fa-check"></i></div>
+                    <div>
+                      <div class="cash-done-title">Cash Collected</div>
+                      <div class="cash-done-meta">
+                        ₹{{ job.safe_payment.amount }} received
+                        {% if job.safe_payment.cash_received_date %}
+                          · {{ job.safe_payment.cash_received_date|date:"d M Y, h:i A" }}
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                  {% elif job.safe_payment.cash_rejection_date %}
+                  <!-- ✅ Already rejected — no buttons -->
+                  <div class="cash-done" style="background:#fef2f2;border:1.5px solid #fecaca;">
+                    <div class="cash-done-ic" style="background:#ef4444;">
+                      <i class="fas fa-times"></i>
+                    </div>
+                    <div>
+                      <div class="cash-done-title" style="color:#dc2626;">Cash Rejection Recorded</div>
+                      <div class="cash-done-meta" style="color:#ef4444;">
+                        Reason: {{ job.safe_payment.cash_rejection_reason }}
+                        · {{ job.safe_payment.cash_rejection_date|date:"d M Y, h:i A" }}
+                      </div>
+                    </div>
+                  </div>
+
+                  {% else %}
+                  <!-- ✅ Pending — show collect/reject buttons -->
+                  <div class="cash-pending">
+                    <div class="cash-pending-head">
+                      <div class="cash-pending-ic"><i class="fas fa-exclamation"></i></div>
+                      <div>
+                        <div class="cash-pending-title">Cash Collection Required</div>
+                        <div class="cash-pending-sub">Collect ₹{{ job.service.price }} from {{ job.user.username }}</div>
+                      </div>
+                    </div>
+                    <div class="cash-btns">
+                      <form method="POST" action="{% url 'worker_confirm_cash' job.id %}" style="flex:2;display:flex;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="received">
+                        <button type="submit" class="btn-cash-yes" style="flex:1;">
+                          <i class="fas fa-check-circle"></i> Yes, Collected ₹{{ job.service.price }}
+                        </button>
+                      </form>
+                      <button class="btn-cash-no" onclick="openRejectCashModal('{{ job.id }}','{{ job.safe_payment.id }}')">
+                        <i class="fas fa-times"></i> Not Received
+                      </button>
+                    </div>
+                  </div>
+                  {% endif %}
+
+                {% endif %}
+              {% endif %}
+            {% endif %}
+
+            <!-- Action buttons -->
+            <div class="job-actions">
+              {% if job.status == 'assigned' or job.status == 'pending' %}
+                <form method="POST" action="{% url 'update_job_status' job.id %}" style="flex:2;display:flex;">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="in_progress">
+                  <button type="submit" class="ja-btn ja-start" style="flex:1;">
+                    <i class="fas fa-play"></i> Accept &amp; Start
+                  </button>
+                </form>
+                <button type="button" class="ja-btn ja-reject" onclick="openRejectJobModal('{{ job.id }}')">
+                  <i class="fas fa-times"></i> Reject
+                </button>
+              {% elif job.status == 'in_progress' %}
+                <form method="POST" action="{% url 'update_job_status' job.id %}" style="flex:1;display:flex;">
+                  {% csrf_token %}
+                  <input type="hidden" name="status" value="completed">
+                  <button type="submit" class="ja-btn ja-complete" style="flex:1;">
+                    <i class="fas fa-check-double"></i> Mark Complete
+                  </button>
+                </form>
+              {% elif job.status == 'completed' %}
+                <a href="{% url 'job_details' job.id %}" class="ja-btn" style="background:var(--light2);color:var(--navy);border:1.5px solid var(--border);flex:1;text-align:center;">
+                  <i class="fas fa-eye"></i> View Details
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-jobs" style="grid-column:1/-1;">
+          <div class="empty-jobs-ic"><i class="fas fa-inbox"></i></div>
+          <div class="empty-jobs-title">No Assigned Jobs</div>
+          <div class="empty-jobs-sub">New jobs assigned to you will appear here.</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── REJECT JOB MODAL ── -->
+<div class="modal-overlay" id="rejectJobModal">
+  <div class="modal-box">
+    <div class="modal-title red"><i class="fas fa-times-circle" style="color:#ef4444;"></i> Reject Job</div>
+    <div class="modal-sub">Please select a reason for rejecting this job.</div>
+    <form method="POST" action="{% url 'reject_job' %}" id="rejectJobForm">
+      {% csrf_token %}
+      <input type="hidden" name="job_id" id="rejectJobId">
+      <div class="modal-fg">
+        <label>Reason</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--navy);cursor:pointer;"><input type="radio" name="reason" value="too_busy" checked> Too busy with other jobs</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--navy);cursor:pointer;"><input type="radio" name="reason" value="out_of_area"> Outside my service area</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--navy);cursor:pointer;"><input type="radio" name="reason" value="not_qualified"> Not qualified for this service</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--navy);cursor:pointer;"><input type="radio" name="reason" value="personal"> Personal reason</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--navy);cursor:pointer;"><input type="radio" name="reason" value="other"> Other</label>
+        </div>
+      </div>
+      <div class="modal-fg">
+        <label>Additional Comments (Optional)</label>
+        <textarea name="comments" class="modal-textarea" placeholder="Any additional details…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal('rejectJobModal')">Cancel</button>
+        <button type="submit" class="btn-modal-confirm">Confirm Reject</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── REJECT CASH MODAL ── -->
+<div class="modal-overlay" id="rejectCashModal">
+  <div class="modal-box">
+    <div class="modal-title red"><i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> Cash Not Collected</div>
+    <div class="modal-sub">Why couldn't you collect the cash payment?</div>
+    <form method="POST" action="" id="rejectCashForm">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="rejected">
+      <input type="hidden" name="job_id" id="rejectCashJobId">
+      <input type="hidden" name="payment_id" id="rejectCashPaymentId">
+      <div class="modal-fg">
+        <label>Reason</label>
+        <select name="reason" class="modal-select" required>
+          <option value="">— Select Reason —</option>
+          <option value="Customer refused to pay">Customer refused to pay</option>
+          <option value="Customer not available">Customer not available</option>
+          <option value="Insufficient cash">Customer didn't have enough cash</option>
+          <option value="Wrong amount">Customer disputed the amount</option>
+          <option value="Other">Other reason</option>
+        </select>
+      </div>
+      <div class="modal-fg">
+        <label>Additional Comments</label>
+        <textarea name="comments" class="modal-textarea" placeholder="Optional additional details…"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-cancel" onclick="closeModal('rejectCashModal')">Cancel</button>
+        <button type="submit" class="btn-modal-confirm">Confirm</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Bank form toggle
+function toggleBankForm() {
+  const fw = document.getElementById('bankFormWrap');
+  const bd = document.getElementById('bankDisplay');
+  const showing = fw.classList.contains('show');
+  fw.classList.toggle('show', !showing);
+  bd.style.display = showing ? '' : 'none';
+}
+
+// Filter jobs
+function filterJobs(status, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.job-card').forEach(c => {
+    c.style.display = (status === 'all' || c.dataset.status === status) ? '' : 'none';
+  });
+}
+
+// Modals
+function openRejectJobModal(jobId) {
+  document.getElementById('rejectJobId').value = jobId;
+  document.getElementById('rejectJobModal').classList.add('show');
+}
+function openRejectCashModal(jobId, paymentId) {
+  document.getElementById('rejectCashJobId').value = jobId;
+  document.getElementById('rejectCashPaymentId').value = paymentId;
+  // ✅ Set the correct form action URL with job ID
+  const workerConfirmUrl = '/payments/worker/confirm-cash/' + jobId + '/';
+  document.getElementById('rejectCashForm').action = workerConfirmUrl;
+  document.getElementById('rejectCashModal').classList.add('show');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// Notification panel toggle
+function toggleNotifPanel() {
+  const panel = document.getElementById('notifPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+// Close on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+});
+
+// Close notification panel when clicking outside
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('notifPanel');
+  const bell = document.querySelector('.fa-bell').parentElement;
+  if (panel && panel.style.display === 'block' && !bell.contains(e.target) && !panel.contains(e.target)) {
+    panel.style.display = 'none';
+  }
+});
+
+// ✅ Mark ALL notifications as read
+function markAllRead() {
+  fetch('/workers/notifications/mark-read/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      location.reload();
+    } else {
+      console.error('Mark read failed:', d);
+    }
+  })
+  .catch(e => console.error('Mark read error:', e));
+}
+
+// ✅ Mark ONE notification as read
+function markOneSeen(notifId, el) {
+  fetch('/workers/notifications/mark-read/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ notif_id: notifId })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      // fade out and remove the notification item
+      el.style.transition = 'opacity .3s';
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.remove();
+        // update badge count
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+          const count = parseInt(badge.textContent) - 1;
+          if (count <= 0) badge.remove();
+          else badge.textContent = count;
+        }
+      }, 300);
+    }
+  })
+  .catch(e => console.error('Mark one error:', e));
+}
+
+// Payment notification dismiss
+function markPaymentAsSeen(paymentId) {
+  fetch('/payments/mark-payment-seen/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+    body: JSON.stringify({ payment_id: paymentId })
+  }).then(r => r.json()).then(d => { if (d.success) location.reload(); });
+}
+
+// AJAX status forms
+function ajaxForm(formId, errorMsg) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch(form.action, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value, 'Content-Type': 'application/json' },
+      body: formId === 'statusForm' ? JSON.stringify({ status: form.querySelector('select').value }) : '{}'
+    }).then(r => r.json()).then(d => {
+      if (d.success) location.reload();
+      else alert(errorMsg || 'Error updating. Please try again.');
+    }).catch(() => alert('Request failed.'));
+  });
+}
+ajaxForm('availForm', 'Error updating availability');
+ajaxForm('statusForm', 'Error updating status');
+
+// Auto-hide alerts
+setTimeout(() => {
+  document.querySelectorAll('.alert').forEach(a => {
+    a.style.transition = 'opacity .5s';
+    a.style.opacity = '0';
+    setTimeout(() => a.remove(), 500);
+  });
+}, 5000);
+
+
+
+
+let locationInterval = null;
+let locationSharing  = false;
+
+function toggleLocationSharing() {
+  if (locationSharing) {
+    stopLocationSharing();
+  } else {
+    startLocationSharing();
+  }
+}
+
+function startLocationSharing() {
+  // Check if we're in a secure context
+  if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+    alert('Location sharing requires HTTPS. For development, you can:\n\n1. Use localhost or 127.0.0.1\n2. Or enable "Insecure origins treated as secure" in Chrome flags\n3. Or use a proper HTTPS certificate');
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    alert('GPS not supported on this device.');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      sendLocation(pos.coords.latitude, pos.coords.longitude);
+      // Send location every 30 seconds
+      locationInterval = setInterval(function() {
+        navigator.geolocation.getCurrentPosition(
+          function(p) { sendLocation(p.coords.latitude, p.coords.longitude); },
+          function(e) { console.error('GPS error:', e); }
+        );
+      }, 30000);
+
+      locationSharing = true;
+      updateLocUI(true);
+    },
+    function(err) {
+      let errorMsg = 'Please allow location access to share your position.';
+      if (err.code === err.PERMISSION_DENIED) {
+        errorMsg = 'Location permission denied. Please enable location access in your browser settings and refresh the page.';
+      } else if (err.code === err.POSITION_UNAVAILABLE) {
+        errorMsg = 'Location information unavailable. Please check your GPS settings.';
+      } else if (err.code === err.TIMEOUT) {
+        errorMsg = 'Location request timed out. Please try again.';
+      }
+      alert(errorMsg);
+      console.error('GPS denied:', err);
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function stopLocationSharing() {
+  if (locationInterval) {
+    clearInterval(locationInterval);
+    locationInterval = null;
+  }
+  locationSharing = false;
+  updateLocUI(false);
+
+  fetch('/workers/stop-location/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' }
+  });
+}
+
+function sendLocation(lat, lng) {
+  fetch('/workers/update-location/', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ latitude: lat, longitude: lng })
+  })
+  .then(r => r.json())
+  .then(d => { if (!d.success) console.error('Location save failed:', d); });
+}
+
+function updateLocUI(sharing) {
+  const dot    = document.getElementById('locDot');
+  const status = document.getElementById('locStatus');
+  const btn    = document.getElementById('locBtn');
+  if (!dot) return;
+
+  if (sharing) {
+    dot.style.background = '#dcfce7';
+    dot.style.color      = '#16a34a';
+    status.textContent   = '🟢 Sharing live';
+    status.style.color   = '#16a34a';
+    btn.className        = 'btn-toggle go-offline';
+    btn.innerHTML        = '<i class="fas fa-location-dot"></i> Stop Sharing';
+  } else {
+    dot.style.background = 'var(--light2)';
+    dot.style.color      = 'var(--muted)';
+    status.textContent   = '🔴 Off';
+    status.style.color   = 'var(--muted)';
+    btn.className        = 'btn-toggle go-online';
+    btn.innerHTML        = '<i class="fas fa-location-dot"></i> Share Location';
+  }
+}
+
+// Note: Location sharing persists in database even after logout/browser close
+// It will only stop when worker manually clicks "Stop Sharing" button
+
+</script>
+
+</body>
+</html>

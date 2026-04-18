@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process Payment - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family:var(--fB);
+  min-height:100vh;
+  background:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px; overflow-y:auto; position:relative;
+}
+
+/* ── BG ── */
+.bg-grid {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:56px 56px;
+  animation:gridMove 30s linear infinite;
+}
+@keyframes gridMove { from{background-position:0 0} to{background-position:56px 56px} }
+.bg-blob { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; }
+.blob-a { width:500px;height:500px; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-100px;right:-80px; animation:bF 10s ease-in-out infinite; }
+.blob-b { width:350px;height:350px; background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%); bottom:-80px;left:-60px; animation:bF 14s ease-in-out infinite reverse; }
+@keyframes bF { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.12) translate(15px,-20px)} }
+
+/* ── CARD ── */
+.card {
+  position:relative; z-index:1;
+  background:var(--white); border-radius:24px;
+  padding:40px 38px; width:100%; max-width:500px;
+  box-shadow:0 32px 80px rgba(0,0,0,.3);
+  animation:cardUp .7s var(--ease) both;
+}
+@keyframes cardUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── LOGO ── */
+.logo { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:28px; }
+.logo-box { width:38px;height:38px; background:var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:17px; }
+.logo-text { font-family:var(--fH); font-size:24px; font-weight:900; letter-spacing:-1px; color:var(--navy); }
+.logo-text em { color:var(--orange); font-style:normal; }
+
+/* ── WORKER BANNER ── */
+.worker-banner {
+  background:var(--navy); border-radius:16px;
+  padding:26px 24px; margin-bottom:22px;
+  position:relative; overflow:hidden;
+  border:1px solid rgba(249,115,22,.15); text-align:center;
+}
+.worker-banner::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.worker-banner::after { content:''; position:absolute; width:220px;height:220px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%); top:-70px;right:-50px; pointer-events:none; }
+.wb-inner { position:relative; z-index:1; }
+.wb-avatar { width:64px;height:64px; border-radius:50%; background:linear-gradient(135deg,var(--orange),var(--orange-dk)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--fH); font-size:26px; font-weight:900; margin:0 auto 12px; border:3px solid rgba(255,255,255,.15); box-shadow:0 8px 24px rgba(249,115,22,.3); }
+.wb-name { font-family:var(--fH); font-size:20px; font-weight:900; color:#fff; letter-spacing:-.3px; margin-bottom:4px; }
+.wb-service { font-size:13px; color:rgba(255,255,255,.5); margin-bottom:14px; }
+.wb-amount { font-family:var(--fH); font-size:44px; font-weight:900; letter-spacing:-2px; color:var(--orange); line-height:1; }
+.wb-period { font-size:12px; color:rgba(255,255,255,.4); margin-top:6px; display:flex; align-items:center; justify-content:center; gap:6px; }
+.wb-period i { color:var(--orange); font-size:11px; }
+
+/* ── BANK DETAILS ── */
+.bank-section {
+  background:var(--light); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden; margin-bottom:22px;
+}
+.bank-toggle {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; cursor:pointer; transition:background .2s;
+  border-bottom:1px solid transparent;
+}
+.bank-toggle:hover { background:var(--light2); }
+.bank-toggle.open { border-bottom-color:var(--border); }
+.bt-label { display:flex; align-items:center; gap:8px; font-family:var(--fH); font-size:13px; font-weight:800; color:var(--navy); }
+.bt-label i { color:var(--orange); }
+.bt-chevron { color:var(--muted); font-size:12px; transition:transform .25s; }
+.bt-chevron.open { transform:rotate(180deg); }
+.bank-rows { display:none; padding:16px 18px; }
+.bank-rows.show { display:block; }
+.bank-row { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+.bank-row:last-child { border-bottom:none; padding-bottom:0; }
+.br-lbl { color:var(--muted); display:flex; align-items:center; gap:6px; }
+.br-lbl i { color:var(--orange); font-size:11px; }
+.br-val { font-weight:700; color:var(--navy); font-family:var(--fH); }
+.acct-masked { letter-spacing:2px; }
+
+/* ── PAYMENT METHODS ── */
+.sec-head { font-family:var(--fH); font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:var(--navy); margin:0 0 14px; }
+.method-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.method-tile {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:14px 8px; border:1.5px solid var(--border); border-radius:11px;
+  cursor:pointer; background:var(--light); transition:all .25s var(--ease);
+  font-size:11px; font-weight:700; color:var(--muted);
+}
+.method-tile i { font-size:22px; color:var(--navy2); }
+.method-tile:hover { border-color:rgba(249,115,22,.4); background:var(--orange-lt); color:var(--navy); }
+.method-tile:hover i { color:var(--orange); }
+.method-tile.selected { border-color:var(--orange); background:var(--orange-lt); color:var(--orange); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.method-tile.selected i { color:var(--orange); }
+
+/* ── PAY BUTTON ── */
+.btn-pay {
+  width:100%; padding:15px; border:none; border-radius:12px;
+  font-family:var(--fH); font-size:17px; font-weight:800;
+  cursor:pointer; transition:all .3s var(--ease);
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  position:relative; overflow:hidden;
+  background:var(--orange); color:#fff;
+  box-shadow:0 4px 18px rgba(249,115,22,.3); margin-bottom:14px;
+}
+.btn-pay::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%); transform:translateX(-100%); transition:transform .5s; }
+.btn-pay:hover::after { transform:translateX(100%); }
+.btn-pay:hover { background:var(--orange-dk); transform:translateY(-2px); box-shadow:0 12px 30px rgba(249,115,22,.45); }
+.btn-pay:disabled { background:#94a3b8; cursor:not-allowed; transform:none; box-shadow:none; }
+
+/* back link */
+.back-link { display:block; text-align:center; font-size:13px; color:#94a3b8; transition:color .2s; }
+.back-link:hover { color:var(--orange); }
+
+/* ── MODAL ── */
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(6px); align-items:center; justify-content:center; z-index:1000; padding:20px; }
+.modal.show { display:flex; }
+.modal-box { background:var(--white); border-radius:24px; padding:40px 36px; max-width:400px; width:100%; text-align:center; animation:modalIn .35s var(--ease); box-shadow:0 32px 80px rgba(0,0,0,.3); }
+@keyframes modalIn { from{transform:translateY(-40px);opacity:0} to{transform:translateY(0);opacity:1} }
+.modal-icon { width:80px;height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:36px; color:#fff; animation:popIn .5s var(--ease); }
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.icon-processing { background:var(--navy); }
+.icon-success    { background:var(--orange); box-shadow:0 8px 28px rgba(249,115,22,.4); }
+.modal-title { font-family:var(--fH); font-size:22px; font-weight:900; letter-spacing:-.5px; color:var(--navy); margin-bottom:8px; }
+.modal-msg { font-size:14px; color:var(--muted); margin-bottom:14px; }
+.txn-box { background:var(--light); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-family:monospace; font-size:15px; color:var(--orange); letter-spacing:1px; margin:14px 0; font-weight:700; }
+.modal-detail { font-size:13px; color:#94a3b8; margin-bottom:20px; }
+.btn-modal { width:100%; padding:13px; background:var(--orange); color:#fff; border:none; border-radius:10px; font-family:var(--fH); font-size:15px; font-weight:800; cursor:pointer; transition:all .25s; }
+.btn-modal:hover { background:var(--orange-dk); transform:translateY(-2px); box-shadow:0 10px 28px rgba(249,115,22,.35); }
+
+.spinner { display:inline-block; width:18px;height:18px; border:2.5px solid rgba(255,255,255,.3); border-radius:50%; border-top-color:#fff; animation:spin 1s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-blob blob-a"></div>
+<div class="bg-blob blob-b"></div>
+
+<div class="card">
+
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="logo-text">Fix<em>zy</em></div>
+  </div>
+
+  <!-- Worker banner -->
+  <div class="worker-banner">
+    <div class="wb-inner">
+      <div class="wb-avatar">{{ payment.worker.user.username|slice:":1"|upper }}</div>
+      <div class="wb-name">{{ payment.worker.user.username }}</div>
+      <div class="wb-service">{{ payment.worker.get_service_type_display }}</div>
+      <div class="wb-amount">₹{{ payment.net_amount }}</div>
+      <div class="wb-period">
+        <i class="fas fa-calendar"></i>
+        {{ payment.period_start|date:"d M Y" }} → {{ payment.period_end|date:"d M Y" }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Bank details accordion -->
+  <div class="bank-section">
+    <div class="bank-toggle" id="bankToggle" onclick="toggleBank()">
+      <div class="bt-label"><i class="fas fa-building-columns"></i> Bank Details</div>
+      <i class="fas fa-chevron-down bt-chevron" id="bankChevron"></i>
+    </div>
+    <div class="bank-rows" id="bankRows">
+      <div class="bank-row">
+        <span class="br-lbl"><i class="fas fa-user"></i> Account Holder</span>
+        <span class="br-val">{{ payment.worker.account_holder_name }}</span>
+      </div>
+      <div class="bank-row">
+        <span class="br-lbl"><i class="fas fa-building"></i> Bank Name</span>
+        <span class="br-val">{{ payment.worker.bank_name }}</span>
+      </div>
+      <div class="bank-row">
+        <span class="br-lbl"><i class="fas fa-credit-card"></i> Account Number</span>
+        <span class="br-val acct-masked">
+          ••••{{ payment.worker.account_number|slice:"-4:" }}
+        </span>
+      </div>
+      <div class="bank-row">
+        <span class="br-lbl"><i class="fas fa-code-branch"></i> IFSC Code</span>
+        <span class="br-val">{{ payment.worker.ifsc_code }}</span>
+      </div>
+      {% if payment.worker.upi_id %}
+      <div class="bank-row">
+        <span class="br-lbl"><i class="fas fa-mobile-screen"></i> UPI ID</span>
+        <span class="br-val">{{ payment.worker.upi_id }}</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Payment method -->
+  <div class="sec-head">Select Payment Method</div>
+  <div class="method-grid">
+    <div class="method-tile selected" onclick="selectMethod('bank')" id="m-bank">
+      <i class="fas fa-building-columns"></i> Bank Transfer
+    </div>
+    <div class="method-tile" onclick="selectMethod('upi')" id="m-upi">
+      <i class="fas fa-mobile-screen"></i> UPI
+    </div>
+    <div class="method-tile" onclick="selectMethod('cash')" id="m-cash">
+      <i class="fas fa-money-bill-wave"></i> Cash
+    </div>
+  </div>
+
+  <!-- Pay button -->
+  <button class="btn-pay" onclick="processPayment()" id="payButton">
+    <i class="fas fa-paper-plane"></i> Process Payment — ₹{{ payment.net_amount }}
+  </button>
+
+  <a href="{% url 'admin_payment_dashboard' %}" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<script>
+let selectedMethod = 'bank';
+const paymentId = '{{ payment.id }}';
+const csrfToken = '{{ csrf_token }}';
+
+function toggleBank() {
+  const rows = document.getElementById('bankRows');
+  const chevron = document.getElementById('bankChevron');
+  const toggle = document.getElementById('bankToggle');
+  rows.classList.toggle('show');
+  chevron.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+function selectMethod(m) {
+  selectedMethod = m;
+  document.querySelectorAll('.method-tile').forEach(t => t.classList.remove('selected'));
+  document.getElementById('m-' + m).classList.add('selected');
+}
+
+function showProcessing() {
+  document.getElementById('modalBox').innerHTML = `
+    <div class="modal-icon icon-processing"><span class="spinner"></span></div>
+    <div class="modal-title">Processing Payment…</div>
+    <div class="modal-msg">Please wait while the payment is being sent to the worker.</div>`;
+  document.getElementById('modal').classList.add('show');
+}
+
+function showSuccess(txnId, msg, detail) {
+  document.getElementById('modalBox').innerHTML = `
+    <div class="modal-icon icon-success"><i class="fas fa-check"></i></div>
+    <div class="modal-title">Payment Processed!</div>
+    <div class="modal-msg">${msg}</div>
+    <div class="txn-box">${txnId}</div>
+    <div class="modal-detail">${detail}</div>
+    <button class="btn-modal" onclick="goToDashboard()">
+      <i class="fas fa-house"></i> Go to Dashboard
+    </button>`;
+}
+
+function processPayment() {
+  const btn = document.getElementById('payButton');
+  btn.innerHTML = '<span class="spinner"></span> Processing…';
+  btn.disabled = true;
+  showProcessing();
+
+  setTimeout(function() {
+    fetch('/payments/admin/process-payment-ajax/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+      body: JSON.stringify({ payment_id: paymentId, payment_method: selectedMethod })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        showSuccess(data.transaction_id, data.message, '₹' + data.amount + ' sent to ' + data.worker_name);
+      } else {
+        document.getElementById('modal').classList.remove('show');
+        alert('Payment failed: ' + data.message);
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Process Payment — ₹{{ payment.net_amount }}';
+        btn.disabled = false;
+      }
+    })
+    .catch(() => {
+      document.getElementById('modal').classList.remove('show');
+      alert('Payment failed. Please try again.');
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Process Payment — ₹{{ payment.net_amount }}';
+      btn.disabled = false;
+    });
+  }, 2000);
+}
+
+function goToDashboard() {
+  window.location.href = "{% url 'admin_payment_dashboard' %}";
+}
+</script>
+
+</body>
+</html>

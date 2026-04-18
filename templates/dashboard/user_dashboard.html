@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Dashboard - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:#0f2040;--navy2:#1e3c72;--navy3:#243f82;
+  --orange:#f97316;--orange-dk:#ea6c0a;--orange-lt:#fff7ed;
+  --white:#ffffff;--light:#f4f7fc;--light2:#eef2f9;
+  --muted:#64748b;--border:#e2e8f0;--text:#0f172a;
+  --fH:'Cabinet Grotesk',sans-serif;--fB:'Figtree',sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);--r:14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--fB);background:var(--light);color:var(--text);overflow-x:hidden;}
+a{text-decoration:none;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--orange);border-radius:2px;}
+.wrap{display:flex;min-height:100vh;}
+.sidebar{width:260px;background:var(--navy);position:fixed;height:100vh;overflow-y:auto;z-index:100;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.06);}
+.sidebar::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+.sb-logo{padding:22px 22px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.07);position:relative;z-index:1;}
+.logo-box{width:36px;height:36px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;}
+.logo-text{font-family:var(--fH);font-size:22px;font-weight:900;letter-spacing:-1px;color:#fff;}
+.logo-text em{color:var(--orange);font-style:normal;}
+.nav-sec{padding:12px 14px 6px;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.28);position:relative;z-index:1;}
+.nav-item{margin:2px 10px;padding:11px 14px;display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.6);border-radius:10px;transition:all .22s var(--ease);font-size:14px;font-weight:500;position:relative;z-index:1;}
+.nav-item i{width:18px;font-size:15px;flex-shrink:0;}
+.nav-item:hover{background:rgba(249,115,22,.12);color:#fff;transform:translateX(4px);}
+.nav-item.active{background:rgba(249,115,22,.18);color:var(--orange);font-weight:600;}
+.nav-item.active i{color:var(--orange);}
+.nav-divider{margin:8px 16px;border:none;border-top:1px solid rgba(255,255,255,.06);}
+.nav-item.logout{color:rgba(255,100,100,.7);}
+.nav-item.logout:hover{background:rgba(239,68,68,.1);color:#f87171;}
+.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto;position:relative;z-index:1;}
+.main{flex:1;margin-left:260px;padding:28px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;background:var(--white);padding:16px 24px;border-radius:var(--r);box-shadow:0 2px 12px rgba(15,32,64,.06);margin-bottom:22px;border:1px solid var(--border);}
+.tb-left{display:flex;align-items:center;gap:14px;}
+.tb-icon{width:42px;height:42px;background:var(--orange-lt);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:18px;}
+.tb-title{font-family:var(--fH);font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--navy);}
+.tb-sub{font-size:13px;color:var(--muted);margin-top:1px;}
+.user-chip{display:flex;align-items:center;gap:10px;background:var(--light);border:1px solid var(--border);border-radius:40px;padding:6px 16px 6px 6px;}
+.user-av{width:34px;height:34px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:14px;}
+.user-name{font-size:13px;font-weight:700;color:var(--navy);}
+.user-email{font-size:11px;color:var(--muted);}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px;transition:all .3s var(--ease);position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease);}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(249,115,22,.1);}
+.stat-card:hover::before{transform:scaleX(1);}
+.stat-ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.s-o{background:var(--orange-lt);color:var(--orange);}
+.s-a{background:#fef9c3;color:#ca8a04;}
+.s-b{background:#dbeafe;color:#1d4ed8;}
+.s-g{background:#dcfce7;color:#15803d;}
+.s-n{background:#e0e7ff;color:var(--navy2);}
+.stat-val{font-family:var(--fH);font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--navy);}
+.stat-lbl{font-size:12px;color:var(--muted);font-weight:500;}
+.sub-banner{border-radius:var(--r);padding:26px 30px;margin-bottom:22px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,var(--navy3) 100%);border:1px solid rgba(249,115,22,.2);}
+.sub-banner::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;}
+.sub-glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%);top:-80px;right:-50px;pointer-events:none;}
+.sub-inner{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.sub-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(249,115,22,.8);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.sub-name{font-family:var(--fH);font-size:24px;font-weight:900;letter-spacing:-1px;color:#fff;margin-bottom:10px;}
+.sub-meta{display:flex;gap:18px;flex-wrap:wrap;}
+.sub-detail{display:flex;align-items:center;gap:7px;font-size:13px;color:rgba(255,255,255,.65);}
+.sub-detail i{color:var(--orange);}
+.btn-sub{padding:12px 26px;background:var(--orange);color:#fff;font-family:var(--fH);font-size:14px;font-weight:800;border-radius:40px;transition:all .25s var(--ease);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0;}
+.btn-sub:hover{background:var(--orange-dk);transform:translateY(-2px);box-shadow:0 12px 28px rgba(249,115,22,.35);}
+.sub-detail-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:22px;box-shadow:0 2px 10px rgba(15,32,64,.04);}
+.sdc-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.sdc-title{font-family:var(--fH);font-size:15px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;}
+.sdc-title i{color:var(--orange);}
+.sdc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.sdc-box{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.sdc-box-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.sdc-box-lbl i{color:var(--orange);font-size:10px;}
+.sdc-box-val{font-family:var(--fH);font-size:16px;font-weight:800;color:var(--navy);}
+.sdc-box-val.green{color:#16a34a;}
+.sdc-box-val.orange{color:var(--orange);}
+.prog-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:8px;}
+.prog-fill{height:100%;border-radius:3px;background:var(--orange);transition:width .8s var(--ease);}
+.prog-fill.full{background:#ef4444;}
+.prog-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+.nosub-banner{background:linear-gradient(135deg,var(--orange) 0%,var(--orange-dk) 100%);border-radius:var(--r);padding:26px 30px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;position:relative;overflow:hidden;}
+.nosub-banner::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px;}
+.nosub-text{position:relative;z-index:1;}
+.nosub-title{font-family:var(--fH);font-size:20px;font-weight:900;color:#fff;letter-spacing:-.5px;margin-bottom:6px;}
+.nosub-sub{color:rgba(255,255,255,.8);font-size:14px;margin-bottom:12px;}
+.nosub-perks{display:flex;flex-wrap:wrap;gap:6px 18px;}
+.nosub-perk{font-size:13px;color:rgba(255,255,255,.9);display:flex;align-items:center;gap:6px;}
+.btn-nosub{position:relative;z-index:1;padding:13px 28px;background:#fff;color:var(--orange);font-family:var(--fH);font-size:14px;font-weight:800;border-radius:40px;transition:all .25s;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;flex-shrink:0;}
+.btn-nosub:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.15);}
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:22px;box-shadow:0 2px 10px rgba(15,32,64,.04);}
+.sec-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.sec-title{font-family:var(--fH);font-size:16px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;letter-spacing:-.3px;}
+.sec-title i{color:var(--orange);}
+.btn-primary{padding:9px 18px;background:var(--orange);color:#fff;border:none;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;font-family:var(--fB);transition:all .25s;text-decoration:none;}
+.btn-primary:hover{background:var(--orange-dk);transform:translateY(-2px);box-shadow:0 8px 20px rgba(249,115,22,.3);}
+.btn-secondary{padding:8px 14px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--fB);transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.btn-secondary:hover{background:var(--navy2);}
+.table-responsive{overflow-x:auto;border-radius:10px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;min-width:780px;}
+thead tr{background:var(--light);}
+th{text-align:left;padding:12px 14px;color:var(--navy);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);}
+td{padding:13px 14px;border-bottom:1px solid var(--light2);color:#334155;font-size:13px;vertical-align:top;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .15s;}
+tbody tr:hover{background:var(--light);}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge i{font-size:10px;}
+.b-pending{background:#fff7ed;color:#c2410c;}
+.b-assigned{background:#eff6ff;color:#1d4ed8;}
+.b-progress{background:#f0fdf4;color:#15803d;}
+.b-complete{background:#ecfdf5;color:#065f46;}
+.b-cancel{background:#fef2f2;color:#991b1b;}
+.pay-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+.pb-paid{background:#dcfce7;color:#166534;}
+.pb-sub{background:#ede9fe;color:#5b21b6;}
+.pb-now{background:var(--orange);color:#fff;border-radius:20px;padding:5px 13px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px;transition:all .2s;}
+.pb-now:hover{background:var(--orange-dk);transform:translateY(-1px);}
+.pb-progress{background:#fff7ed;color:#c2410c;}
+.pb-pending{background:#f1f5f9;color:#64748b;}
+.pb-assigned{background:#eff6ff;color:#1d4ed8;}
+.pb-cancel{background:#fef2f2;color:#991b1b;}
+.pb-cash{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+.act-btn{padding:5px 11px;border-radius:6px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;text-decoration:none;transition:all .2s;}
+.act-view{background:var(--navy);color:#fff;}
+.act-view:hover{background:var(--navy2);}
+.act-cancel{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+.act-location{background:var(--orange);color:#fff;}
+.act-location:hover{background:var(--orange-dk);}
+/* Rating button - Attractive star rating */
+.btn-rate{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:8px 14px;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
+  color:#fff;
+  border:none;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700;
+  font-family:var(--fH);
+  cursor:pointer;
+  transition:all .3s var(--ease);
+  box-shadow:0 3px 12px rgba(249,115,22,.25);
+  position:relative;
+  overflow:hidden;
+  letter-spacing:0.3px;
+}
+.btn-rate::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,.15);
+  transform:translateX(-100%);
+  transition:transform .3s var(--ease);
+}
+.btn-rate:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(249,115,22,.4);
+}
+.btn-rate:hover::before{
+  transform:translateX(0);
+}
+.btn-rate i{
+  font-size:15px;
+  animation:starTwinkle 0.6s ease-in-out;
+}
+@keyframes starTwinkle{0%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.2) rotate(15deg)}100%{transform:scale(1) rotate(0deg)}}
+.btn-rate:active{
+  transform:translateY(-1px);
+}
+.stars-display{
+  color:#f59e0b;
+  font-size:14px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin-top:6px;
+  letter-spacing:1px;
+}
+.empty-state{text-align:center;padding:40px 20px;}
+.empty-icon{width:56px;height:56px;background:var(--light2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);margin:0 auto 12px;}
+.empty-title{font-family:var(--fH);font-weight:700;font-size:15px;color:var(--navy);margin-bottom:5px;}
+.empty-sub{font-size:13px;color:var(--muted);}
+.fab-wrap{position:fixed;bottom:28px;right:28px;z-index:999;}
+.fab{width:54px;height:54px;background:var(--navy);border-radius:50%;box-shadow:0 6px 24px rgba(15,32,64,.35);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:22px;transition:all .3s var(--ease);text-decoration:none;border:2px solid rgba(249,115,22,.3);}
+.fab:hover{background:var(--orange);color:#fff;transform:scale(1.08);box-shadow:0 10px 30px rgba(249,115,22,.4);border-color:var(--orange);}
+.fab-label{position:absolute;bottom:62px;right:0;background:#fff;border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.08);pointer-events:none;}
+/* Rating modal */
+@keyframes modalIn{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media(max-width:1200px){.stats-grid{grid-template-columns:repeat(3,1fr);}.sdc-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:1024px){.sidebar{width:70px;}.sb-logo .logo-text,.nav-sec,.nav-item span,.sb-footer{display:none;}.nav-item{justify-content:center;padding:13px;}.main{margin-left:70px;}}
+@media(max-width:768px){.sidebar{width:0;overflow:hidden;}.main{margin-left:0;padding:16px;}.stats-grid{grid-template-columns:repeat(2,1fr);}.topbar{flex-direction:column;align-items:flex-start;gap:10px;}.sdc-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="logo-text">Fix<em>zy</em></div>
+  </div>
+  <div class="nav-sec">Main Menu</div>
+  <a href="{% url 'user_dashboard' %}" class="nav-item active"><i class="fas fa-house"></i><span>Dashboard</span></a>
+  <a href="{% url 'request_service' %}" class="nav-item"><i class="fas fa-circle-plus"></i><span>Request Service</span></a>
+  <a href="{% url 'my_requests' %}" class="nav-item"><i class="fas fa-clock-rotate-left"></i><span>My Bookings</span></a>
+  <a href="{% url 'payment_history' %}" class="nav-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+  <hr class="nav-divider">
+  <div class="nav-sec">Account</div>
+  <a href="{% url 'plan_list' %}" class="nav-item"><i class="fas fa-crown"></i><span>Subscriptions</span></a>
+  <a href="{% url 'edit_profile' %}" class="nav-item"><i class="fas fa-user-pen"></i><span>Profile</span></a>
+  <hr class="nav-divider">
+  <a href="{% url 'logout' %}" class="nav-item logout"><i class="fas fa-right-from-bracket"></i><span>Logout</span></a>
+  <div class="sb-footer"><div style="font-size:11px;color:rgba(255,255,255,.25);text-align:center;">© 2026 Fixzy</div></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-icon"><i class="fas fa-gauge-high"></i></div>
+      <div>
+        <div class="tb-title">Dashboard</div>
+        <div class="tb-sub">Welcome back, {{ request.user.username }} 👋</div>
+      </div>
+    </div>
+    <div class="user-chip">
+      <div class="user-av"><i class="fas fa-user"></i></div>
+      <div>
+        <div class="user-name">{{ request.user.username }}</div>
+        <div class="user-email">{{ request.user.email }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-ic s-n"><i class="fas fa-calendar-check"></i></div><div class="stat-val">{{ total_requests|default:"0" }}</div><div class="stat-lbl">Total Bookings</div></div>
+    <div class="stat-card"><div class="stat-ic s-a"><i class="fas fa-clock"></i></div><div class="stat-val">{{ pending_requests|default:"0" }}</div><div class="stat-lbl">Pending</div></div>
+    <div class="stat-card"><div class="stat-ic s-b"><i class="fas fa-spinner"></i></div><div class="stat-val">{{ in_progress|default:"0" }}</div><div class="stat-lbl">In Progress</div></div>
+    <div class="stat-card"><div class="stat-ic s-g"><i class="fas fa-circle-check"></i></div><div class="stat-val">{{ completed|default:"0" }}</div><div class="stat-lbl">Completed</div></div>
+    <div class="stat-card"><div class="stat-ic s-o"><i class="fas fa-indian-rupee-sign"></i></div><div class="stat-val">₹{{ total_spent|default:"0" }}</div><div class="stat-lbl">Total Spent</div></div>
+  </div>
+
+  <!-- Subscription -->
+  {% if active_subscription and active_subscription.status == 'active' %}
+  <div class="sub-banner">
+    <div class="sub-glow"></div>
+    <div class="sub-inner">
+      <div>
+        <div class="sub-eyebrow"><i class="fas fa-crown"></i> Your Subscription</div>
+        <div class="sub-name">{{ active_subscription.plan.name }}</div>
+        <div class="sub-meta">
+          <span class="sub-detail"><i class="fas fa-calendar"></i> Valid till: {{ active_subscription.end_date|date:"d M Y" }}</span>
+          <span class="sub-detail"><i class="fas fa-screwdriver-wrench"></i> {{ active_subscription.visits_remaining }}/{{ active_subscription.total_visits_allowed }} visits left</span>
+        </div>
+      </div>
+      <a href="{% url 'plan_list' %}" class="btn-sub"><i class="fas fa-crown"></i> Manage Plan</a>
+    </div>
+  </div>
+  <div class="sub-detail-card">
+    <div class="sdc-hd">
+      <div class="sdc-title"><i class="fas fa-chart-pie"></i> Subscription Details</div>
+      <a href="{% url 'subscription_history' %}" class="btn-secondary"><i class="fas fa-clock-rotate-left"></i> History</a>
+    </div>
+    <div class="sdc-grid">
+      <div class="sdc-box"><div class="sdc-box-lbl"><i class="fas fa-tag"></i> Plan</div><div class="sdc-box-val">{{ active_subscription.plan.name }}</div></div>
+      <div class="sdc-box"><div class="sdc-box-lbl"><i class="fas fa-calendar-xmark"></i> Expires</div><div class="sdc-box-val green">{{ active_subscription.end_date|date:"d M Y" }}</div></div>
+      <div class="sdc-box"><div class="sdc-box-lbl"><i class="fas fa-indian-rupee-sign"></i> Amount Paid</div><div class="sdc-box-val orange">₹{{ active_subscription.amount_paid }}</div></div>
+      <div class="sdc-box">
+        <div class="sdc-box-lbl"><i class="fas fa-screwdriver-wrench"></i> Visit Usage</div>
+        <div class="sdc-box-val">{{ active_subscription.visits_used }}<span style="font-size:13px;color:var(--muted);font-weight:500;">/{{ active_subscription.total_visits_allowed }}</span></div>
+        <div class="prog-track">
+          <div class="prog-fill {% if active_subscription.visits_remaining == 0 %}full{% endif %}" id="sub-progress"
+               data-used="{{ active_subscription.visits_used }}" data-total="{{ active_subscription.total_visits_allowed }}" style="width:0%;"></div>
+        </div>
+        <div class="prog-lbl">
+          {% if active_subscription.visits_remaining == 0 %}No visits left
+          {% elif active_subscription.visits_remaining <= 2 %}⚠️ {{ active_subscription.visits_remaining }} remaining — renew soon!
+          {% else %}{{ active_subscription.visits_remaining }} visits remaining{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="nosub-banner">
+    <div class="nosub-text">
+      <div class="nosub-title"><i class="fas fa-crown"></i> Unlock Home Care Benefits</div>
+      <div class="nosub-sub">Subscribe and save on every service booking.</div>
+      <div class="nosub-perks">
+        <div class="nosub-perk"><i class="fas fa-check-circle"></i> Multiple service visits</div>
+        <div class="nosub-perk"><i class="fas fa-check-circle"></i> Discount on parts</div>
+        <div class="nosub-perk"><i class="fas fa-check-circle"></i> Priority support</div>
+        <div class="nosub-perk"><i class="fas fa-check-circle"></i> Free inspection</div>
+      </div>
+    </div>
+    <a href="{% url 'plan_list' %}" class="btn-nosub"><i class="fas fa-crown"></i> View Plans</a>
+  </div>
+  {% endif %}
+
+  <!-- Recent Bookings -->
+  <div class="section-card">
+    <div class="sec-hd">
+      <div class="sec-title"><i class="fas fa-clock-rotate-left"></i> Recent Bookings</div>
+      <a href="{% url 'request_service' %}" class="btn-primary"><i class="fas fa-plus"></i> New Request</a>
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Service</th><th>Date</th><th>Status</th><th>Worker</th><th>Payment & Rating</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for booking in service_requests|slice:":5" %}
+          <tr>
+            <td style="font-weight:700;color:var(--navy);">#{{ booking.id }}</td>
+            <td><strong>{{ booking.service.name }}</strong></td>
+            <td>{{ booking.created_at|date:"d M Y" }}</td>
+            <td>
+              {% if booking.status == 'pending' %}<span class="badge b-pending"><i class="fas fa-clock"></i> Pending</span>
+              {% elif booking.status == 'assigned' %}<span class="badge b-assigned"><i class="fas fa-user-check"></i> Assigned</span>
+              {% elif booking.status == 'in_progress' %}<span class="badge b-progress"><i class="fas fa-spinner fa-spin"></i> In Progress</span>
+              {% elif booking.status == 'completed' %}<span class="badge b-complete"><i class="fas fa-check-circle"></i> Completed</span>
+              {% elif booking.status == 'cancelled' %}<span class="badge b-cancel"><i class="fas fa-times-circle"></i> Cancelled</span>
+              {% else %}<span class="badge">{{ booking.get_status_display }}</span>{% endif %}
+            </td>
+            <td>
+              {% if booking.assigned_worker %}<span style="font-weight:600;color:var(--navy);">{{ booking.assigned_worker.username }}</span>
+              {% else %}<span style="color:#94a3b8;">Not assigned</span>{% endif %}
+            </td>
+
+            <!-- ✅ PAYMENT + RATING COMBINED — no duplicates -->
+            <td>
+              {% if booking.status == 'completed' %}
+
+                {% if booking.safe_payment %}
+                  {% if booking.safe_payment.status == 'completed' %}
+                    <span class="pay-badge pb-paid"><i class="fas fa-check-circle"></i> Paid</span>
+                  {% elif booking.safe_payment.status == 'pending_collection' %}
+                    {% if booking.safe_payment.cash_received %}
+                      <span class="pay-badge pb-paid"><i class="fas fa-check-circle"></i> Paid</span>
+                    {% else %}
+                      <span class="pay-badge pb-cash"><i class="fas fa-clock"></i> Cash Pending</span>
+                    {% endif %}
+                  {% else %}
+                    <a href="{% url 'payment_page' booking.id %}" class="pb-now"><i class="fas fa-credit-card"></i> Pay Now</a>
+                  {% endif %}
+                {% elif booking.subscription %}
+                  <span class="pay-badge pb-sub"><i class="fas fa-crown"></i> Subscription</span>
+                {% else %}
+                  <a href="{% url 'payment_page' booking.id %}" class="pb-now"><i class="fas fa-credit-card"></i> Pay Now</a>
+                {% endif %}
+
+                <!-- ✅ RATING — only after paid or subscription, only one block -->
+                {% if booking.assigned_worker %}
+                  {% if booking.safe_payment and booking.safe_payment.status == 'completed' or booking.safe_payment and booking.safe_payment.cash_received or booking.subscription %}
+                    {% if booking.rating %}
+                      <div class="stars-display">
+                        {% for i in "12345" %}{% if forloop.counter <= booking.rating.stars %}★{% else %}☆{% endif %}{% endfor %}
+                        <span style="font-size:11px;color:var(--muted);margin-left:4px;">Rated</span>
+                      </div>
+                    {% else %}
+                      <button class="btn-rate" onclick="openRatingModal('{{ booking.id }}','{{ booking.assigned_worker.username }}')">
+                        <i class="fas fa-star"></i> <span>Share Your Feedback</span>
+                      </button>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+
+              {% elif booking.status == 'in_progress' %}
+                <span class="pay-badge pb-progress"><i class="fas fa-play-circle"></i> In Progress</span>
+              {% elif booking.status == 'pending' %}
+                <span class="pay-badge pb-pending"><i class="fas fa-clock"></i> Pending</span>
+              {% elif booking.status == 'assigned' %}
+                <span class="pay-badge pb-assigned"><i class="fas fa-user-check"></i> Assigned</span>
+              {% elif booking.status == 'cancelled' %}
+                <span class="pay-badge pb-cancel"><i class="fas fa-times-circle"></i> Cancelled</span>
+              {% else %}
+                <span style="color:#94a3b8;">—</span>
+              {% endif %}
+            </td>
+
+            <td>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                <a href="{% url 'request_detail' booking.id %}" class="act-btn act-view"><i class="fas fa-eye"></i> View</a>
+                {% if booking.status == 'assigned' or booking.status == 'in_progress' %}
+                  {% if booking.assigned_worker %}
+                  <button type="button" class="act-btn act-location" data-job-id="{{ booking.id }}"><i class="fas fa-location-dot"></i> Location</button>
+                  {% endif %}
+                {% endif %}
+                {% if booking.status == 'pending' %}
+                <a href="{% url 'cancel_request' booking.id %}" class="act-btn act-cancel" onclick="return confirm('Cancel this booking?')"><i class="fas fa-times"></i> Cancel</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+              <div class="empty-title">No bookings yet</div>
+              <div class="empty-sub">Book your first home service today!</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Refund Status -->
+  <div class="section-card" style="border-left:4px solid var(--orange);">
+    <div class="sec-hd">
+      <div class="sec-title"><i class="fas fa-rotate-left"></i> Refund Status</div>
+      <a href="{% url 'payment_history' %}" class="btn-secondary"><i class="fas fa-receipt"></i> View All Payments</a>
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Item</th><th>Type</th><th>Date</th><th>Amount</th><th>Refund Status</th><th>Refund Amount</th><th>Reason</th></tr>
+        </thead>
+        <tbody>
+          {% for payment in refund_payments %}
+          <tr>
+            <td><strong>{% if payment.booking %}{{ payment.booking.service.name }}{% elif payment.subscription %}{{ payment.subscription.plan.name }}{% else %}Payment #{{ payment.id }}{% endif %}</strong></td>
+            <td>
+              {% if payment.booking %}<span style="background:var(--navy2);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">Service</span>
+              {% elif payment.subscription %}<span style="background:#7c3aed;color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">Subscription</span>
+              {% else %}<span style="background:var(--muted);color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">Payment</span>{% endif %}
+            </td>
+            <td>{% if payment.refund_request_date %}{{ payment.refund_request_date|date:"d M Y" }}{% else %}{{ payment.payment_date|date:"d M Y" }}{% endif %}</td>
+            <td style="font-weight:700;color:#15803d;">₹{{ payment.amount }}</td>
+            <td>
+              {% if payment.status == 'refunded' %}<span class="badge b-complete"><i class="fas fa-check-circle"></i> Refunded</span>
+              {% elif payment.status == 'partial_refunded' %}<span class="badge" style="background:#ede9fe;color:#5b21b6;"><i class="fas fa-exclamation-circle"></i> Partial</span>
+              {% elif payment.refund_requested %}<span class="badge b-pending"><i class="fas fa-clock"></i> Pending</span>{% endif %}
+            </td>
+            <td style="font-weight:700;color:var(--orange);">{% if payment.refund_amount %}₹{{ payment.refund_amount }}{% else %}—{% endif %}</td>
+            <td style="color:var(--muted);">{% if payment.refund_reason %}{{ payment.refund_reason|truncatechars:30 }}{% else %}—{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fas fa-rotate-left"></i></div>
+              <div class="empty-title">No refund requests</div>
+              <div class="empty-sub">Any refund requests will appear here</div>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ✅ RATING MODAL -->
+<div id="ratingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:1000;padding:20px;">
+  <div style="background:var(--white);border-radius:20px;padding:32px;max-width:400px;width:100%;text-align:center;animation:modalIn .3s var(--ease);">
+    <div style="width:64px;height:64px;background:var(--orange-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:var(--orange);"><i class="fas fa-star"></i></div>
+    <div style="font-family:var(--fH);font-size:20px;font-weight:900;color:var(--navy);margin-bottom:6px;">Rate Your Service</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">How was your experience with <strong id="ratingWorkerName"></strong>?</div>
+    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:16px;" id="starRow">
+      <span class="star-btn" data-val="1" style="font-size:38px;cursor:pointer;color:#e2e8f0;transition:all .15s;" onmouseover="hoverStars(1)" onmouseout="resetStars()" onclick="pickStar(1)">★</span>
+      <span class="star-btn" data-val="2" style="font-size:38px;cursor:pointer;color:#e2e8f0;transition:all .15s;" onmouseover="hoverStars(2)" onmouseout="resetStars()" onclick="pickStar(2)">★</span>
+      <span class="star-btn" data-val="3" style="font-size:38px;cursor:pointer;color:#e2e8f0;transition:all .15s;" onmouseover="hoverStars(3)" onmouseout="resetStars()" onclick="pickStar(3)">★</span>
+      <span class="star-btn" data-val="4" style="font-size:38px;cursor:pointer;color:#e2e8f0;transition:all .15s;" onmouseover="hoverStars(4)" onmouseout="resetStars()" onclick="pickStar(4)">★</span>
+      <span class="star-btn" data-val="5" style="font-size:38px;cursor:pointer;color:#e2e8f0;transition:all .15s;" onmouseover="hoverStars(5)" onmouseout="resetStars()" onclick="pickStar(5)">★</span>
+    </div>
+    <div id="starLabel" style="font-family:var(--fH);font-size:14px;font-weight:700;color:var(--orange);margin-bottom:14px;min-height:20px;"></div>
+    <textarea id="reviewText" placeholder="Write a review (optional)…" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:var(--fB);color:var(--navy);background:var(--light);outline:none;resize:none;height:80px;margin-bottom:16px;" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeRatingModal()" style="flex:1;padding:11px;background:var(--light2);border:1.5px solid var(--border);border-radius:9px;font-family:var(--fH);font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);">Cancel</button>
+      <button onclick="submitRating()" style="flex:2;padding:11px;background:var(--orange);color:#fff;border:none;border-radius:9px;font-family:var(--fH);font-size:14px;font-weight:800;cursor:pointer;" onmouseover="this.style.background='var(--orange-dk)'" onmouseout="this.style.background='var(--orange)'">
+        <i class="fas fa-paper-plane"></i> Submit Rating
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- AI FAB -->
+<div class="fab-wrap">
+  <div class="fab-label">🤖 AI Assistant</div>
+  <a href="{% url 'ai_chat' %}" class="fab">
+    <i class="fas fa-robot"></i>
+    {% if unseen_chat_notifications > 0 %}
+    <span style="position:absolute;top:-8px;right:-8px;background:#ef4444;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid #fff;">{{ unseen_chat_notifications }}</span>
+    {% endif %}
+  </a>
+</div>
+
+<!-- Worker Location Map Modal -->
+<div id="mapModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:2000;padding:20px;">
+  <div style="background:var(--white);border-radius:20px;width:100%;max-width:520px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.3);">
+
+    <!-- Modal header -->
+    <div style="background:var(--navy);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(249,115,22,.15);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:16px;">
+          <i class="fas fa-location-dot"></i>
+        </div>
+        <div>
+          <div style="font-family:var(--fH);font-size:15px;font-weight:800;color:#fff;">Worker Location</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);" id="mapWorkerName">Loading...</div>
+        </div>
+      </div>
+      <button onclick="closeMapModal()"
+        style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:14px;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Map iframe -->
+    <div id="mapContainer" style="height:360px;background:var(--light);display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center;color:var(--muted);">
+        <i class="fas fa-spinner fa-spin" style="font-size:28px;color:var(--orange);display:block;margin-bottom:12px;"></i>
+        <div style="font-size:14px;font-weight:600;">Fetching location...</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:14px 22px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);">
+      <div style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;">
+        <i class="fas fa-clock" style="color:var(--orange);"></i>
+        Last updated: <span id="mapUpdatedAt">—</span>
+      </div>
+      <button onclick="refreshWorkerLocation()"
+        style="padding:6px 16px;background:var(--orange);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fH);">
+        <i class="fas fa-rotate"></i> Refresh
+      </button>
+    </div>
+
+  </div>
+</div>
+<script>
+// Add event listeners for location buttons
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-job-id]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const jobId = this.getAttribute('data-job-id');
+      showWorkerMap(jobId);
+    });
+  });
+});
+
+let selectedStars = 0;
+let currentJobId  = null;
+const starLabels  = ['','Poor','Fair','Good','Very Good','Excellent!'];
+const csrfToken   = '{{ csrf_token }}';
+
+function openRatingModal(jobId, workerName) {
+  currentJobId = jobId;
+  selectedStars = 0;
+  document.getElementById('ratingWorkerName').textContent = workerName;
+  document.getElementById('reviewText').value = '';
+  document.getElementById('starLabel').textContent = '';
+  resetStars();
+  document.getElementById('ratingModal').style.display = 'flex';
+}
+function closeRatingModal() {
+  document.getElementById('ratingModal').style.display = 'none';
+}
+function hoverStars(n) {
+  document.querySelectorAll('.star-btn').forEach((s,i) => {
+    s.style.color     = i < n ? '#f59e0b' : '#e2e8f0';
+    s.style.transform = i < n ? 'scale(1.2)' : 'scale(1)';
+  });
+}
+function resetStars() {
+  document.querySelectorAll('.star-btn').forEach((s,i) => {
+    s.style.color     = i < selectedStars ? '#f59e0b' : '#e2e8f0';
+    s.style.transform = i < selectedStars ? 'scale(1.1)' : 'scale(1)';
+  });
+}
+function pickStar(n) {
+  selectedStars = n;
+  document.getElementById('starLabel').textContent = starLabels[n];
+  resetStars();
+}
+function submitRating() {
+  if (!selectedStars) { alert('Please select a star rating'); return; }
+  fetch('/booking/booking/rate/' + currentJobId + '/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+    body: JSON.stringify({ stars: selectedStars, review: document.getElementById('reviewText').value })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      closeRatingModal();
+      alert('Thank you for your rating! ⭐');
+      location.reload();
+    } else {
+      alert(data.message || 'Error submitting rating');
+    }
+  })
+  .catch(() => alert('Network error. Please try again.'));
+}
+document.getElementById('ratingModal').addEventListener('click', function(e) {
+  if (e.target === this) closeRatingModal();
+});
+
+// Subscription progress bar
+document.addEventListener('DOMContentLoaded', function() {
+  var bar = document.getElementById('sub-progress');
+  if (bar) {
+    var used  = parseFloat(bar.getAttribute('data-used'))  || 0;
+    var total = parseFloat(bar.getAttribute('data-total')) || 1;
+    var pct   = Math.min(100, Math.round((used / total) * 100));
+    var rem   = total - used;
+    bar.style.background = rem <= 2 ? '#ef4444' : rem <= 4 ? '#f97316' : '#22c55e';
+    setTimeout(function() { bar.style.width = pct + '%'; }, 300);
+  }
+});
+
+let mapRefreshTimer = null;
+
+function showWorkerMap(jobId) {
+  currentJobId = jobId;
+  document.getElementById('mapModal').style.display = 'flex';
+  fetchWorkerLocation();
+  // Auto-refresh every 30 seconds
+  mapRefreshTimer = setInterval(fetchWorkerLocation, 30000);
+}
+
+function closeMapModal() {
+  document.getElementById('mapModal').style.display = 'none';
+  if (mapRefreshTimer) clearInterval(mapRefreshTimer);
+  currentJobId = null;
+}
+
+function refreshWorkerLocation() {
+  fetchWorkerLocation();
+}
+
+function fetchWorkerLocation() {
+  if (!currentJobId) return;
+
+  fetch('/booking/worker-location/' + currentJobId + '/')
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('mapWorkerName').textContent = 
+        data.worker + ' — Live Location';
+      document.getElementById('mapUpdatedAt').textContent = data.updated_at;
+
+      // ✅ Show OpenStreetMap (free, no API key needed)
+      const lat = data.latitude;
+      const lng = data.longitude;
+      const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}&layer=mapnik&marker=${lat},${lng}`;
+
+      document.getElementById('mapContainer').innerHTML = `
+        <iframe 
+          src="${mapUrl}"
+          style="width:100%;height:360px;border:none;"
+          title="Worker Location">
+        </iframe>
+      `;
+    } else {
+      document.getElementById('mapContainer').innerHTML = `
+        <div style="text-align:center;padding:40px;color:var(--muted);">
+          <i class="fas fa-location-slash" style="font-size:36px;color:#94a3b8;display:block;margin-bottom:12px;"></i>
+          <div style="font-family:var(--fH);font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px;">Location Not Available</div>
+          <div style="font-size:13px;">${data.message}</div>
+        </div>
+      `;
+      document.getElementById('mapWorkerName').textContent = 'Worker location unavailable';
+    }
+  })
+  .catch(() => {
+    document.getElementById('mapContainer').innerHTML = `
+      <div style="text-align:center;padding:40px;color:var(--muted);">
+        <i class="fas fa-wifi-slash" style="font-size:36px;color:#94a3b8;display:block;margin-bottom:12px;"></i>
+        <div style="font-size:13px;">Network error. Please try again.</div>
+      </div>
+    `;
+  });
+}
+
+// Close on backdrop click
+document.getElementById('mapModal').addEventListener('click', function(e) {
+  if (e.target === this) closeMapModal();
+});
+</script>
+</body>
+</html>

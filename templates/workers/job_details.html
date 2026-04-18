@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Details - Fixzy Worker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:var(--text); }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background:var(--navy); padding:0 40px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.tb-logo { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.tb-logo-box { width:34px; height:34px; background:var(--orange); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; }
+.tb-logo-text { font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+.tb-right { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:8px 18px; border-radius:30px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.8); font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35); color:#fff; transform:translateX(-3px); }
+
+/* ── PAGE ── */
+.page { max-width:900px; margin:0 auto; padding:36px 24px 60px; }
+
+/* ── MESSAGES ── */
+.messages { margin-bottom:20px; }
+.alert { padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500; margin-bottom:8px; display:flex; align-items:center; gap:8px; animation:alertIn .4s var(--ease) both; }
+@keyframes alertIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.alert-success { background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; border-left:4px solid #22c55e; }
+.alert-error   { background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; border-left:4px solid #ef4444; }
+.alert-info    { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; border-left:4px solid #3b82f6; }
+
+/* ── JOB HERO CARD ── */
+.job-hero {
+  background:var(--navy);
+  border-radius:var(--r); padding:30px 32px;
+  margin-bottom:20px;
+  position:relative; overflow:hidden;
+  border:1px solid rgba(249,115,22,.12);
+  animation:cardUp .6s var(--ease) both;
+}
+@keyframes cardUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.job-hero::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.job-hero::after {
+  content:''; position:absolute; width:350px; height:350px; border-radius:50%;
+  background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);
+  top:-100px; right:-80px; pointer-events:none;
+}
+.hero-inner {
+  position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px; flex-wrap:wrap;
+}
+.hero-left { display:flex; align-items:center; gap:18px; }
+.job-icon-wrap {
+  width:60px; height:60px; border-radius:16px;
+  background:rgba(249,115,22,.15); border:1.5px solid rgba(249,115,22,.3);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--orange); font-size:26px; flex-shrink:0;
+}
+.job-name { font-family:var(--fH); font-size:24px; font-weight:900; letter-spacing:-.5px; color:#fff; margin-bottom:6px; }
+.job-id { font-size:13px; color:rgba(255,255,255,.45); }
+
+/* status badges */
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 18px; border-radius:30px;
+  font-size:13px; font-weight:700; letter-spacing:.2px;
+}
+.b-pending   { background:#fef9c3; color:#854d0e; }
+.b-assigned  { background:#dbeafe; color:#1e40af; }
+.b-progress  { background:#fff7ed; color:#c2410c; border:1px solid rgba(249,115,22,.25); }
+.b-completed { background:#dcfce7; color:#166534; }
+.b-cancelled { background:#fee2e2; color:#991b1b; }
+
+/* ── MAIN GRID ── */
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.detail-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:24px;
+  box-shadow:0 2px 10px rgba(15,32,64,.05);
+  animation:cardUp .6s var(--ease) .1s both;
+}
+.detail-card.full { grid-column:1 / -1; }
+
+.card-title {
+  font-family:var(--fH); font-size:13px; font-weight:800;
+  text-transform:uppercase; letter-spacing:2px; color:var(--orange);
+  margin-bottom:18px; display:flex; align-items:center; gap:8px;
+}
+.card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* info rows */
+.info-row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:11px 0; border-bottom:1px solid var(--light2);
+}
+.info-row:last-child { border-bottom:none; padding-bottom:0; }
+.info-row:first-child { padding-top:0; }
+.row-icon {
+  width:32px; height:32px; border-radius:8px;
+  background:var(--orange-lt); border:1px solid rgba(249,115,22,.15);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--orange); font-size:13px; flex-shrink:0;
+}
+.row-body { flex:1; }
+.row-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-bottom:3px; }
+.row-value { font-size:14px; font-weight:600; color:var(--navy); }
+.row-value a { color:var(--orange); transition:color .2s; }
+.row-value a:hover { color:var(--orange-dk); text-decoration:underline; }
+
+/* price highlight */
+.price-highlight {
+  font-family:var(--fH); font-size:22px; font-weight:900;
+  color:var(--orange); letter-spacing:-1px;
+}
+
+/* address card full width */
+.address-text {
+  font-size:14px; color:var(--navy); line-height:1.7;
+  background:var(--light); border-radius:10px; padding:14px 16px;
+  border:1px solid var(--border);
+}
+
+/* ── IMAGE SECTION ── */
+.image-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:24px;
+  box-shadow:0 2px 10px rgba(15,32,64,.05);
+  margin-bottom:16px;
+  animation:cardUp .6s var(--ease) .2s both;
+}
+.issue-img {
+  width:100%; max-height:360px; object-fit:cover;
+  border-radius:10px;
+  border:1px solid var(--border);
+  box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+
+/* ── ACTION BUTTONS ── */
+.action-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:24px;
+  box-shadow:0 2px 10px rgba(15,32,64,.05);
+  animation:cardUp .6s var(--ease) .25s both;
+}
+.action-title {
+  font-family:var(--fH); font-size:13px; font-weight:800;
+  text-transform:uppercase; letter-spacing:2px; color:var(--muted);
+  margin-bottom:16px; display:flex; align-items:center; gap:8px;
+}
+.action-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.action-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+
+/* status info strip (if completed) */
+.status-strip {
+  display:flex; align-items:center; gap:10px;
+  background:var(--light); border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px;
+  font-size:13px; color:var(--muted); margin-bottom:16px;
+}
+.status-strip i { color:var(--orange); }
+
+/* buttons */
+.btn {
+  display:inline-flex; align-items:center; gap:9px;
+  padding:12px 26px; border-radius:10px; border:none;
+  font-family:var(--fH); font-size:14px; font-weight:800;
+  cursor:pointer; transition:all .3s var(--ease);
+  position:relative; overflow:hidden; text-decoration:none;
+}
+.btn::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18),transparent 70%);
+  transform:translateX(-100%); transition:transform .5s;
+}
+.btn:hover::after { transform:translateX(100%); }
+.btn:hover { transform:translateY(-2px); }
+
+.btn-start {
+  background:var(--orange); color:#fff;
+  box-shadow:0 4px 16px rgba(249,115,22,.25);
+}
+.btn-start:hover { background:var(--orange-dk); box-shadow:0 10px 28px rgba(249,115,22,.4); }
+
+.btn-complete {
+  background:#16a34a; color:#fff;
+  box-shadow:0 4px 16px rgba(22,163,74,.2);
+}
+.btn-complete:hover { background:#15803d; box-shadow:0 10px 28px rgba(22,163,74,.35); }
+
+.btn-secondary {
+  background:var(--light); color:var(--navy);
+  border:1.5px solid var(--border);
+}
+.btn-secondary:hover { border-color:var(--orange); color:var(--orange); background:var(--orange-lt); }
+
+/* progress tracker */
+.progress-track {
+  display:flex; align-items:center; gap:0;
+  margin-bottom:20px; overflow:hidden;
+}
+.prog-step {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  gap:6px; position:relative;
+}
+.prog-step::before {
+  content:''; position:absolute;
+  top:15px; left:calc(50% + 18px); right:calc(-50% + 18px);
+  height:2px; background:var(--border); z-index:0;
+}
+.prog-step:last-child::before { display:none; }
+.prog-step.done::before { background:var(--orange); }
+.prog-dot {
+  width:30px; height:30px; border-radius:50%; position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; flex-shrink:0;
+  border:2px solid var(--border); background:var(--white); color:#94a3b8;
+  transition:all .3s;
+}
+.prog-step.done .prog-dot { background:var(--orange); border-color:var(--orange); color:#fff; }
+.prog-step.active .prog-dot { background:var(--orange-lt); border-color:var(--orange); color:var(--orange); }
+.prog-lbl { font-size:11px; font-weight:600; color:#94a3b8; text-align:center; }
+.prog-step.done .prog-lbl { color:var(--orange); }
+.prog-step.active .prog-lbl { color:var(--navy); font-weight:700; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:680px) {
+  .topbar { padding:0 20px; }
+  .page { padding:24px 16px 48px; }
+  .detail-grid { grid-template-columns:1fr; }
+  .detail-card.full { grid-column:unset; }
+  .hero-inner { flex-direction:column; align-items:flex-start; }
+  .action-row { flex-direction:column; align-items:stretch; }
+  .btn { justify-content:center; }
+  .progress-track { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'worker_my_jobs' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <div class="tb-right">
+    <a href="{% url 'worker_my_jobs' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back to Jobs
+    </a>
+  </div>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      <i class="fas {% if 'success' in message.tags %}fa-circle-check{% elif 'error' in message.tags %}fa-circle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Job Hero -->
+  <div class="job-hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="job-icon-wrap"><i class="fas fa-screwdriver-wrench"></i></div>
+        <div>
+          <div class="job-name">{{ job.service.name }}</div>
+          <div class="job-id">Job #{{ job.id }} &nbsp;·&nbsp; {{ job.created_at|date:"d M Y" }}</div>
+        </div>
+      </div>
+      <div>
+        {% if job.status == 'pending' %}
+          <span class="badge b-pending"><i class="fas fa-clock"></i> Pending</span>
+        {% elif job.status == 'assigned' %}
+          <span class="badge b-assigned"><i class="fas fa-user-check"></i> Assigned</span>
+        {% elif job.status == 'in_progress' %}
+          <span class="badge b-progress"><i class="fas fa-spinner fa-spin"></i> In Progress</span>
+        {% elif job.status == 'completed' %}
+          <span class="badge b-completed"><i class="fas fa-circle-check"></i> Completed</span>
+        {% elif job.status == 'cancelled' %}
+          <span class="badge b-cancelled"><i class="fas fa-times-circle"></i> Cancelled</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress tracker -->
+  <div class="progress-track" style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px 28px;margin-bottom:16px;">
+    <div class="prog-step {% if job.status == 'pending' or job.status == 'assigned' or job.status == 'in_progress' or job.status == 'completed' %}done{% endif %}">
+      <div class="prog-dot"><i class="fas fa-check"></i></div>
+      <div class="prog-lbl">Booked</div>
+    </div>
+    <div class="prog-step {% if job.status == 'assigned' or job.status == 'in_progress' or job.status == 'completed' %}done{% elif job.status == 'pending' %}active{% endif %}">
+      <div class="prog-dot"><i class="fas fa-user-check"></i></div>
+      <div class="prog-lbl">Assigned</div>
+    </div>
+    <div class="prog-step {% if job.status == 'in_progress' or job.status == 'completed' %}done{% elif job.status == 'assigned' %}active{% endif %}">
+      <div class="prog-dot"><i class="fas fa-play"></i></div>
+      <div class="prog-lbl">In Progress</div>
+    </div>
+    <div class="prog-step {% if job.status == 'completed' %}done{% elif job.status == 'in_progress' %}active{% endif %}">
+      <div class="prog-dot"><i class="fas fa-check-double"></i></div>
+      <div class="prog-lbl">Completed</div>
+    </div>
+  </div>
+
+  <!-- Detail grid -->
+  <div class="detail-grid">
+
+    <!-- Customer info -->
+    <div class="detail-card">
+      <div class="card-title"><i class="fas fa-user"></i> Customer</div>
+      <div class="info-row">
+        <div class="row-icon"><i class="fas fa-user"></i></div>
+        <div class="row-body">
+          <div class="row-label">Name</div>
+          <div class="row-value">{{ job.user.get_full_name|default:job.user.username }}</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="row-icon"><i class="fas fa-phone"></i></div>
+        <div class="row-body">
+          <div class="row-label">Phone</div>
+          <div class="row-value">
+            {% if job.user.phone %}
+              <a href="tel:{{ job.user.phone }}">{{ job.user.phone }}</a>
+            {% else %}Not provided{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="row-icon"><i class="fas fa-envelope"></i></div>
+        <div class="row-body">
+          <div class="row-label">Email</div>
+          <div class="row-value">
+            <a href="mailto:{{ job.user.email }}">{{ job.user.email }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job info -->
+    <div class="detail-card">
+      <div class="card-title"><i class="fas fa-briefcase"></i> Job Info</div>
+      <div class="info-row">
+        <div class="row-icon"><i class="fas fa-tools"></i></div>
+        <div class="row-body">
+          <div class="row-label">Service</div>
+          <div class="row-value">{{ job.service.name }}</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="row-icon"><i class="fas fa-indian-rupee-sign"></i></div>
+        <div class="row-body">
+          <div class="row-label">Price</div>
+          <div class="row-value price-highlight">₹{{ job.service.price }}</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="row-icon"><i class="fas fa-calendar"></i></div>
+        <div class="row-body">
+          <div class="row-label">Booked On</div>
+          <div class="row-value">{{ job.created_at|date:"d M Y, h:i A" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address — full width -->
+    <div class="detail-card full">
+      <div class="card-title"><i class="fas fa-location-dot"></i> Service Address</div>
+      <div class="address-text">
+        <i class="fas fa-map-pin" style="color:var(--orange);margin-right:8px;"></i>
+        {{ job.address }}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Issue image -->
+  {% if job.issue_image %}
+  <div class="image-card">
+    <div class="card-title"><i class="fas fa-image"></i> Issue Image</div>
+    <img src="{{ job.issue_image.url }}" alt="Issue reported by customer" class="issue-img">
+  </div>
+  {% endif %}
+
+  <!-- Action buttons -->
+  <div class="action-card">
+    <div class="action-title"><i class="fas fa-bolt"></i> Actions</div>
+
+    {% if job.status == 'completed' %}
+    <div class="status-strip">
+      <i class="fas fa-circle-check" style="color:#16a34a;font-size:18px;"></i>
+      <span><strong>Job completed!</strong> This job has been marked as done. Great work.</span>
+    </div>
+    {% endif %}
+
+    <div class="action-row">
+      {% if job.status == 'assigned' %}
+      <form method="POST" action="{% url 'update_job_status' job.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="in_progress">
+        <button type="submit" class="btn btn-start">
+          <i class="fas fa-play"></i> Start Job
+        </button>
+      </form>
+      {% endif %}
+
+      {% if job.status == 'in_progress' %}
+      <form method="POST" action="{% url 'update_job_status' job.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="completed">
+        <button type="submit" class="btn btn-complete">
+          <i class="fas fa-check-double"></i> Mark as Complete
+        </button>
+      </form>
+      {% endif %}
+
+      <a href="{% url 'worker_my_jobs' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Jobs
+      </a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

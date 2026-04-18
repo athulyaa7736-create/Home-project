@@ -1,0 +1,109 @@
+from django.contrib import admin
+from .models import Service
+from users.models import UserSubscription
+
+# Force unregister before registering
+try:
+    admin.site.unregister(Service)
+except:
+    pass
+
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'price', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'description']
+
+admin.site.register(Service, ServiceAdmin)
+
+class UserSubscriptionAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'user',
+        'plan',
+        'status_simple',
+        'start_date',
+        'end_date',
+        'days_remaining_simple',
+        'visits_used_simple',
+        'auto_renew',
+        'payment_simple'
+    ]
+    
+    list_filter = ['status', 'plan', 'auto_renew', 'start_date', 'end_date']
+    search_fields = ['user__username', 'user__email']
+    date_hierarchy = 'end_date'
+    readonly_fields = ['start_date', 'created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Subscriber Information', {
+            'fields': ('user', 'plan', 'status')
+        }),
+        ('Subscription Period', {
+            'fields': ('start_date', 'end_date', 'next_billing_date'),
+        }),
+        ('Usage Tracking', {
+            'fields': ('visits_used', 'total_visits_allowed'),  # ✅ Removed emergency_visits_used
+        }),
+        ('Payment Information', {
+            'fields': ('amount_paid', 'payment', 'auto_renew')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def status_simple(self, obj):
+        """Simple status with emoji - NO format_html"""
+        if obj.status == 'active':
+            days = obj.days_remaining()
+            if days <= 3:
+                return "⚠️ Expiring Soon"
+            return "✅ Active"
+        elif obj.status == 'expired':
+            return "❌ Expired"
+        elif obj.status == 'cancelled':
+            return "🚫 Cancelled"
+        return obj.status
+    status_simple.short_description = 'Status'
+    
+    def days_remaining_simple(self, obj):
+        """Simple days remaining - NO format_html"""
+        days = obj.days_remaining()
+        if days > 0:
+            if days <= 3:
+                return f"⚠️ {days} days"
+            elif days <= 7:
+                return f"⚠️ {days} days"
+            else:
+                return f"{days} days"
+        return "Expired"
+    days_remaining_simple.short_description = 'Remaining'
+    
+    def visits_used_simple(self, obj):
+        """Simple visits used display - NO format_html"""
+        return f"{obj.visits_used}/{obj.total_visits_allowed}"
+    visits_used_simple.short_description = 'Visits Used'
+    
+    def payment_simple(self, obj):
+        """Simple payment status - NO format_html"""
+        if obj.payment:
+            return f"✅ ₹{obj.amount_paid}"
+        return "❌ Pending"
+    payment_simple.short_description = 'Payment'
+    
+    actions = ['mark_expired', 'mark_active']
+    
+    def mark_expired(self, request, queryset):
+        updated = queryset.update(status='expired')
+        self.message_user(request, f"{updated} subscriptions marked as expired.")
+    mark_expired.short_description = "Mark as Expired"
+    
+    def mark_active(self, request, queryset):
+        updated = queryset.update(status='active')
+        self.message_user(request, f"{updated} subscriptions marked as active.")
+    mark_active.short_description = "Mark as Active"
+
+# Register models
+admin.site.register(Service, ServiceAdmin)
+admin.site.register(UserSubscription, UserSubscriptionAdmin)

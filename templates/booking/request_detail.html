@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request Details - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:#0f2040;--navy2:#1e3c72;--orange:#f97316;--orange-dk:#ea6c0a;
+  --orange-lt:#fff7ed;--white:#ffffff;--light:#f4f7fc;--light2:#eef2f9;
+  --muted:#64748b;--border:#e2e8f0;--fH:'Cabinet Grotesk',sans-serif;
+  --fB:'Figtree',sans-serif;--ease:cubic-bezier(.16,1,.3,1);--r:14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--fB);background:var(--navy);min-height:100vh;color:#0f172a;}
+a{text-decoration:none;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--orange);border-radius:2px;}
+
+/* BG */
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:56px 56px;animation:gridMove 30s linear infinite;}
+@keyframes gridMove{from{background-position:0 0}to{background-position:56px 56px}}
+.bg-blob{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.blob-a{width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);top:-80px;right:-60px;animation:bF 10s ease-in-out infinite;}
+.blob-b{width:300px;height:300px;background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%);bottom:-60px;left:-40px;animation:bF 14s ease-in-out infinite reverse;}
+@keyframes bF{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.1) translate(15px,-20px)}}
+
+/* PAGE */
+.page-wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:32px 24px 60px;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.tb-logo{display:flex;align-items:center;gap:10px;}
+.tb-logo-box{width:34px;height:34px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;}
+.tb-logo-text{font-family:var(--fH);font-size:21px;font-weight:900;letter-spacing:-1px;color:#fff;}
+.tb-logo-text em{color:var(--orange);font-style:normal;}
+.btn-back{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:30px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.8);font-size:13px;font-weight:600;transition:all .22s;}
+.btn-back:hover{background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.35);color:#fff;transform:translateX(-2px);}
+
+/* MAIN CARD */
+.detail-card{background:var(--white);border-radius:22px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:cardUp .6s var(--ease) both;}
+@keyframes cardUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* STATUS HEADER */
+.status-header{padding:26px 30px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden;}
+.sh-pending{background:linear-gradient(135deg,#c2410c,var(--orange));}
+.sh-assigned{background:linear-gradient(135deg,#1e40af,#3b82f6);}
+.sh-in_progress{background:linear-gradient(135deg,#15803d,#22c55e);}
+.sh-completed{background:linear-gradient(135deg,#065f46,#10b981);}
+.sh-cancelled{background:linear-gradient(135deg,#991b1b,#ef4444);}
+.status-header::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
+.status-header::after{content:'';position:absolute;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);top:-80px;right:-60px;pointer-events:none;}
+.sh-left{position:relative;z-index:1;}
+.sh-req-id{font-size:12px;color:rgba(255,255,255,.6);margin-bottom:6px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.sh-svc-name{font-family:var(--fH);font-size:24px;font-weight:900;color:#fff;letter-spacing:-.5px;}
+.sh-badge{position:relative;z-index:1;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);padding:8px 18px;border-radius:30px;font-size:13px;font-weight:700;color:#fff;backdrop-filter:blur(4px);}
+
+/* PROGRESS TRACKER */
+.progress-section{padding:28px 30px;border-bottom:1px solid var(--border);background:var(--light);}
+.progress-tracker{display:flex;align-items:flex-start;position:relative;}
+.progress-track-line{position:absolute;top:18px;left:18px;right:18px;height:2px;background:var(--border);z-index:1;}
+.progress-fill-line{position:absolute;top:0;left:0;height:100%;background:var(--orange);border-radius:2px;transition:width .8s var(--ease);}
+.progress-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:2;}
+.step-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;font-family:var(--fH);margin-bottom:8px;border:2px solid var(--border);background:var(--white);color:#94a3b8;transition:all .3s;}
+.step-circle.done{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 4px 12px rgba(249,115,22,.35);}
+.step-circle.active{background:var(--white);border-color:var(--orange);color:var(--orange);box-shadow:0 0 0 4px rgba(249,115,22,.12);}
+.step-lbl{font-size:11px;font-weight:700;color:#94a3b8;text-align:center;}
+.step-lbl.done{color:var(--orange);}
+.step-lbl.active{color:var(--navy);font-weight:800;}
+
+/* BODY */
+.detail-body{padding:28px 30px;}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.info-section{background:var(--light);border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:all .2s;}
+.info-section:hover{border-color:rgba(249,115,22,.25);}
+.info-section.full{grid-column:1/-1;}
+.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.info-row{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px dashed var(--border);}
+.info-row:last-child{border-bottom:none;}
+.info-lbl{font-size:11px;color:#94a3b8;font-weight:600;width:110px;flex-shrink:0;padding-top:2px;}
+.info-val{font-size:13px;font-weight:600;color:var(--navy);flex:1;}
+.info-val.green{color:#16a34a;}
+.info-val.orange{color:var(--orange);}
+
+/* Worker card */
+.worker-card{display:flex;align-items:center;gap:14px;background:var(--light);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:20px;transition:all .2s;}
+.worker-card:hover{border-color:rgba(249,115,22,.3);background:var(--orange-lt);}
+.worker-av{width:48px;height:48px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:20px;flex-shrink:0;}
+.worker-name{font-family:var(--fH);font-size:16px;font-weight:800;color:var(--navy);}
+.worker-meta{font-size:12px;color:var(--muted);margin-top:3px;display:flex;gap:14px;flex-wrap:wrap;}
+.worker-meta span{display:flex;align-items:center;gap:4px;}
+.worker-meta i{color:var(--orange);font-size:10px;}
+.no-worker{text-align:center;padding:20px;color:#ef4444;font-size:14px;font-weight:500;background:#fef2f2;border-radius:10px;border:1px solid #fecaca;}
+
+/* Notes */
+.notes-box{background:var(--orange-lt);border:1px solid rgba(249,115,22,.2);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--navy);line-height:1.6;}
+
+/* Issue image */
+.issue-img-wrap{margin-bottom:20px;}
+.issue-img{width:100%;max-height:280px;object-fit:cover;border-radius:12px;border:1px solid var(--border);}
+
+/* Action buttons */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+.btn-action{flex:1;min-width:120px;padding:12px 18px;border-radius:10px;font-family:var(--fH);font-size:13px;font-weight:800;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:all .25s;border:none;cursor:pointer;}
+.btn-orange{background:var(--orange);color:#fff;box-shadow:0 4px 14px rgba(249,115,22,.25);}
+.btn-orange:hover{background:var(--orange-dk);transform:translateY(-2px);box-shadow:0 10px 24px rgba(249,115,22,.4);}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-navy:hover{background:var(--navy2);transform:translateY(-2px);}
+.btn-red{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;}
+.btn-red:hover{background:#ef4444;color:#fff;border-color:#ef4444;transform:translateY(-2px);}
+
+@media(max-width:640px){.info-grid{grid-template-columns:1fr;}.action-row{flex-direction:column;}.page-wrap{padding:20px 16px 48px;}}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-blob blob-a"></div>
+<div class="bg-blob blob-b"></div>
+
+<div class="page-wrap">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="{% url 'user_dashboard' %}" class="tb-logo">
+      <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+      <div class="tb-logo-text">Fix<em>zy</em></div>
+    </a>
+    <a href="{% url 'my_requests' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> My Requests
+    </a>
+  </div>
+
+  <!-- Main card -->
+  <div class="detail-card">
+
+    <!-- Status header -->
+    <div class="status-header
+      {% if request.status == 'pending' %}sh-pending
+      {% elif request.status == 'assigned' %}sh-assigned
+      {% elif request.status == 'in_progress' %}sh-in_progress
+      {% elif request.status == 'completed' %}sh-completed
+      {% else %}sh-cancelled{% endif %}">
+      <div class="sh-left">
+        <div class="sh-req-id">Request #{{ request.id }}</div>
+        <div class="sh-svc-name">{{ request.service.name }}</div>
+      </div>
+      <div class="sh-badge">
+        <i class="fas
+          {% if request.status == 'pending' %}fa-clock
+          {% elif request.status == 'assigned' %}fa-user-check
+          {% elif request.status == 'in_progress' %}fa-play-circle
+          {% elif request.status == 'completed' %}fa-check-circle
+          {% else %}fa-times-circle{% endif %}">
+        </i>
+        {{ request.get_status_display }}
+      </div>
+    </div>
+
+    <!-- Progress tracker -->
+    <div class="progress-section">
+      <div class="progress-tracker">
+        <div class="progress-track-line">
+          <div class="progress-fill-line" id="progLine" style="width:0%;"></div>
+        </div>
+
+        <!-- Step 1: Requested -->
+        <div class="progress-step">
+          <div class="step-circle {% if request.status != 'cancelled' %}done{% endif %}">
+            <i class="fas fa-check" style="font-size:12px;"></i>
+          </div>
+          <div class="step-lbl {% if request.status != 'cancelled' %}done{% endif %}">Requested</div>
+        </div>
+
+        <!-- Step 2: Assigned -->
+        <div class="progress-step">
+          <div class="step-circle
+            {% if request.status == 'assigned' or request.status == 'in_progress' or request.status == 'completed' %}done
+            {% elif request.status == 'pending' %}active{% endif %}">
+            {% if request.status == 'assigned' or request.status == 'in_progress' or request.status == 'completed' %}
+              <i class="fas fa-check" style="font-size:12px;"></i>
+            {% else %}2{% endif %}
+          </div>
+          <div class="step-lbl
+            {% if request.status == 'assigned' or request.status == 'in_progress' or request.status == 'completed' %}done
+            {% elif request.status == 'pending' %}active{% endif %}">Assigned</div>
+        </div>
+
+        <!-- Step 3: In Progress -->
+        <div class="progress-step">
+          <div class="step-circle
+            {% if request.status == 'in_progress' or request.status == 'completed' %}done
+            {% elif request.status == 'assigned' %}active{% endif %}">
+            {% if request.status == 'in_progress' or request.status == 'completed' %}
+              <i class="fas fa-check" style="font-size:12px;"></i>
+            {% else %}3{% endif %}
+          </div>
+          <div class="step-lbl
+            {% if request.status == 'in_progress' or request.status == 'completed' %}done
+            {% elif request.status == 'assigned' %}active{% endif %}">In Progress</div>
+        </div>
+
+        <!-- Step 4: Completed -->
+        <div class="progress-step">
+          <div class="step-circle
+            {% if request.status == 'completed' %}done
+            {% elif request.status == 'in_progress' %}active{% endif %}">
+            {% if request.status == 'completed' %}
+              <i class="fas fa-check" style="font-size:12px;"></i>
+            {% else %}4{% endif %}
+          </div>
+          <div class="step-lbl
+            {% if request.status == 'completed' %}done
+            {% elif request.status == 'in_progress' %}active{% endif %}">Completed</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="detail-body">
+
+      <!-- Info grid -->
+      <div class="info-grid">
+
+        <!-- Service details -->
+        <div class="info-section">
+          <div class="sec-title"><i class="fas fa-screwdriver-wrench"></i> Service Details</div>
+          <div class="info-row"><span class="info-lbl">Service</span><span class="info-val">{{ request.service.name }}</span></div>
+          <div class="info-row"><span class="info-lbl">Category</span><span class="info-val">{{ request.service.get_category_display }}</span></div>
+          <div class="info-row"><span class="info-lbl">Price</span><span class="info-val orange">₹{{ request.service.price }}</span></div>
+          <div class="info-row"><span class="info-lbl">Description</span><span class="info-val">{{ request.service.description|truncatechars:80 }}</span></div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="info-section">
+          <div class="sec-title"><i class="fas fa-calendar"></i> Schedule</div>
+          <div class="info-row"><span class="info-lbl">Requested</span><span class="info-val">{{ request.created_at|date:"d M Y, h:i A" }}</span></div>
+          {% if request.preferred_date %}
+          <div class="info-row"><span class="info-lbl">Preferred Date</span><span class="info-val">{{ request.preferred_date|date:"d M Y" }}</span></div>
+          {% endif %}
+          {% if request.preferred_time %}
+          <div class="info-row"><span class="info-lbl">Preferred Time</span><span class="info-val">{{ request.preferred_time|time:"h:i A" }}</span></div>
+          {% endif %}
+        </div>
+
+        <!-- Location -->
+        <div class="info-section">
+          <div class="sec-title"><i class="fas fa-location-dot"></i> Location</div>
+          <div class="info-row"><span class="info-lbl">Address</span><span class="info-val">{{ request.address }}</span></div>
+        </div>
+
+        <!-- Payment status -->
+        <div class="info-section">
+          <div class="sec-title"><i class="fas fa-indian-rupee-sign"></i> Payment</div>
+          <div class="info-row">
+            <span class="info-lbl">Amount</span>
+            <span class="info-val orange">₹{{ request.service.price }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-lbl">Status</span>
+            <span class="info-val">
+              {% if request.payment %}
+                {% if request.payment.status == 'completed' %}
+                  <span style="color:#16a34a;font-weight:700;"><i class="fas fa-check-circle"></i> Paid</span>
+                {% else %}
+                  <span style="color:var(--orange);">Pending</span>
+                {% endif %}
+              {% elif request.subscription %}
+                <span style="color:#7c3aed;"><i class="fas fa-crown"></i> Subscription</span>
+              {% else %}
+                <span style="color:#94a3b8;">Not paid</span>
+              {% endif %}
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Worker info -->
+      <div class="sec-title" style="margin-bottom:12px;"><i class="fas fa-user-tie"></i> Assigned Worker</div>
+      {% if request.assigned_worker %}
+      <div class="worker-card">
+        <div class="worker-av"><i class="fas fa-user-tie"></i></div>
+        <div>
+          <div class="worker-name">{{ request.assigned_worker.username }}</div>
+          <div class="worker-meta">
+            <span><i class="fas fa-phone"></i> {{ request.assigned_worker.phone|default:"No phone" }}</span>
+            {% if request.assigned_worker.worker_profile %}
+            <span><i class="fas fa-briefcase"></i> {{ request.assigned_worker.worker_profile.experience }} yrs exp</span>
+            <span><i class="fas fa-star"></i> {{ request.assigned_worker.worker_profile.average_rating|floatformat:1 }} rating</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="no-worker"><i class="fas fa-hourglass-half" style="margin-right:8px;"></i>No worker assigned yet — we'll notify you when one is assigned.</div>
+      {% endif %}
+
+      <!-- Notes -->
+      {% if request.notes %}
+      <div class="sec-title" style="margin:20px 0 10px;"><i class="fas fa-sticky-note"></i> Additional Notes</div>
+      <div class="notes-box"><i class="fas fa-quote-left" style="color:var(--orange);margin-right:8px;font-size:12px;"></i>{{ request.notes }}</div>
+      {% endif %}
+
+      <!-- Issue image -->
+      {% if request.issue_image %}
+      <div class="sec-title" style="margin:20px 0 10px;"><i class="fas fa-camera"></i> Issue Image</div>
+      <div class="issue-img-wrap">
+        <img src="{{ request.issue_image.url }}" alt="Issue Image" class="issue-img">
+      </div>
+      {% endif %}
+
+      <!-- Action buttons -->
+      <div class="action-row">
+        {% if request.status == 'pending' %}
+        <a href="{% url 'cancel_request' request.id %}" class="btn-action btn-red"
+           onclick="return confirm('Cancel this booking?')">
+          <i class="fas fa-times"></i> Cancel Request
+        </a>
+        {% endif %}
+
+        {% if request.status == 'completed' %}
+          {% if not request.payment %}
+          <a href="{% url 'payment_page' request.id %}" class="btn-action btn-orange">
+            <i class="fas fa-credit-card"></i> Pay Now
+          </a>
+          {% endif %}
+        {% endif %}
+
+        <a href="{% url 'my_requests' %}" class="btn-action btn-navy">
+          <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+        <a href="{% url 'user_dashboard' %}" class="btn-action btn-navy" style="background:var(--light2);color:var(--navy);border:1.5px solid var(--border);"
+           onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'"
+           onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--navy)'">
+          <i class="fas fa-house"></i> Dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Animate progress bar fill
+document.addEventListener('DOMContentLoaded', function() {
+  const status = '{{ request.status }}';
+  const fills  = { pending:0, assigned:33, in_progress:66, completed:100, cancelled:0 };
+  const pct    = fills[status] || 0;
+  setTimeout(function() {
+    const line = document.getElementById('progLine');
+    if (line) line.style.width = pct + '%';
+  }, 300);
+});
+</script>
+
+</body>
+</html>

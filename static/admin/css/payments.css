@@ -1,0 +1,97 @@
+/* Clean table layout */
+#result_list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#result_list thead th {
+    background: #2c3e50;
+    color: white;
+    padding: 12px 8px;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: left;
+}
+
+#result_list tbody tr {
+    border-bottom: 1px solid #ecf0f1;
+}
+
+#result_list tbody tr:hover {
+    background: #f8f9fa;
+}
+
+#result_list tbody td {
+    padding: 12px 8px;
+    vertical-align: middle;
+}
+
+/* Bulk action bar */
+.actions {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.actions select {
+    padding: 8px 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    min-width: 200px;
+}
+
+.actions button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.actions button:hover {
+    background: #2980b9;
+}
+
+/* Pagination */
+.paginator {
+    margin-top: 20px;
+    padding: 10px 0;
+    text-align: right;
+}
+
+.paginator a, .paginator span {
+    padding: 8px 12px;
+    margin: 0 2px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #34495e;
+}
+
+.paginator .this-page {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+/* Filter section */
+#changelist-filter {
+    background: white;
+    border: 1px solid #ecf0f1;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+#changelist-filter h2 {
+    margin-top: 0;
+    font-size: 16px;
+    color: #2c3e50;
+}

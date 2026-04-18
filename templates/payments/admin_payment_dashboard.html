@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worker Payments - Fixzy Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:var(--text); }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background:var(--navy); padding:0 44px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.tb-logo { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.tb-logo-box { width:34px; height:34px; background:var(--orange); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; }
+.tb-logo-text { font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+.tb-right { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:8px 18px; border-radius:30px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.8); font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35); color:#fff; transform:translateX(-2px); }
+
+/* ── PAGE ── */
+.page { max-width:1280px; margin:0 auto; padding:32px 28px 60px; }
+
+/* ── PAGE HEAD ── */
+.page-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.page-head-icon { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,var(--navy2),var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:22px; box-shadow:0 4px 16px rgba(15,32,64,.15); flex-shrink:0; }
+.page-head-title { font-family:var(--fH); font-size:26px; font-weight:900; letter-spacing:-.8px; color:var(--navy); }
+.page-head-sub { font-size:14px; color:var(--muted); margin-top:2px; }
+
+/* ── WEEK CARD ── */
+.week-card {
+  background:var(--navy); border-radius:var(--r);
+  padding:26px 32px; margin-bottom:20px;
+  border:1px solid rgba(249,115,22,.15);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:20px; position:relative; overflow:hidden;
+}
+.week-card::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.week-card::after { content:''; position:absolute; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-80px; right:-60px; pointer-events:none; }
+.wc-left { position:relative; z-index:1; }
+.wc-label { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(249,115,22,.7); margin-bottom:8px; display:flex; align-items:center; gap:7px; }
+.wc-label::before { content:''; width:16px; height:1.5px; background:rgba(249,115,22,.5); border-radius:2px; }
+.wc-dates { display:flex; align-items:center; gap:12px; }
+.wc-date-pill {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+  border-radius:10px; padding:10px 18px;
+  font-family:var(--fH); font-size:16px; font-weight:700; color:#fff;
+}
+.wc-date-pill i { color:var(--orange); }
+.wc-arrow { color:rgba(255,255,255,.3); font-size:18px; }
+.wc-right { position:relative; z-index:1; }
+.btn-calculate {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:13px 28px; background:var(--orange); color:#fff;
+  border:none; border-radius:10px; cursor:pointer;
+  font-family:var(--fH); font-size:15px; font-weight:800;
+  transition:all .3s var(--ease); position:relative; overflow:hidden;
+}
+.btn-calculate::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18),transparent 70%); transform:translateX(-100%); transition:transform .5s; }
+.btn-calculate:hover::after { transform:translateX(100%); }
+.btn-calculate:hover { background:var(--orange-dk); transform:translateY(-2px); box-shadow:0 12px 28px rgba(249,115,22,.35); }
+
+/* ── SECTION CARD ── */
+.section-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); overflow:hidden;
+  box-shadow:0 2px 12px rgba(15,32,64,.05);
+  margin-bottom:20px;
+}
+.sec-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 24px; border-bottom:1px solid var(--border);
+  flex-wrap:wrap; gap:12px;
+}
+.sec-title { font-family:var(--fH); font-size:16px; font-weight:800; color:var(--navy); display:flex; align-items:center; gap:8px; }
+.sec-title i { color:var(--orange); }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; min-width:700px; }
+thead tr { background:var(--light); }
+th { text-align:left; padding:13px 16px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; border-bottom:1px solid var(--border); }
+td { padding:14px 16px; border-bottom:1px solid var(--light2); font-size:13px; color:#334155; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr { transition:background .15s; }
+tbody tr:hover td { background:var(--light); }
+
+/* table cells */
+.batch-id { font-family:var(--fH); font-weight:900; color:var(--navy); }
+.amount-green { font-family:var(--fH); font-size:14px; font-weight:900; color:#16a34a; }
+.amount-orange { font-family:var(--fH); font-size:14px; font-weight:900; color:var(--orange); }
+.worker-name { font-weight:700; color:var(--navy); }
+.worker-email { font-size:11px; color:#94a3b8; }
+
+/* status badges */
+.badge { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:20px; font-size:11px; font-weight:700; }
+.b-pending    { background:#fff7ed; color:#c2410c; }
+.b-completed  { background:#dcfce7; color:#166534; }
+.b-processing { background:#dbeafe; color:#1e40af; }
+
+/* action buttons */
+.act-btn { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:7px; font-size:11px; font-weight:700; font-family:var(--fH); transition:all .22s; }
+.ab-process { background:var(--orange-lt); color:var(--orange); border:1px solid rgba(249,115,22,.25); }
+.ab-process:hover { background:var(--orange); color:#fff; }
+.ab-export  { background:#dcfce7; color:#166634; border:1px solid #bbf7d0; }
+.ab-export:hover  { background:#16a34a; color:#fff; border-color:#16a34a; }
+.ab-bank    { background:#dbeafe; color:#1e40af; border:1px solid #bfdbfe; }
+.ab-bank:hover    { background:#1d4ed8; color:#fff; border-color:#1d4ed8; }
+.ab-history { background:var(--light2); color:var(--navy); border:1.5px solid var(--border); }
+.ab-history:hover { border-color:var(--orange); color:var(--orange); }
+.ab-pay     { background:var(--orange); color:#fff; border:none; }
+.ab-pay:hover     { background:var(--orange-dk); transform:translateY(-1px); }
+.no-pay     { font-size:11px; color:#94a3b8; padding:6px 8px; }
+
+/* acts row */
+.acts { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+
+/* empty */
+.empty-cell { text-align:center; padding:48px 20px; }
+.empty-icon { width:56px; height:56px; background:var(--light2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--muted); margin:0 auto 12px; }
+.empty-title { font-family:var(--fH); font-size:15px; font-weight:800; color:var(--navy); margin-bottom:4px; }
+.empty-sub { font-size:13px; color:var(--muted); }
+
+/* responsive */
+@media(max-width:768px) { .topbar { padding:0 20px; } .page { padding:20px 16px 48px; } .week-card { flex-direction:column; } }
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'admin_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <div class="tb-right">
+    <a href="{% url 'admin_dashboard' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Page heading -->
+  <div class="page-head">
+    <div class="page-head-icon"><i class="fas fa-money-bill-wave"></i></div>
+    <div>
+      <div class="page-head-title">Worker Payments</div>
+      <div class="page-head-sub">Manage weekly payment batches and worker earnings</div>
+    </div>
+  </div>
+
+  <!-- Current week card -->
+  <div class="week-card">
+    <div class="wc-left">
+      <div class="wc-label"><i class="fas fa-calendar-week"></i> Current Payment Week</div>
+      <div class="wc-dates">
+        <div class="wc-date-pill"><i class="fas fa-calendar"></i> {{ week_start|date:"d M Y" }}</div>
+        <div class="wc-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="wc-date-pill"><i class="fas fa-calendar-check"></i> {{ week_end|date:"d M Y" }}</div>
+      </div>
+    </div>
+    <div class="wc-right">
+      <form method="POST" action="{% url 'calculate_weekly_payments' %}">
+        {% csrf_token %}
+        <input type="hidden" name="week_start" value="{{ week_start|date:'Y-m-d' }}">
+        <input type="hidden" name="week_end"   value="{{ week_end|date:'Y-m-d' }}">
+        <button type="submit" class="btn-calculate">
+          <i class="fas fa-calculator"></i> Calculate Weekly Payments
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recent Payment Batches -->
+  <div class="section-card">
+    <div class="sec-hd">
+      <div class="sec-title"><i class="fas fa-layer-group"></i> Recent Payment Batches</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Batch ID</th>
+            <th>Period</th>
+            <th>Workers</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for batch in recent_batches %}
+          <tr>
+            <td><span class="batch-id">#{{ batch.batch_id }}</span></td>
+            <td style="color:var(--muted);">{{ batch.period_start|date:"d M" }} → {{ batch.period_end|date:"d M" }}</td>
+            <td>
+              <span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;">
+                <i class="fas fa-users" style="color:var(--orange);font-size:12px;"></i>
+                {{ batch.total_workers }}
+              </span>
+            </td>
+            <td><span class="amount-green">₹{{ batch.total_amount }}</span></td>
+            <td>
+              {% if batch.status == 'pending' %}
+                <span class="badge b-pending"><i class="fas fa-clock"></i> {{ batch.get_status_display }}</span>
+              {% elif batch.status == 'completed' %}
+                <span class="badge b-completed"><i class="fas fa-circle-check"></i> {{ batch.get_status_display }}</span>
+              {% elif batch.status == 'processing' %}
+                <span class="badge b-processing"><i class="fas fa-spinner fa-spin"></i> {{ batch.get_status_display }}</span>
+              {% else %}
+                <span class="badge b-pending">{{ batch.get_status_display }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="acts">
+                <a href="{% url 'process_batch_payments' batch.batch_id %}" class="act-btn ab-process">
+                  <i class="fas fa-play"></i> Process
+                </a>
+                <a href="{% url 'export_payment_report' batch.batch_id %}" class="act-btn ab-export">
+                  <i class="fas fa-download"></i> Export
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6">
+              <div class="empty-cell">
+                <div class="empty-icon"><i class="fas fa-layer-group"></i></div>
+                <div class="empty-title">No Payment Batches Yet</div>
+                <div class="empty-sub">Calculate weekly payments to create the first batch.</div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Worker Payment Status -->
+  <div class="section-card">
+    <div class="sec-hd">
+      <div class="sec-title"><i class="fas fa-users"></i> Worker Payment Status</div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Worker</th>
+            <th>Service</th>
+            <th>Jobs This Week</th>
+            <th>Total Earnings</th>
+            <th>Commission (20%)</th>
+            <th>Net Payable</th>
+            <th>Pay Method</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for worker in workers %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;color:var(--orange);font-family:var(--fH);font-size:14px;font-weight:900;flex-shrink:0;">
+                  {{ worker.user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                  <div class="worker-name">{{ worker.user.username }}</div>
+                  <div class="worker-email">{{ worker.user.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span style="background:var(--orange-lt);border:1px solid rgba(249,115,22,.2);color:var(--orange);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">
+                {{ worker.get_service_type_display }}
+              </span>
+            </td>
+            <td style="font-family:var(--fH);font-weight:800;color:var(--navy);">{{ worker.weekly_jobs|default:"0" }}</td>
+            <td><span class="amount-orange">₹{{ worker.weekly_earnings|default:"0" }}</span></td>
+            <td style="color:#dc2626;font-weight:700;">₹{{ worker.commission|default:"0"|floatformat:2 }}</td>
+            <td><span class="amount-green">₹{{ worker.net_earnings|default:"0"|floatformat:2 }}</span></td>
+            <td style="color:var(--muted);font-size:13px;">{{ worker.get_payment_method_display }}</td>
+            <td>
+              <div class="acts">
+                <a href="{% url 'admin_worker_bank_details' worker.id %}" class="act-btn ab-bank">
+                  <i class="fas fa-building-columns"></i> Bank
+                </a>
+                <a href="{% url 'worker_payment_history' worker.id %}" class="act-btn ab-history">
+                  <i class="fas fa-clock-rotate-left"></i> History
+                </a>
+                {% if worker.net_earnings > 0 %}
+                <a href="{% url 'admin_process_worker_payment' worker.id %}" class="act-btn ab-pay">
+                  <i class="fas fa-paper-plane"></i> Pay ₹{{ worker.net_earnings|floatformat:0 }}
+                </a>
+                {% else %}
+                <span class="no-pay">No payment due</span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8">
+              <div class="empty-cell">
+                <div class="empty-icon"><i class="fas fa-users"></i></div>
+                <div class="empty-title">No Workers Found</div>
+                <div class="empty-sub">Worker payment records will appear here once jobs are completed.</div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

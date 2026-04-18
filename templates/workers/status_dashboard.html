@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worker Status Dashboard - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --navy3:     #243f82;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --orange-gl: rgba(249,115,22,.18);
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --text:      #0f172a;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:var(--text); }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background:var(--navy); padding:0 40px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:200;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.tb-logo { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.tb-logo-box { width:34px; height:34px; background:var(--orange); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; }
+.tb-logo-text { font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+.tb-right { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:8px 18px; border-radius:30px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.8); font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35); color:#fff; transform:translateX(-3px); }
+
+/* ── PAGE ── */
+.page { max-width:1400px; margin:0 auto; padding:32px 28px 60px; }
+
+/* ── PAGE HEAD ── */
+.page-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.page-head-icon { width:50px; height:50px; border-radius:13px; background:linear-gradient(135deg,var(--navy2),var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:21px; box-shadow:0 4px 16px rgba(15,32,64,.15); flex-shrink:0; }
+.page-head-title { font-family:var(--fH); font-size:24px; font-weight:900; letter-spacing:-.8px; color:var(--navy); }
+.page-head-sub { font-size:13px; color:var(--muted); margin-top:2px; }
+
+/* ── STATS GRID ── */
+.stats-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:16px; }
+.stat-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:20px 16px;
+  text-align:center; transition:all .3s var(--ease);
+  position:relative; overflow:hidden;
+}
+.stat-card::before { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--orange); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease); }
+.stat-card:hover { transform:translateY(-4px); box-shadow:0 14px 36px rgba(249,115,22,.12); }
+.stat-card:hover::before { transform:scaleX(1); }
+.stat-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; margin:0 auto 12px; }
+.si-orange { background:var(--orange-lt); color:var(--orange); }
+.si-green  { background:#dcfce7; color:#16a34a; }
+.si-amber  { background:#fef9c3; color:#ca8a04; }
+.si-red    { background:#fee2e2; color:#dc2626; }
+.si-blue   { background:#dbeafe; color:#1d4ed8; }
+.si-navy   { background:#e0e7ff; color:var(--navy2); }
+.stat-val { font-family:var(--fH); font-size:26px; font-weight:900; letter-spacing:-1px; color:var(--navy); margin-bottom:4px; }
+.stat-lbl { font-size:12px; color:var(--muted); }
+
+/* ── DOC STATS ── */
+.doc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.doc-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:18px 16px;
+  display:flex; align-items:center; gap:14px;
+  transition:all .3s var(--ease);
+  border-left:4px solid var(--orange);
+}
+.doc-card:hover { transform:translateY(-3px); box-shadow:0 10px 28px rgba(249,115,22,.1); }
+.doc-ic { width:42px; height:42px; border-radius:11px; background:var(--orange-lt); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:18px; flex-shrink:0; }
+.doc-val { font-family:var(--fH); font-size:20px; font-weight:900; color:var(--navy); letter-spacing:-.5px; }
+.doc-lbl { font-size:12px; color:var(--muted); margin-top:1px; }
+
+/* ── FILTERS ── */
+.filters-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:22px 24px; margin-bottom:20px;
+  box-shadow:0 2px 10px rgba(15,32,64,.04);
+}
+.filters-hd {
+  font-family:var(--fH); font-size:14px; font-weight:800;
+  text-transform:uppercase; letter-spacing:1.5px; color:var(--navy);
+  margin-bottom:16px; display:flex; align-items:center; gap:8px;
+}
+.filters-hd i { color:var(--orange); }
+.filters-row { display:grid; grid-template-columns:repeat(5,1fr) auto; gap:12px; align-items:end; }
+.fg { display:flex; flex-direction:column; gap:5px; }
+.fg label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--navy); }
+.fg select, .fg input {
+  padding:10px 12px; border:1.5px solid var(--border); border-radius:9px;
+  font-size:13px; font-family:var(--fB); color:var(--navy);
+  background:var(--light); outline:none; transition:all .2s;
+  appearance:none; -webkit-appearance:none;
+}
+.fg select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:28px; cursor:pointer; }
+.fg select:focus, .fg input:focus { border-color:var(--orange); background:var(--white); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.fg input::placeholder { color:#94a3b8; }
+.filter-btns { display:flex; gap:8px; }
+.btn-filter { padding:10px 20px; background:var(--orange); color:#fff; border:none; border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; white-space:nowrap; }
+.btn-filter:hover { background:var(--orange-dk); transform:translateY(-1px); }
+.btn-reset { padding:10px 16px; background:var(--light2); color:var(--navy); border:1.5px solid var(--border); border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; transition:all .25s; }
+.btn-reset:hover { border-color:var(--orange); color:var(--orange); }
+
+/* ── WORKER GRID ── */
+.worker-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(420px,1fr)); gap:18px; }
+
+.worker-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); overflow:hidden;
+  box-shadow:0 2px 10px rgba(15,32,64,.05);
+  transition:all .35s var(--ease);
+}
+.worker-card:hover { transform:translateY(-5px); box-shadow:0 18px 44px rgba(15,32,64,.12); border-color:rgba(249,115,22,.25); }
+
+/* card header */
+.wc-head {
+  background:var(--navy);
+  padding:18px 20px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; position:relative; overflow:hidden;
+}
+.wc-head::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.wc-head::after { content:''; position:absolute; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-60px; right:-40px; pointer-events:none; }
+.wc-left { display:flex; align-items:center; gap:12px; position:relative; z-index:1; }
+.wc-avatar { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,var(--orange),var(--orange-dk)); display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--fH); font-size:17px; font-weight:900; flex-shrink:0; border:2px solid rgba(255,255,255,.15); }
+.wc-name { font-family:var(--fH); font-size:16px; font-weight:800; color:#fff; letter-spacing:-.3px; }
+.wc-name a { color:#fff; transition:color .2s; }
+.wc-name a:hover { color:var(--orange); }
+.wc-svc { font-size:12px; color:rgba(255,255,255,.45); margin-top:2px; }
+
+/* availability badges */
+.avail-badge { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; position:relative; z-index:1; }
+.av-available { background:#dcfce7; color:#166534; }
+.av-busy      { background:#fff7ed; color:#c2410c; border:1px solid rgba(249,115,22,.2); }
+.av-leave     { background:#fee2e2; color:#991b1b; }
+.av-pending   { background:rgba(255,255,255,.1); color:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.15); }
+
+/* card body */
+.wc-body { padding:18px 20px; }
+
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.info-item {
+  background:var(--light); border:1px solid var(--border);
+  border-radius:10px; padding:10px 12px;
+  transition:all .2s;
+}
+.info-item:hover { border-color:rgba(249,115,22,.25); background:var(--orange-lt); }
+.info-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#94a3b8; margin-bottom:3px; }
+.info-val { font-size:13px; font-weight:700; color:var(--navy); }
+
+.badge-v { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; }
+.bv-ok  { background:#dcfce7; color:#166534; }
+.bv-no  { background:#fef9c3; color:#854d0e; }
+
+/* documents */
+.docs-section {
+  padding-top:14px; border-top:1px dashed var(--border);
+  margin-top:4px;
+}
+.docs-hd {
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px;
+  color:var(--orange); margin-bottom:10px; display:flex; align-items:center; gap:6px;
+}
+.docs-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.doc-tile {
+  text-align:center; padding:10px 6px; border-radius:10px;
+  background:var(--light); border:1px solid var(--border);
+  transition:all .2s;
+}
+.doc-tile:hover { border-color:rgba(249,115,22,.35); background:var(--orange-lt); }
+.dt-ic { font-size:20px; color:var(--navy2); margin-bottom:5px; }
+.dt-name { font-size:10px; color:var(--muted); margin-bottom:5px; font-weight:500; }
+.dt-status { display:inline-block; padding:2px 7px; border-radius:10px; font-size:10px; font-weight:700; }
+.ds-up  { background:#dcfce7; color:#166534; }
+.ds-mis { background:#fee2e2; color:#991b1b; }
+.dt-link { display:block; margin-top:5px; font-size:10px; color:var(--orange); font-weight:600; transition:color .2s; }
+.dt-link:hover { color:var(--orange-dk); }
+
+/* action row */
+.wc-actions { display:flex; gap:8px; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+.act-btn {
+  flex:1; padding:9px 10px; border:none; border-radius:8px;
+  font-size:12px; font-weight:700; font-family:var(--fH);
+  cursor:pointer; text-align:center; transition:all .25s;
+  display:inline-flex; align-items:center; justify-content:center; gap:5px;
+}
+.ab-edit   { background:var(--orange-lt); color:var(--orange); border:1px solid rgba(249,115,22,.25); }
+.ab-edit:hover { background:var(--orange); color:#fff; }
+.ab-verify { background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
+.ab-verify:hover { background:#16a34a; color:#fff; border-color:#16a34a; }
+
+/* empty state */
+.empty-state { text-align:center; padding:60px 20px; background:var(--white); border:1px solid var(--border); border-radius:var(--r); grid-column:1/-1; }
+.empty-icon { width:72px; height:72px; background:var(--light2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--muted); margin:0 auto 16px; }
+.empty-title { font-family:var(--fH); font-size:18px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+.empty-sub { font-size:14px; color:var(--muted); }
+
+/* result count */
+.result-count { font-size:13px; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+.result-count strong { color:var(--navy); }
+.result-count span { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; background:var(--orange); color:#fff; border-radius:50%; font-size:11px; font-weight:700; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px) { .stats-grid { grid-template-columns:repeat(3,1fr); } .doc-grid { grid-template-columns:repeat(2,1fr); } .filters-row { grid-template-columns:repeat(3,1fr); } }
+@media(max-width:768px) { .topbar{padding:0 20px;} .page{padding:20px 16px 48px;} .stats-grid{grid-template-columns:repeat(2,1fr);} .doc-grid{grid-template-columns:repeat(2,1fr);} .filters-row{grid-template-columns:1fr;} .worker-grid{grid-template-columns:1fr;} .docs-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'worker_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <div class="tb-right">
+    <a href="{% url 'worker_dashboard' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Page heading -->
+  <div class="page-head">
+    <div class="page-head-icon"><i class="fas fa-users-gear"></i></div>
+    <div>
+      <div class="page-head-title">Worker Status Dashboard</div>
+      <div class="page-head-sub">Monitor all workers, availability, documents and verification status</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon si-navy"><i class="fas fa-users"></i></div>
+      <div class="stat-val">{{ total_workers }}</div>
+      <div class="stat-lbl">Total Workers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-green"><i class="fas fa-circle-check"></i></div>
+      <div class="stat-val">{{ available_workers }}</div>
+      <div class="stat-lbl">Available</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-amber"><i class="fas fa-clock"></i></div>
+      <div class="stat-val">{{ busy_workers }}</div>
+      <div class="stat-lbl">Busy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-red"><i class="fas fa-plane"></i></div>
+      <div class="stat-val">{{ on_leave_workers }}</div>
+      <div class="stat-lbl">On Leave</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-green"><i class="fas fa-check-double"></i></div>
+      <div class="stat-val">{{ verified_workers }}</div>
+      <div class="stat-lbl">Verified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon si-red"><i class="fas fa-times-circle"></i></div>
+      <div class="stat-val">{{ unverified_workers }}</div>
+      <div class="stat-lbl">Unverified</div>
+    </div>
+  </div>
+
+  <!-- Document stats -->
+  <div class="doc-grid">
+    <div class="doc-card">
+      <div class="doc-ic"><i class="fas fa-id-card"></i></div>
+      <div>
+        <div class="doc-val">{{ workers_with_id }}<span style="font-size:14px;color:var(--muted);font-weight:500;">/{{ total_workers }}</span></div>
+        <div class="doc-lbl">ID Proof Uploaded</div>
+      </div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-ic"><i class="fas fa-house"></i></div>
+      <div>
+        <div class="doc-val">{{ workers_with_address }}<span style="font-size:14px;color:var(--muted);font-weight:500;">/{{ total_workers }}</span></div>
+        <div class="doc-lbl">Address Proof</div>
+      </div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-ic"><i class="fas fa-certificate"></i></div>
+      <div>
+        <div class="doc-val">{{ workers_with_certificate }}<span style="font-size:14px;color:var(--muted);font-weight:500;">/{{ total_workers }}</span></div>
+        <div class="doc-lbl">Certificates</div>
+      </div>
+    </div>
+    <div class="doc-card" style="border-left-color:#16a34a;">
+      <div class="doc-ic" style="background:#dcfce7;color:#16a34a;"><i class="fas fa-folder-check"></i></div>
+      <div>
+        <div class="doc-val" style="color:#16a34a;">{{ workers_with_all_docs }}<span style="font-size:14px;color:var(--muted);font-weight:500;">/{{ total_workers }}</span></div>
+        <div class="doc-lbl">All Documents</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filters-hd"><i class="fas fa-filter"></i> Filter Workers</div>
+    <div class="filters-row">
+      <div class="fg">
+        <label>Status</label>
+        <select id="statusFilter">
+          <option value="all">All Statuses</option>
+          <option value="available">Available</option>
+          <option value="busy">Busy</option>
+          <option value="on_leave">On Leave</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Verification</label>
+        <select id="verificationFilter">
+          <option value="all">All</option>
+          <option value="verified">Verified</option>
+          <option value="unverified">Unverified</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Documents</label>
+        <select id="documentFilter">
+          <option value="all">All</option>
+          <option value="has_id">Has ID Proof</option>
+          <option value="has_address">Has Address Proof</option>
+          <option value="has_certificate">Has Certificate</option>
+          <option value="missing_docs">Missing Docs</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Service Type</label>
+        <select id="serviceFilter">
+          <option value="all">All Services</option>
+          {% for service in service_types %}
+          <option value="{{ service.code }}">{{ service.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="fg">
+        <label>Search</label>
+        <input type="text" id="searchInput" placeholder="Search by name…">
+      </div>
+      <div class="filter-btns">
+        <button class="btn-filter" onclick="filterWorkers()"><i class="fas fa-search"></i> Apply</button>
+        <button class="btn-reset" onclick="resetFilters()"><i class="fas fa-rotate-left"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result count -->
+  <div class="result-count">
+    Showing <span id="visCount">{{ workers|length }}</span> of <strong>{{ workers|length }} workers</strong>
+  </div>
+
+  <!-- Worker grid -->
+  <div class="worker-grid" id="workerGrid">
+    {% for worker in workers %}
+    <div class="worker-card"
+         data-status="{{ worker.availability_status }}"
+         data-verified="{% if worker.verified %}verified{% else %}unverified{% endif %}"
+         data-service="{{ worker.service_type }}"
+         data-has-id="{% if worker.id_proof %}yes{% else %}no{% endif %}"
+         data-has-address="{% if worker.address_proof %}yes{% else %}no{% endif %}"
+         data-has-cert="{% if worker.certificate %}yes{% else %}no{% endif %}"
+         data-name="{{ worker.user.username|lower }}">
+
+      <!-- Card header -->
+      <div class="wc-head">
+        <div class="wc-left">
+          <div class="wc-avatar">{{ worker.user.username|slice:":1"|upper }}</div>
+          <div>
+            <div class="wc-name">
+              <a href="/admin/workers/workerprofile/{{ worker.id }}/change/">{{ worker.user.username }}</a>
+            </div>
+            <div class="wc-svc">{{ worker.get_service_type_display }}</div>
+          </div>
+        </div>
+        <div>
+          {% if worker.availability_status == 'available' %}
+            <span class="avail-badge av-available"><i class="fas fa-circle" style="font-size:7px;"></i> Available</span>
+          {% elif worker.availability_status == 'busy' %}
+            <span class="avail-badge av-busy"><i class="fas fa-spinner fa-spin" style="font-size:9px;"></i> Busy</span>
+          {% elif worker.availability_status == 'on_leave' %}
+            <span class="avail-badge av-leave"><i class="fas fa-plane" style="font-size:9px;"></i> On Leave</span>
+          {% else %}
+            <span class="avail-badge av-pending"><i class="fas fa-clock" style="font-size:9px;"></i> Pending</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Card body -->
+      <div class="wc-body">
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-lbl">Experience</div>
+            <div class="info-val">{{ worker.experience }} yrs</div>
+          </div>
+          <div class="info-item">
+            <div class="info-lbl">Rate</div>
+            <div class="info-val">{% if worker.job_rate > 0 %}₹{{ worker.job_rate }}/job{% else %}Not set{% endif %}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-lbl">Phone</div>
+            <div class="info-val">{{ worker.user.phone|default:"—" }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-lbl">Email</div>
+            <div class="info-val" style="font-size:12px;word-break:break-all;">{{ worker.user.email|default:"—" }}</div>
+          </div>
+          <div class="info-item" style="grid-column:span 2;">
+            <div class="info-lbl">Verification</div>
+            <div class="info-val">
+              {% if worker.verified %}
+                <span class="badge-v bv-ok"><i class="fas fa-circle-check"></i> Verified</span>
+              {% else %}
+                <span class="badge-v bv-no"><i class="fas fa-clock"></i> Pending</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents -->
+        <div class="docs-section">
+          <div class="docs-hd"><i class="fas fa-folder-open"></i> Documents</div>
+          <div class="docs-grid">
+
+            <!-- Photo -->
+            <div class="doc-tile">
+              <div class="dt-ic"><i class="fas fa-camera"></i></div>
+              <div class="dt-name">Photo</div>
+              {% if worker.photo %}
+                <span class="dt-status ds-up"><i class="fas fa-check"></i> Yes</span>
+                <a href="{{ worker.photo.url }}" class="dt-link" target="_blank"><i class="fas fa-eye"></i> View</a>
+              {% else %}
+                <span class="dt-status ds-mis"><i class="fas fa-times"></i> Missing</span>
+              {% endif %}
+            </div>
+
+            <!-- ID Proof -->
+            <div class="doc-tile">
+              <div class="dt-ic"><i class="fas fa-id-card"></i></div>
+              <div class="dt-name">ID Proof</div>
+              {% if worker.id_proof %}
+                <span class="dt-status ds-up"><i class="fas fa-check"></i> Yes</span>
+                <a href="{{ worker.id_proof.url }}" class="dt-link" target="_blank"><i class="fas fa-eye"></i> View</a>
+              {% else %}
+                <span class="dt-status ds-mis"><i class="fas fa-times"></i> Missing</span>
+              {% endif %}
+            </div>
+
+            <!-- Address Proof -->
+            <div class="doc-tile">
+              <div class="dt-ic"><i class="fas fa-house"></i></div>
+              <div class="dt-name">Address</div>
+              {% if worker.address_proof %}
+                <span class="dt-status ds-up"><i class="fas fa-check"></i> Yes</span>
+                <a href="{{ worker.address_proof.url }}" class="dt-link" target="_blank"><i class="fas fa-eye"></i> View</a>
+              {% else %}
+                <span class="dt-status ds-mis"><i class="fas fa-times"></i> Missing</span>
+              {% endif %}
+            </div>
+
+            <!-- Certificate -->
+            <div class="doc-tile">
+              <div class="dt-ic"><i class="fas fa-certificate"></i></div>
+              <div class="dt-name">Certificate</div>
+              {% if worker.certificate %}
+                <span class="dt-status ds-up"><i class="fas fa-check"></i> Yes</span>
+                <a href="{{ worker.certificate.url }}" class="dt-link" target="_blank"><i class="fas fa-eye"></i> View</a>
+              {% else %}
+                <span class="dt-status ds-mis"><i class="fas fa-times"></i> Missing</span>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="wc-actions">
+          <a href="/admin/workers/workerprofile/{{ worker.id }}/change/" class="act-btn ab-edit">
+            <i class="fas fa-pen"></i> Edit
+          </a>
+          {% if not worker.verified %}
+          <a href="/admin/workers/workerprofile/{{ worker.id }}/change/" class="act-btn ab-verify">
+            <i class="fas fa-circle-check"></i> Verify
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fas fa-users-slash"></i></div>
+      <div class="empty-title">No Workers Found</div>
+      <div class="empty-sub">There are no workers in the system yet.</div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+function filterWorkers() {
+  const sf = document.getElementById('statusFilter').value;
+  const vf = document.getElementById('verificationFilter').value;
+  const df = document.getElementById('documentFilter').value;
+  const svc = document.getElementById('serviceFilter').value;
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+
+  const cards = document.querySelectorAll('.worker-card');
+  let vis = 0;
+
+  cards.forEach(c => {
+    const status  = c.dataset.status;
+    const ver     = c.dataset.verified;
+    const service = c.dataset.service;
+    const hasId   = c.dataset.hasId;
+    const hasAddr = c.dataset.hasAddress;
+    const hasCert = c.dataset.hasCert;
+    const name    = c.dataset.name;
+
+    let show = true;
+    if (sf  !== 'all' && status  !== sf)  show = false;
+    if (vf  !== 'all' && ver     !== vf)  show = false;
+    if (svc !== 'all' && service !== svc) show = false;
+    if (q && !name.includes(q)) show = false;
+    if (df === 'has_id'          && hasId   !== 'yes') show = false;
+    if (df === 'has_address'     && hasAddr !== 'yes') show = false;
+    if (df === 'has_certificate' && hasCert !== 'yes') show = false;
+    if (df === 'missing_docs' && hasId === 'yes' && hasAddr === 'yes' && hasCert === 'yes') show = false;
+
+    c.style.display = show ? '' : 'none';
+    if (show) vis++;
+  });
+
+  const el = document.getElementById('visCount');
+  if (el) el.textContent = vis;
+}
+
+function resetFilters() {
+  ['statusFilter','verificationFilter','documentFilter','serviceFilter'].forEach(id => {
+    document.getElementById(id).value = 'all';
+  });
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.worker-card').forEach(c => c.style.display = '');
+  const el = document.getElementById('visCount');
+  if (el) el.textContent = document.querySelectorAll('.worker-card').length;
+}
+
+// Live search
+document.getElementById('searchInput').addEventListener('input', filterWorkers);
+</script>
+
+</body>
+</html>

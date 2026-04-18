@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request a Service - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:#0f2040;--navy2:#1e3c72;--orange:#f97316;--orange-dk:#ea6c0a;
+  --orange-lt:#fff7ed;--white:#ffffff;--light:#f4f7fc;--light2:#eef2f9;
+  --muted:#64748b;--border:#e2e8f0;--fH:'Cabinet Grotesk',sans-serif;
+  --fB:'Figtree',sans-serif;--ease:cubic-bezier(.16,1,.3,1);--r:14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--fB);background:var(--light);min-height:100vh;color:#0f172a;}
+a{text-decoration:none;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--orange);border-radius:2px;}
+
+/* BG */
+.bg-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:56px 56px;animation:gridMove 30s linear infinite;}
+@keyframes gridMove{from{background-position:0 0}to{background-position:56px 56px}}
+.bg-blob{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.blob-a{width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);top:-80px;right:-60px;animation:bF 10s ease-in-out infinite;}
+.blob-b{width:300px;height:300px;background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%);bottom:-60px;left:-40px;animation:bF 14s ease-in-out infinite reverse;}
+@keyframes bF{0%,100%{transform:scale(1)}50%{transform:scale(1.1) translate(15px,-20px)}}
+
+/* PAGE */
+.page-wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:28px 24px 60px;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;background:var(--navy);padding:0 48px;height:64px;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.06);}
+.topbar::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px;}
+.tb-logo{display:flex;align-items:center;gap:10px;}
+.tb-logo-box{width:34px;height:34px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;}
+.tb-logo-text{font-family:var(--fH);font-size:21px;font-weight:900;letter-spacing:-1px;color:#fff;}
+.tb-logo-text em{color:var(--orange);font-style:normal;}
+.btn-back{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:30px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.8);font-size:13px;font-weight:600;transition:all .22s;}
+.btn-back:hover{background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.35);color:#fff;transform:translateX(-2px);}
+
+/* SUBSCRIPTION BANNER */
+.sub-banner{background:linear-gradient(135deg,var(--navy2),var(--navy));margin-top:24px;border:1px solid rgba(249,115,22,.25);border-radius:var(--r);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;animation:cardUp .5s var(--ease) both;}
+.sub-banner::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;}
+.sub-banner::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);top:-50px;right:-30px;pointer-events:none;}
+.sub-ic{width:48px;height:48px;border-radius:50%;background:rgba(249,115,22,.15);border:1.5px solid rgba(249,115,22,.3);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:22px;flex-shrink:0;position:relative;z-index:1;}
+.sub-body{position:relative;z-index:1;}
+.sub-title{font-family:var(--fH);font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;}
+.sub-desc{font-size:13px;color:rgba(255,255,255,.65);}
+.sub-desc strong{color:#fbbf24;}
+
+/* FORM CARD */
+.form-card{background:var(--white);border-radius:22px;overflow:hidden;box-shadow:0 4px 24px rgba(15,32,64,.08);border:1px solid var(--border);animation:cardUp .6s var(--ease) .1s both;}
+@keyframes cardUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* FORM HEADER */
+.form-head{background:var(--navy);padding:24px 30px;position:relative;overflow:hidden;}
+.form-head::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
+.form-head::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);top:-60px;right:-40px;pointer-events:none;}
+.fh-title{font-family:var(--fH);font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px;position:relative;z-index:1;display:flex;align-items:center;gap:10px;}
+.fh-title i{color:var(--orange);}
+.fh-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;position:relative;z-index:1;}
+
+/* FORM BODY */
+.form-body{padding:28px 30px;}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;}
+.alert-success{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-left:4px solid #22c55e;}
+.alert-error  {background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-left:4px solid #ef4444;}
+.alert-info   {background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-left:4px solid #3b82f6;}
+
+/* FORM GROUPS */
+.fg{margin-bottom:20px;}
+.fg label{display:block;margin-bottom:6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--navy);}
+.fg label i{color:var(--orange);margin-right:5px;}
+.fg label .req{color:#ef4444;}
+
+.form-control{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-size:14px;font-family:var(--fB);color:var(--navy);
+  background:var(--light);outline:none;transition:all .22s;
+  appearance:none;-webkit-appearance:none;
+}
+.form-control:focus{border-color:var(--orange);background:var(--white);box-shadow:0 0 0 3px rgba(249,115,22,.1);}
+.form-control::placeholder{color:#94a3b8;}
+select.form-control{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;}
+textarea.form-control{resize:vertical;min-height:100px;}
+.fg .hint{font-size:11px;color:#94a3b8;margin-top:5px;display:block;}
+.errorlist{list-style:none;margin-top:5px;padding:0;}
+.errorlist li{font-size:12px;color:#ef4444;font-weight:600;}
+.fg.has-error .form-control{border-color:#ef4444;background:#fef2f2;}
+
+/* DATETIME ROW */
+.dt-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* FILE INPUT */
+.file-zone{border:2px dashed var(--border);border-radius:10px;background:var(--light);padding:20px;text-align:center;transition:all .22s;cursor:pointer;position:relative;}
+.file-zone:hover{border-color:rgba(249,115,22,.4);background:var(--orange-lt);}
+.file-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.fz-ic{font-size:28px;color:var(--muted);margin-bottom:8px;}
+.fz-text{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.fz-hint{font-size:11px;color:#94a3b8;}
+.file-zone.has-file{border-color:rgba(249,115,22,.4);background:var(--orange-lt);}
+.file-zone.has-file .fz-ic{color:var(--orange);}
+
+/* BUTTONS */
+.btn-submit{width:100%;padding:14px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-family:var(--fH);font-size:15px;font-weight:800;cursor:pointer;transition:all .25s var(--ease);display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;}
+.btn-submit:hover{background:var(--orange-dk);transform:translateY(-2px);box-shadow:0 12px 28px rgba(249,115,22,.4);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.btn-cancel-link{display:block;text-align:center;margin-top:12px;padding:11px;background:var(--light2);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;font-family:var(--fH);font-size:13px;font-weight:700;transition:all .22s;}
+.btn-cancel-link:hover{border-color:var(--orange);color:var(--orange);}
+
+/* DIVIDER */
+.form-divider{display:flex;align-items:center;gap:12px;margin:24px 0;}
+.form-divider span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;white-space:nowrap;}
+.form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+@media(max-width:640px){.dt-row{grid-template-columns:1fr;}.page-wrap{padding:20px 16px 48px;}}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="{% url 'user_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <a href="{% url 'user_dashboard' %}" class="btn-back">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+</div>
+
+<div class="page-wrap">
+
+
+  <!-- Subscription banner -->
+  {% if active_subscription %}
+  <div class="sub-banner">
+    <div class="sub-ic"><i class="fas fa-crown"></i></div>
+    <div class="sub-body">
+      <div class="sub-title">Active Subscription: {{ active_subscription.plan.name }}</div>
+      <div class="sub-desc">You have <strong>{{ remaining_visits }} visit{{ remaining_visits|pluralize }}</strong> remaining — this service will be covered by your plan.</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Form card -->
+  <div class="form-card">
+
+    <!-- Header -->
+    <div class="form-head">
+      <div class="fh-title"><i class="fas fa-circle-plus"></i> Request a Service</div>
+      <div class="fh-sub">Fill in the details below and we'll assign the best worker for you</div>
+    </div>
+
+    <!-- Body -->
+    <div class="form-body">
+
+      <!-- Messages -->
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+          {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST" enctype="multipart/form-data" id="requestForm">
+        {% csrf_token %}
+
+        <!-- Service -->
+        <div class="fg {% if form.service.errors %}has-error{% endif %}">
+          <label for="{{ form.service.id_for_label }}">
+            <i class="fas fa-screwdriver-wrench"></i> Select Service <span class="req">*</span>
+          </label>
+          {{ form.service }}
+          {% if form.service.errors %}
+            <ul class="errorlist">{% for e in form.service.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+          <span class="hint">Choose the type of service you need</span>
+        </div>
+
+        <div class="form-divider"><span>Location & Schedule</span></div>
+
+        <!-- Address -->
+        <div class="fg {% if form.address.errors %}has-error{% endif %}">
+          <label for="{{ form.address.id_for_label }}">
+            <i class="fas fa-location-dot"></i> Service Address <span class="req">*</span>
+          </label>
+          {{ form.address }}
+          {% if form.address.errors %}
+            <ul class="errorlist">{% for e in form.address.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+          <span class="hint">Enter the complete address where the service is needed</span>
+        </div>
+
+        <!-- Date + Time -->
+        <div class="dt-row">
+          <div class="fg {% if form.preferred_date.errors %}has-error{% endif %}">
+            <label for="{{ form.preferred_date.id_for_label }}">
+              <i class="fas fa-calendar"></i> Preferred Date
+            </label>
+            <input type="date" name="preferred_date" class="form-control"
+                   id="{{ form.preferred_date.id_for_label }}"
+                   value="{{ form.preferred_date.value|default:'' }}"
+                   min="{% now 'Y-m-d' %}">
+            {% if form.preferred_date.errors %}
+              <ul class="errorlist">{% for e in form.preferred_date.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+            <span class="hint">When would you like the service?</span>
+          </div>
+
+          <div class="fg {% if form.preferred_time.errors %}has-error{% endif %}">
+            <label for="{{ form.preferred_time.id_for_label }}">
+              <i class="fas fa-clock"></i> Preferred Time
+            </label>
+            <input type="time" name="preferred_time" class="form-control"
+                   id="{{ form.preferred_time.id_for_label }}"
+                   value="{{ form.preferred_time.value|default:'' }}">
+            {% if form.preferred_time.errors %}
+              <ul class="errorlist">{% for e in form.preferred_time.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+            {% endif %}
+            <span class="hint">Preferred time of day</span>
+          </div>
+        </div>
+
+        <div class="form-divider"><span>Additional Info</span></div>
+
+        <!-- Notes -->
+        <div class="fg {% if form.notes.errors %}has-error{% endif %}">
+          <label for="{{ form.notes.id_for_label }}">
+            <i class="fas fa-sticky-note"></i> Additional Notes <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#94a3b8;">(Optional)</span>
+          </label>
+          <textarea name="notes" class="form-control" id="{{ form.notes.id_for_label }}"
+                    rows="3" placeholder="Any special instructions or notes for the worker…">{{ form.notes.value|default:'' }}</textarea>
+          {% if form.notes.errors %}
+            <ul class="errorlist">{% for e in form.notes.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+          <span class="hint">Let us know if you have any special requirements</span>
+        </div>
+
+        <!-- Issue image -->
+        <div class="fg {% if form.issue_image.errors %}has-error{% endif %}">
+          <label><i class="fas fa-camera"></i> Issue Photo <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#94a3b8;">(Optional)</span></label>
+          <div class="file-zone" id="fileZone">
+            {{ form.issue_image }}
+            <div class="fz-ic"><i class="fas fa-cloud-arrow-up"></i></div>
+            <div class="fz-text" id="fzText">Click to upload or drag &amp; drop</div>
+            <div class="fz-hint">JPG, PNG up to 5MB</div>
+          </div>
+          {% if form.issue_image.errors %}
+            <ul class="errorlist">{% for e in form.issue_image.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <i class="fas fa-paper-plane"></i> Submit Request
+        </button>
+
+        <a href="{% url 'user_dashboard' %}" class="btn-cancel-link">
+          <i class="fas fa-times"></i> Cancel
+        </a>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Add form-control class to Django form fields
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('select, textarea, input[type="text"]').forEach(el => {
+    if (!el.classList.contains('form-control')) el.classList.add('form-control');
+  });
+
+  // Min date
+  const dateInput = document.querySelector('input[name="preferred_date"]');
+  if (dateInput) dateInput.min = new Date().toISOString().split('T')[0];
+
+  // File upload feedback
+  const fileInput = document.querySelector('input[type="file"]');
+  const fzText    = document.getElementById('fzText');
+  const fileZone  = document.getElementById('fileZone');
+  if (fileInput) {
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size should be less than 5MB');
+        this.value = ''; return;
+      }
+      if (!['image/jpeg','image/png','image/jpg'].includes(file.type)) {
+        alert('Only JPG and PNG files are allowed');
+        this.value = ''; return;
+      }
+      fzText.textContent = file.name;
+      fileZone.classList.add('has-file');
+      fileZone.querySelector('.fz-ic i').className = 'fas fa-check-circle';
+    });
+  }
+});
+
+// Loading state on submit
+document.getElementById('requestForm').addEventListener('submit', function() {
+  const btn = document.getElementById('submitBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+  btn.disabled = true;
+});
+
+</script>
+
+<!-- ✅ Safe way to pass JSON to JS -->
+<script>
+function safeJSON(str, fallback) {
+  try { return JSON.parse(str); } catch(e) { return fallback; }
+}
+const servicesData = safeJSON('{{ services_json|escapejs }}', []);
+
+const priceMap = {};
+servicesData.forEach(s => { priceMap[s.id] = s; });
+
+const serviceSelect = document.querySelector('select[name="service"]') || document.getElementById('id_service');
+
+if (serviceSelect) {
+  // ✅ Update option labels to show price
+  Array.from(serviceSelect.options).forEach(opt => {
+    if (opt.value && priceMap[opt.value]) {
+      const svc = priceMap[opt.value];
+      opt.text = svc.name + '  —  ₹' + svc.price;
+    }
+  });
+
+  // ✅ Price badge element
+  const priceBadge = document.createElement('div');
+  priceBadge.id = 'price-badge';
+  priceBadge.style.cssText = 'display:none;margin-top:8px;padding:10px 14px;background:var(--orange-lt);border:1.5px solid rgba(249,115,22,.3);border-radius:10px;align-items:center;gap:10px;';
+  priceBadge.innerHTML = `
+    <i class="fas fa-indian-rupee-sign" style="color:var(--orange);font-size:16px;"></i>
+    <div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Service Price</div>
+      <div id="price-val" style="font-size:20px;font-weight:900;color:var(--navy);font-family:var(--fH);">₹0</div>
+    </div>
+  `;
+  serviceSelect.parentNode.insertBefore(priceBadge, serviceSelect.nextSibling);
+
+  // ✅ Show price on change
+  serviceSelect.addEventListener('change', function() {
+    const id = this.value;
+    if (id && priceMap[id]) {
+      document.getElementById('price-val').textContent = '₹' + priceMap[id].price;
+      priceBadge.style.display = 'flex';
+    } else {
+      priceBadge.style.display = 'none';
+    }
+  });
+}
+</script>
+
+</body>
+</html>

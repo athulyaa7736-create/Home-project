@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Worker Bank Details - Fixzy Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f4f7fc;
+            padding: 30px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+        }
+        
+        .header h1 {
+            color: #1e2b4f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header h1 i {
+            color: #4ecdc4;
+        }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background: #4ecdc4;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        
+        .bank-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .worker-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-item {
+            padding: 15px;
+            background: #f8fafd;
+            border-radius: 10px;
+        }
+        
+        .info-label {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: #1e2b4f;
+            font-size: 16px;
+        }
+        
+        .copy-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-university"></i>
+                Worker Bank Details
+            </h1>
+            <a href="{% url 'admin_payment_dashboard' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+        
+        <div class="bank-card">
+            <div class="worker-info">
+                <h2>{{ worker.user.username }}</h2>
+                <p>{{ worker.get_service_type_display }} | {{ worker.experience }} years experience</p>
+            </div>
+            
+            <h3 style="margin-bottom: 20px;">Payment Information</h3>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Account Holder Name</div>
+                    <div class="info-value">
+                        {{ worker.account_holder_name|default:"Not provided" }}
+                        {% if worker.account_holder_name %}
+                        <button class="copy-btn" onclick="copyToClipboard('{{ worker.account_holder_name }}')">Copy</button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Bank Name</div>
+                    <div class="info-value">{{ worker.bank_name|default:"Not provided" }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Account Number</div>
+                    <div class="info-value">
+                        {{ worker.account_number|default:"Not provided" }}
+                        {% if worker.account_number %}
+                        <button class="copy-btn" onclick="copyToClipboard('{{ worker.account_number }}')">Copy</button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">IFSC Code</div>
+                    <div class="info-value">
+                        {{ worker.ifsc_code|default:"Not provided" }}
+                        {% if worker.ifsc_code %}
+                        <button class="copy-btn" onclick="copyToClipboard('{{ worker.ifsc_code }}')">Copy</button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">UPI ID</div>
+                    <div class="info-value">
+                        {{ worker.upi_id|default:"Not provided" }}
+                        {% if worker.upi_id %}
+                        <button class="copy-btn" onclick="copyToClipboard('{{ worker.upi_id }}')">Copy</button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Payment Method</div>
+                    <div class="info-value">{{ worker.get_payment_method_display }}</div>
+                </div>
+            </div>
+            
+            {% if not worker.account_number %}
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle" style="color: #856404;"></i>
+                <strong>Warning:</strong> This worker hasn't provided bank details yet. Payment cannot be processed.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Copied to clipboard!');
+            }, function() {
+                alert('Failed to copy');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment History - Fixzy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+  --navy:      #0f2040;
+  --navy2:     #1e3c72;
+  --orange:    #f97316;
+  --orange-dk: #ea6c0a;
+  --orange-lt: #fff7ed;
+  --white:     #ffffff;
+  --light:     #f4f7fc;
+  --light2:    #eef2f9;
+  --muted:     #64748b;
+  --border:    #e2e8f0;
+  --fH: 'Cabinet Grotesk', sans-serif;
+  --fB: 'Figtree', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --r: 14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--fB); background:var(--light); min-height:100vh; color:#0f172a; }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background:var(--navy); padding:0 48px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.topbar::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.tb-logo { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.tb-logo-box { width:34px; height:34px; background:var(--orange); border-radius:9px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:15px; }
+.tb-logo-text { font-family:var(--fH); font-size:21px; font-weight:900; letter-spacing:-1px; color:#fff; }
+.tb-logo-text em { color:var(--orange); font-style:normal; }
+.tb-right { display:flex; align-items:center; gap:10px; position:relative; z-index:1; }
+.btn-back { display:inline-flex; align-items:center; gap:7px; padding:8px 18px; border-radius:30px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.8); font-size:13px; font-weight:600; transition:all .22s; }
+.btn-back:hover { background:rgba(249,115,22,.15); border-color:rgba(249,115,22,.35); color:#fff; transform:translateX(-2px); }
+
+/* ── PAGE ── */
+.page { max-width:1000px; margin:0 auto; padding:32px 24px 60px; }
+
+/* ── PAGE HEAD ── */
+.page-head { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.page-head-icon { width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,var(--navy2),var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:22px; box-shadow:0 4px 16px rgba(15,32,64,.15); flex-shrink:0; }
+.page-head-title { font-family:var(--fH); font-size:26px; font-weight:900; letter-spacing:-.8px; color:var(--navy); }
+.page-head-sub { font-size:14px; color:var(--muted); margin-top:2px; }
+
+/* ── STATS ── */
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:20px; }
+.stat-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:20px;
+  display:flex; align-items:center; gap:14px;
+  transition:all .3s var(--ease); position:relative; overflow:hidden;
+  animation:fadeUp .5s var(--ease) both;
+}
+.stat-card:nth-child(1){animation-delay:.05s}
+.stat-card:nth-child(2){animation-delay:.1s}
+.stat-card:nth-child(3){animation-delay:.15s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.stat-card::before { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--orange); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease); }
+.stat-card:hover { transform:translateY(-4px); box-shadow:0 14px 36px rgba(249,115,22,.1); }
+.stat-card:hover::before { transform:scaleX(1); }
+.stat-ic { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.si-o { background:var(--orange-lt); color:var(--orange); }
+.si-g { background:#dcfce7; color:#16a34a; }
+.si-n { background:#e0e7ff; color:var(--navy2); }
+.stat-val { font-family:var(--fH); font-size:28px; font-weight:900; letter-spacing:-1px; color:var(--navy); }
+.stat-lbl { font-size:13px; color:var(--muted); font-weight:500; margin-top:2px; }
+
+/* ── FILTERS ── */
+.filters-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:18px 22px;
+  margin-bottom:20px; box-shadow:0 2px 10px rgba(15,32,64,.04);
+}
+.filters-hd { font-family:var(--fH); font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:var(--navy); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+.filters-hd i { color:var(--orange); }
+.filters-row { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:12px; align-items:end; }
+.fg { display:flex; flex-direction:column; gap:5px; }
+.fg label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#94a3b8; }
+.fg select, .fg input {
+  padding:10px 12px; border:1.5px solid var(--border); border-radius:9px;
+  font-size:13px; font-family:var(--fB); color:var(--navy);
+  background:var(--light); outline:none; transition:all .2s;
+  appearance:none; -webkit-appearance:none;
+}
+.fg select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:28px; cursor:pointer; }
+.fg select:focus, .fg input:focus { border-color:var(--orange); background:var(--white); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.fg input::placeholder { color:#94a3b8; }
+.btn-filter { padding:10px 22px; background:var(--orange); color:#fff; border:none; border-radius:9px; font-family:var(--fH); font-size:13px; font-weight:800; cursor:pointer; transition:all .25s; white-space:nowrap; }
+.btn-filter:hover { background:var(--orange-dk); transform:translateY(-1px); }
+
+/* ── PAYMENT CARDS ── */
+.payment-card {
+  background:var(--white); border:1px solid var(--border);
+  border-radius:var(--r); padding:22px 24px;
+  margin-bottom:14px;
+  border-left:4px solid var(--border);
+  transition:all .3s var(--ease);
+  animation:fadeUp .5s var(--ease) both;
+  box-shadow:0 2px 10px rgba(15,32,64,.04);
+}
+.payment-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(15,32,64,.1); }
+.payment-card.completed { border-left-color:#22c55e; }
+.payment-card.pending   { border-left-color:var(--orange); }
+.payment-card.failed    { border-left-color:#ef4444; }
+.payment-card.refunded  { border-left-color:#3b82f6; }
+.payment-card.partial_refunded { border-left-color:#8b5cf6; }
+
+/* card top */
+.pc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.pc-left { display:flex; align-items:center; gap:12px; }
+.svc-icon { width:44px; height:44px; border-radius:12px; background:var(--orange-lt); display:flex; align-items:center; justify-content:center; color:var(--orange); font-size:18px; flex-shrink:0; }
+.svc-name { font-family:var(--fH); font-size:17px; font-weight:800; letter-spacing:-.3px; color:var(--navy); }
+.svc-date { font-size:12px; color:#94a3b8; margin-top:2px; }
+.pc-right { display:flex; align-items:center; gap:10px; }
+
+/* amount */
+.amount-big { font-family:var(--fH); font-size:24px; font-weight:900; letter-spacing:-1px; color:#16a34a; }
+
+/* status badges */
+.badge { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; }
+.b-completed       { background:#dcfce7; color:#166534; }
+.b-pending         { background:var(--orange-lt); color:var(--orange-dk); border:1px solid rgba(249,115,22,.2); }
+.b-failed          { background:#fee2e2; color:#991b1b; }
+.b-refunded        { background:#dbeafe; color:#1e40af; }
+.b-partial_refunded{ background:#ede9fe; color:#5b21b6; }
+
+/* detail pills */
+.pc-details { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.detail-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--light); border:1px solid var(--border);
+  border-radius:8px; padding:6px 12px;
+  font-size:12px; color:var(--muted); font-weight:500;
+  transition:all .2s;
+}
+.detail-pill:hover { border-color:rgba(249,115,22,.25); background:var(--orange-lt); color:var(--navy); }
+.detail-pill i { color:var(--orange); font-size:11px; }
+.txn-code { font-family:monospace; font-size:12px; background:var(--light2); border:1px solid var(--border); border-radius:6px; padding:5px 10px; color:var(--muted); letter-spacing:.5px; }
+
+/* refund info strip */
+.refund-strip {
+  background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px;
+  padding:12px 16px; margin-bottom:14px;
+  display:flex; align-items:flex-start; gap:10px; font-size:13px; color:#1e40af;
+}
+.refund-strip i { color:#3b82f6; margin-top:1px; flex-shrink:0; }
+
+/* refund button */
+.btn-refund {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:8px;
+  background:#fee2e2; color:#b91c1c; border:1px solid #fecaca;
+  font-size:12px; font-weight:700; font-family:var(--fH);
+  transition:all .22s;
+}
+.btn-refund:hover { background:#ef4444; color:#fff; border-color:#ef4444; transform:translateY(-1px); }
+
+/* empty state */
+.empty-state { text-align:center; padding:72px 24px; background:var(--white); border:1px solid var(--border); border-radius:var(--r); box-shadow:0 2px 12px rgba(15,32,64,.05); }
+.empty-icon { width:80px; height:80px; background:var(--light2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; color:var(--muted); margin:0 auto 20px; }
+.empty-title { font-family:var(--fH); font-size:22px; font-weight:900; color:var(--navy); margin-bottom:8px; }
+.empty-sub { font-size:15px; color:var(--muted); margin-bottom:28px; }
+.btn-book { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; background:var(--orange); color:#fff; border-radius:30px; font-family:var(--fH); font-size:15px; font-weight:800; transition:all .25s var(--ease); }
+.btn-book:hover { background:var(--orange-dk); transform:translateY(-2px); box-shadow:0 12px 28px rgba(249,115,22,.35); }
+
+/* responsive */
+@media(max-width:640px) {
+  .topbar { padding:0 20px; }
+  .page { padding:20px 16px 48px; }
+  .stats-grid { grid-template-columns:1fr; }
+  .filters-row { grid-template-columns:1fr; }
+  .pc-top { flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <a href="{% url 'user_dashboard' %}" class="tb-logo">
+    <div class="tb-logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
+    <div class="tb-logo-text">Fix<em>zy</em></div>
+  </a>
+  <div class="tb-right">
+    <a href="{% url 'user_dashboard' %}" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+</div>
+
+<!-- ── PAGE ── -->
+<div class="page">
+
+  <!-- Page heading -->
+  <div class="page-head">
+    <div class="page-head-icon"><i class="fas fa-receipt"></i></div>
+    <div>
+      <div class="page-head-title">Payment History</div>
+      <div class="page-head-sub">All your transactions and payment records</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-ic si-n"><i class="fas fa-credit-card"></i></div>
+      <div>
+        <div class="stat-val">{{ payments.count }}</div>
+        <div class="stat-lbl">Total Transactions</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ic si-g"><i class="fas fa-circle-check"></i></div>
+      <div>
+        <div class="stat-val">{{ completed_count }}</div>
+        <div class="stat-lbl">Successful</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ic si-o"><i class="fas fa-indian-rupee-sign"></i></div>
+      <div>
+        <div class="stat-val">₹{{ total_spent }}</div>
+        <div class="stat-lbl">Total Spent</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filters-hd"><i class="fas fa-sliders"></i> Filter Payments</div>
+    <div class="filters-row">
+      <div class="fg">
+        <label>Status</label>
+        <select id="statusFilter">
+          <option value="all">All Statuses</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+          <option value="refunded">Refunded</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Payment Method</label>
+        <select id="methodFilter">
+          <option value="all">All Methods</option>
+          <option value="cash">Cash</option>
+          <option value="card">Card</option>
+          <option value="upi">UPI</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Search Transaction</label>
+        <input type="text" id="searchInput" placeholder="Enter transaction ID…">
+      </div>
+      <button class="btn-filter" onclick="filterPayments()">
+        <i class="fas fa-magnifying-glass"></i> Apply
+      </button>
+    </div>
+  </div>
+
+  <!-- Payment list -->
+  <div id="paymentList">
+    {% for payment in payments %}
+    <div class="payment-card {{ payment.status }}"
+         data-status="{{ payment.status }}"
+         data-method="{{ payment.payment_method }}"
+         data-transaction="{{ payment.transaction_id|lower }}">
+
+      <!-- Top row -->
+      <div class="pc-top">
+        <div class="pc-left">
+          <div class="svc-icon"><i class="fas fa-tools"></i></div>
+          <div>
+            <div class="svc-name">{{ payment.booking.service.name }}</div>
+            <div class="svc-date">{{ payment.payment_date|date:"d M Y, h:i A" }}</div>
+          </div>
+        </div>
+        <div class="pc-right">
+          <span class="amount-big">₹{{ payment.amount }}</span>
+          {% if payment.status == 'completed' %}
+            <span class="badge b-completed"><i class="fas fa-circle-check"></i> {{ payment.get_status_display }}</span>
+          {% elif payment.status == 'pending' %}
+            <span class="badge b-pending"><i class="fas fa-clock"></i> {{ payment.get_status_display }}</span>
+          {% elif payment.status == 'failed' %}
+            <span class="badge b-failed"><i class="fas fa-times-circle"></i> {{ payment.get_status_display }}</span>
+          {% elif payment.status == 'refunded' %}
+            <span class="badge b-refunded"><i class="fas fa-rotate-left"></i> {{ payment.get_status_display }}</span>
+          {% elif payment.status == 'partial_refunded' %}
+            <span class="badge b-partial_refunded"><i class="fas fa-circle-half-stroke"></i> {{ payment.get_status_display }}</span>
+          {% else %}
+            <span class="badge b-pending">{{ payment.get_status_display }}</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Detail pills -->
+      <div class="pc-details">
+        <span class="txn-code"><i class="fas fa-hashtag" style="color:var(--orange);margin-right:4px;font-size:10px;"></i>{{ payment.transaction_id }}</span>
+        <div class="detail-pill"><i class="fas fa-credit-card"></i> {{ payment.get_payment_method_display }}</div>
+        <div class="detail-pill"><i class="fas fa-calendar"></i> {{ payment.payment_date|date:"d M Y" }}</div>
+      </div>
+
+      <!-- Refund info -->
+      {% if payment.status == 'refunded' or payment.status == 'partial_refunded' %}
+      <div class="refund-strip">
+        <i class="fas fa-rotate-left"></i>
+        <div>
+          <strong>Refunded ₹{{ payment.refund_amount }}</strong>
+          {% if payment.refund_date %} on {{ payment.refund_date|date:"d M Y" }}{% endif %}
+          {% if payment.refund_reason %}<br><span style="color:#3b82f6;opacity:.8;">Reason: {{ payment.refund_reason }}</span>{% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Refund button -->
+      {% if payment.status == 'completed' %}
+      <div style="display:flex;justify-content:flex-end;">
+        <a href="{% url 'request_refund' payment.id %}" class="btn-refund">
+          <i class="fas fa-rotate-left"></i> Request Refund
+        </a>
+      </div>
+      {% endif %}
+
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon"><i class="fas fa-receipt"></i></div>
+      <div class="empty-title">No Payment History</div>
+      <div class="empty-sub">You haven't made any payments yet. Book a service to get started.</div>
+      <a href="{% url 'request_service' %}" class="btn-book">
+        <i class="fas fa-bolt"></i> Book a Service
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+function filterPayments() {
+  const sf  = document.getElementById('statusFilter').value;
+  const mf  = document.getElementById('methodFilter').value;
+  const q   = document.getElementById('searchInput').value.toLowerCase().trim();
+  document.querySelectorAll('.payment-card').forEach(c => {
+    let show = true;
+    if (sf !== 'all' && c.dataset.status  !== sf) show = false;
+    if (mf !== 'all' && c.dataset.method  !== mf) show = false;
+    if (q && !c.dataset.transaction.includes(q))   show = false;
+    c.style.display = show ? '' : 'none';
+  });
+}
+// Live search
+document.getElementById('searchInput').addEventListener('input', filterPayments);
+</script>
+
+</body>
+</html>
