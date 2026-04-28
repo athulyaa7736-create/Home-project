@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
+/* ════════════════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════════════════ */
 :root {
   --navy:        #1e3c72;
   --navy-dark:   #0f2040;
@@ -16,396 +19,453 @@
   --orange:      #f97316;
   --orange-dk:   #ea6c0a;
   --orange-lt:   #fff7ed;
+  --orange-mid:  #fed7aa;
   --orange-glow: rgba(249,115,22,.3);
   --white:   #ffffff;
   --light:   #f8fafc;
   --muted:   #64748b;
+  --border:  #e2e8f0;
   --fH: 'Cabinet Grotesk', sans-serif;
   --fS: 'Instrument Serif', serif;
   --fB: 'Figtree', sans-serif;
   --ease: cubic-bezier(.16,1,.3,1);
   --r: 18px;
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:var(--fB);background:var(--white);color:#0f172a;overflow-x:hidden;}
-a{text-decoration:none;}
-::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-thumb{background:var(--orange);border-radius:2px;}
-
-/* ── LOADER ── */
-#ld{position:fixed;inset:0;z-index:9999;background:var(--navy-dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity .6s,visibility .6s;}
-#ld.gone{opacity:0;visibility:hidden;}
-.ld-logo{font-family:var(--fH);font-size:52px;font-weight:900;letter-spacing:-2px;color:#fff;}
-.ld-logo em{color:var(--orange);font-style:normal;}
-.ld-bar{width:160px;height:2px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;}
-.ld-fill{height:100%;background:var(--orange);animation:ldF 1.3s var(--ease) forwards;}
-@keyframes ldF{from{width:0}to{width:100%}}
-
-/* ── CURSOR ── */
-.cur{position:fixed;pointer-events:none;z-index:9998;border-radius:50%;}
-.cur-d{width:8px;height:8px;background:var(--orange);}
-.cur-r{width:40px;height:40px;border:1.5px solid var(--navy);opacity:.35;top:-16px;left:-16px;transition:all .22s var(--ease);}
-.cur-r.h{transform:scale(1.7);opacity:.15;border-color:var(--orange);}
-
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:900;height:68px;padding:0 52px;display:flex;align-items:center;justify-content:space-between;background:rgba(15,32,64,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.07);animation:navIn .8s var(--ease) both;transition:height .3s,background .3s;}
-@keyframes navIn{from{transform:translateY(-100%)}to{transform:translateY(0)}}
-.logo{font-family:var(--fH);font-size:25px;font-weight:900;letter-spacing:-1px;color:#fff;display:flex;align-items:center;gap:10px;}
-.logo-box{width:36px;height:36px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;animation:iconRock 5s ease-in-out infinite;}
-@keyframes iconRock{0%,100%{transform:rotate(0)}40%{transform:rotate(-12deg)}60%{transform:rotate(12deg)}}
-.logo em{color:var(--orange);font-style:normal;}
-.nav-c{display:flex;gap:4px;}
-.nav-c a{color:rgba(255,255,255,.6);font-size:14px;font-weight:500;padding:7px 16px;border-radius:30px;transition:all .2s;}
-.nav-c a:hover{color:#fff;background:rgba(255,255,255,.08);}
-.nav-r{display:flex;align-items:center;gap:10px;}
-.n-ghost{padding:7px 20px;border-radius:30px;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);font-size:14px;font-weight:500;transition:all .2s;}
-.n-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff;}
-.n-solid{padding:8px 22px;border-radius:30px;background:var(--orange);color:#fff;font-size:14px;font-weight:700;transition:all .25s;}
-.n-solid:hover{transform:translateY(-2px);box-shadow:0 10px 28px var(--orange-glow);}
-.n-pro{padding:7px 18px;border-radius:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.85);font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;transition:all .25s;}
-.n-pro:hover{background:rgba(255,255,255,.18);transform:translateY(-2px);}
-
-/* ── HERO ── */
-.hero{min-height:100svh;padding-top:68px;position:relative;overflow:hidden;background:var(--navy-dark);display:flex;flex-direction:column;}
-.h-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:64px 64px;animation:gridD 35s linear infinite;}
-@keyframes gridD{from{background-position:0 0}to{background-position:64px 64px}}
-.h-blob{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
-.bA{width:480px;height:480px;background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%);top:-60px;right:100px;animation:bP 10s ease-in-out infinite;}
-.bB{width:320px;height:320px;background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%);bottom:100px;left:40px;animation:bP 14s ease-in-out infinite reverse;}
-@keyframes bP{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.12) translate(15px,-20px)}}
-.hero-accent{position:absolute;top:0;right:0;width:5px;height:100%;background:linear-gradient(180deg,var(--orange),transparent);opacity:.5;}
-.hero-body{position:relative;z-index:2;flex:1;max-width:1280px;margin:0 auto;width:100%;padding:80px 52px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
-.hl{animation:hLI .9s var(--ease) .2s both;}
-.hr{animation:hRI .9s var(--ease) .4s both;}
-@keyframes hLI{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
-@keyframes hRI{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
-.h-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);border-radius:30px;padding:5px 14px 5px 6px;font-size:13px;font-weight:600;color:var(--orange);margin-bottom:28px;}
-.pdot{width:22px;height:22px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;position:relative;}
-.pdot::after{content:'';position:absolute;inset:-5px;border:1.5px solid var(--orange);border-radius:50%;animation:rP 2s ease-out infinite;}
-@keyframes rP{from{transform:scale(.75);opacity:.8}to{transform:scale(1.7);opacity:0}}
-.h1{font-family:var(--fH);font-size:clamp(44px,5.2vw,74px);font-weight:900;line-height:.98;letter-spacing:-3px;color:#fff;margin-bottom:10px;}
-.h1-it{font-family:var(--fS);font-style:italic;font-weight:400;font-size:clamp(46px,5.5vw,78px);color:var(--orange);letter-spacing:-2px;display:block;margin-bottom:8px;}
-.h1-end{display:block;color:#fff;}
-.h-desc{font-size:17px;color:rgba(255,255,255,.55);line-height:1.75;max-width:440px;margin:28px 0 40px;}
-.h-btns{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
-.btn-cta{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:var(--orange);color:#fff;font-family:var(--fH);font-size:16px;font-weight:800;border-radius:50px;transition:all .3s var(--ease);position:relative;overflow:hidden;}
-.btn-cta::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%);transform:translateX(-100%);transition:transform .5s;}
-.btn-cta:hover::after{transform:translateX(100%);}
-.btn-cta:hover{transform:translateY(-3px);box-shadow:0 18px 40px var(--orange-glow);background:var(--orange-dk);}
-.btn-gh{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75);font-size:15px;font-weight:500;border-radius:50px;transition:all .25s;}
-.btn-gh:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.06);}
-.h-trust{display:flex;align-items:center;gap:20px;margin-top:48px;}
-.t-avs{display:flex;}
-.t-av{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.2);background:linear-gradient(135deg,var(--navy-mid),var(--orange));margin-left:-10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;}
-.t-av:first-child{margin-left:0;}
-.t-stars{color:#fbbf24;font-size:14px;letter-spacing:1px;}
-.t-label{font-size:13px;color:rgba(255,255,255,.55);margin-top:2px;}
-.t-label strong{color:#fff;font-weight:600;}
-
-/* Showcase */
-.showcase{position:relative;height:520px;}
-.sc-main{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:220px;height:220px;border-radius:50%;border:1px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;}
-.sc-main::before{content:'';position:absolute;inset:-22px;border-radius:50%;border:1px dashed rgba(249,115,22,.12);animation:oSpin 22s linear infinite;}
-.sc-main::after{content:'';position:absolute;inset:-52px;border-radius:50%;border:1px solid rgba(249,115,22,.06);animation:oSpin 40s linear infinite reverse;}
-@keyframes oSpin{to{transform:rotate(360deg)}}
-.sc-ctr{width:130px;height:130px;border-radius:50%;background:rgba(249,115,22,.12);border:1.5px solid rgba(249,115,22,.3);backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 0 60px rgba(249,115,22,.15);}
-.sc-ctr i{font-size:32px;color:var(--orange);}
-.sc-ctr span{font-family:var(--fH);font-size:11px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1.5px;}
-.oc{position:absolute;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(14px);border-radius:14px;padding:11px 16px;display:flex;align-items:center;gap:10px;transition:all .3s;cursor:default;white-space:nowrap;}
-.oc:hover{border-color:rgba(249,115,22,.5);background:rgba(249,115,22,.1);transform:scale(1.05);}
-.oci{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
-.cy{background:rgba(251,191,36,.2);color:#fbbf24;}.cb{background:rgba(56,189,248,.2);color:#38bdf8;}.cg{background:rgba(34,197,94,.2);color:#22c55e;}.cr{background:rgba(249,115,22,.25);color:var(--orange);}.cp{background:rgba(167,139,250,.2);color:#a78bfa;}.co{background:rgba(248,113,113,.2);color:#f87171;}
-.ocl{font-size:13px;font-weight:600;color:#fff;}.ocp{font-size:11px;color:rgba(255,255,255,.55);}
-.oc1{top:5%;left:50%;animation:fAx 5s ease-in-out infinite;}
-.oc2{top:20%;right:2%;animation:fB 6s ease-in-out infinite;}
-.oc3{top:52%;right:0%;animation:fA 7s ease-in-out infinite 1s;}
-.oc4{bottom:10%;right:10%;animation:fB 5.5s ease-in-out infinite .5s;}
-.oc5{bottom:5%;left:8%;animation:fA 6.5s ease-in-out infinite 1.5s;}
-.oc6{top:50%;left:0%;animation:fB 4.8s ease-in-out infinite .8s;}
-@keyframes fAx{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-12px)}}
-@keyframes fA{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-@keyframes fB{0%,100%{transform:translateY(0)}50%{transform:translateY(12px)}}
-
-/* ── TICKER ── */
-.ticker{background:var(--orange);height:48px;overflow:hidden;display:flex;align-items:center;z-index:3;}
-.tick-track{display:flex;animation:tick 22s linear infinite;white-space:nowrap;}
-.tick-item{display:inline-flex;align-items:center;gap:12px;padding:0 36px;font-family:var(--fH);font-size:14px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:1px;}
-.tick-sep{color:rgba(255,255,255,.4);font-size:18px;margin:0 4px;}
-@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:var(--fB); background:var(--white); color:#0f172a; overflow-x:hidden; }
+a { text-decoration:none; }
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-thumb { background:var(--orange); border-radius:2px; }
 
 /* ════════════════════════════════════════════════════
-   SERVICES — with image backgrounds
+   LOADER
 ════════════════════════════════════════════════════ */
-.services{
-  padding:120px 52px;
-  position:relative;
-  overflow:hidden;
-  background:#fff;
+#ld {
+  position:fixed; inset:0; z-index:9999;
+  background:var(--navy-dark);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:20px;
+  transition:opacity .6s, visibility .6s;
 }
-
-/* The 4 real photos sit BEHIND everything as soft blurred layers */
-.svc-bg-layer {
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-}
-
-/* Each image quadrant — covers a corner of the section */
-.bg-img {
-  position:absolute;
-  width:55%;
-  height:55%;
-  object-fit:cover;
-  filter:blur(28px) saturate(0.7) brightness(1.05);
-  opacity:0.40;
-  border-radius:0;
-  transition:opacity 1s;
-}
-/* position the 4 images in the 4 corners/areas */
-.bg-img-tl { top:-5%;    left:-5%;    transform:rotate(-4deg) scale(1.12); }
-.bg-img-tr { top:-5%;    right:-5%;   transform:rotate(4deg) scale(1.12); }
-.bg-img-bl { bottom:-5%; left:-5%;    transform:rotate(3deg) scale(1.12); }
-.bg-img-br { bottom:-5%; right:-5%;   transform:rotate(-3deg) scale(1.12); }
-
-/* Vignette: white bleeds in from center so text is readable */
-.svc-bg-layer::after {
-  content:'';
-  position:absolute; inset:0;
-  background:
-    radial-gradient(ellipse 70% 70% at 50% 50%, rgba(248,250,252,0.92) 0%, rgba(248,250,252,0.78) 45%, rgba(248,250,252,0.35) 100%);
-  z-index:1;
-}
-
-.svc-inner{max-width:1280px;margin:0 auto;position:relative;z-index:2;}
-
-/* ── section label ── */
-.slabel{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:18px;}
-.slabel::before{content:'';display:block;width:24px;height:2px;background:var(--orange);border-radius:2px;}
-.sh2{font-family:var(--fH);font-size:clamp(34px,4vw,54px);font-weight:900;letter-spacing:-2px;line-height:1.02;color:var(--navy-dark);margin-bottom:16px;}
-.sh2 em{font-family:var(--fS);font-style:italic;font-weight:400;color:var(--orange);}
-.ssub{font-size:16px;color:var(--muted);max-width:480px;line-height:1.7;margin-bottom:70px;}
-
-/* Bento grid */
-.sg{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;}
-.svc-card{border-radius:var(--r);padding:34px 30px;position:relative;overflow:hidden;transition:all .38s var(--ease);cursor:default;display:flex;flex-direction:column;justify-content:space-between;border:none;}
-.svc-card:hover{transform:translateY(-10px);box-shadow:0 30px 70px rgba(0,0,0,.22);}
-.svc-card::after{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.07),transparent 70%);transform:translateX(-100%);transition:transform .6s;pointer-events:none;}
-.svc-card:hover::after{transform:translateX(100%);}
-.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;opacity:.75;transition:opacity .3s;pointer-events:none;}
-.svc-card:hover::before{opacity:1;}
-.card-elec{background:linear-gradient(145deg,#1a3a6b,#1d4ed8);}
-.card-plumb{background:linear-gradient(145deg,#0c4a2f,#16803d);}
-.card-carp{background:linear-gradient(145deg,#7c2d12,#c2410c);}
-.card-clean{background:linear-gradient(145deg,#134e4a,#0f766e);}
-.card-ac{background:linear-gradient(145deg,#1e1b4b,#4338ca);}
-.card-paint{background:linear-gradient(145deg,#701a75,#a21caf);}
-.card-misc{background:linear-gradient(145deg,#0c3047,#0369a1);}
-.card-elec::before{background:linear-gradient(90deg,#60a5fa,#bfdbfe);}
-.card-plumb::before{background:linear-gradient(90deg,#4ade80,#bbf7d0);}
-.card-carp::before{background:linear-gradient(90deg,#fb923c,#fde68a);}
-.card-clean::before{background:linear-gradient(90deg,#2dd4bf,#99f6e4);}
-.card-ac::before{background:linear-gradient(90deg,#a5b4fc,#e0e7ff);}
-.card-paint::before{background:linear-gradient(90deg,#e879f9,#f5d0fe);}
-.card-misc::before{background:linear-gradient(90deg,#38bdf8,#bae6fd);}
-.svc-card:nth-child(1){grid-column:span 5;}
-.svc-card:nth-child(2){grid-column:span 7;}
-.svc-card:nth-child(3){grid-column:span 4;}
-.svc-card:nth-child(4){grid-column:span 4;}
-.svc-card:nth-child(5){grid-column:span 4;}
-.svc-card:nth-child(6){grid-column:span 6;}
-.svc-card:nth-child(7){grid-column:span 6;}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;}
-.card-num{font-family:var(--fH);font-size:60px;font-weight:900;color:rgba(255,255,255,.07);line-height:1;}
-.card-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(255,255,255,.15);color:#fff;transition:transform .35s var(--ease);backdrop-filter:blur(6px);}
-.svc-card:hover .card-icon{transform:rotate(-8deg) scale(1.12);background:rgba(255,255,255,.22);}
-.card-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:30px;padding:4px 12px;font-size:12px;font-weight:600;color:#fff;margin-bottom:10px;}
-.card-name{font-family:var(--fH);font-size:21px;font-weight:800;letter-spacing:-.5px;color:#fff;margin-bottom:10px;}
-.card-desc{font-size:14px;color:rgba(255,255,255,.62);line-height:1.75;margin-bottom:26px;flex:1;}
-.card-ft{display:flex;align-items:center;justify-content:space-between;}
-.card-price{display:flex;flex-direction:column;}
-.card-from{font-size:11px;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:.8px;}
-.card-val{font-family:var(--fH);font-size:26px;font-weight:900;color:#fff;letter-spacing:-1px;}
-.card-btn{width:42px;height:42px;border-radius:11px;border:1.5px solid rgba(255,255,255,.28);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .3s var(--ease);text-decoration:none;}
-.svc-card:hover .card-btn{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.55);transform:rotate(45deg);}
+#ld.gone { opacity:0; visibility:hidden; }
+.ld-logo { font-family:var(--fH); font-size:52px; font-weight:900; letter-spacing:-2px; color:#fff; }
+.ld-logo em { color:var(--orange); font-style:normal; }
+.ld-bar { width:160px; height:2px; background:rgba(255,255,255,.15); border-radius:2px; overflow:hidden; }
+.ld-fill { height:100%; background:var(--orange); animation:ldF 1.3s var(--ease) forwards; }
+@keyframes ldF { from{width:0} to{width:100%} }
 
 /* ════════════════════════════════════════════════════
-   HOW IT WORKS — electrician image blurred behind
+   CURSOR
 ════════════════════════════════════════════════════ */
-.how{
-  padding:120px 52px;
-  position:relative;
-  overflow:hidden;
-  background:#ffffff;
-}
-.how-bg {
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-}
-/* Full-bleed blurred photo */
-.how-bg-img {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center 30%;
-  filter:blur(36px) saturate(0.5) brightness(1.1);
-  opacity:0.10;
-  transform:scale(1.08);
-}
-/* Strong white wash so text is crisp */
-.how-bg::after {
-  content:'';
-  position:absolute; inset:0;
-  background: linear-gradient(135deg,
-    rgba(255,255,255,0.97) 0%,
-    rgba(255,255,255,0.88) 40%,
-    rgba(255,255,255,0.93) 100%
-  );
-}
-
-/* subtle split-tone edge tints from the image */
-.how-bg-tint-l {
-  position:absolute;
-  left:0; top:0; bottom:0;
-  width:30%;
-  background: linear-gradient(90deg, rgba(249,115,22,0.05), transparent);
-  z-index:1;
-}
-.how-bg-tint-r {
-  position:absolute;
-  right:0; top:0; bottom:0;
-  width:30%;
-  background: linear-gradient(270deg, rgba(30,60,114,0.06), transparent);
-  z-index:1;
-}
-
-.how-in{max-width:1280px;margin:0 auto;position:relative;z-index:2;}
-.how-hd{margin-bottom:80px;}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);position:relative;}
-.steps::before{content:'';position:absolute;top:38px;left:calc(12.5% + 20px);right:calc(12.5% + 20px);height:2px;background:linear-gradient(90deg,var(--orange),var(--navy-mid),var(--orange));opacity:.2;}
-.step{padding:0 24px;text-align:center;transition:all .3s;}
-.step:hover{transform:translateY(-8px);}
-.step-b{width:76px;height:76px;border-radius:20px;background:rgba(255,255,255,0.85);border:1.5px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;margin:0 auto 28px;transition:all .4s var(--ease);box-shadow:0 4px 16px rgba(249,115,22,.08);backdrop-filter:blur(8px);}
-.step:hover .step-b{background:var(--orange);border-color:transparent;box-shadow:0 12px 40px var(--orange-glow);}
-.step-n{font-family:var(--fH);font-size:22px;font-weight:900;color:var(--orange);line-height:1;transition:color .3s;}
-.step:hover .step-n{color:#fff;}
-.step-mi{font-size:11px;color:#94a3b8;transition:color .3s;}
-.step:hover .step-mi{color:rgba(255,255,255,.7);}
-.step h3{font-family:var(--fH);font-size:18px;font-weight:800;letter-spacing:-.3px;color:var(--navy-dark);margin-bottom:12px;}
-.step p{font-size:14px;color:var(--muted);line-height:1.75;}
-
-/* ── STATS ── */
-.stats{background:var(--navy-dark);}
-.stats-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);border-left:1px solid rgba(255,255,255,.06);}
-.sb{padding:60px 48px;border-right:1px solid rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);transition:all .3s;}
-.sb:hover{background:rgba(249,115,22,.05);}
-.sb-ic{font-size:22px;color:var(--orange);margin-bottom:16px;}
-.sb-num{font-family:var(--fH);font-size:54px;font-weight:900;letter-spacing:-3px;line-height:1;color:#fff;margin-bottom:8px;}
-.sb-num sup{font-size:22px;color:var(--orange);vertical-align:super;}
-.sb-desc{font-size:15px;color:rgba(255,255,255,.45);line-height:1.5;}
+.cur { position:fixed; pointer-events:none; z-index:9998; border-radius:50%; }
+.cur-d { width:8px; height:8px; background:var(--orange); }
+.cur-r { width:40px; height:40px; border:1.5px solid var(--navy); opacity:.35; top:-16px; left:-16px; transition:all .22s var(--ease); }
+.cur-r.h { transform:scale(1.7); opacity:.15; border-color:var(--orange); }
 
 /* ════════════════════════════════════════════════════
-   PRO BANNER — carpenter image ghosted behind
+   NAV
 ════════════════════════════════════════════════════ */
-.pro-wrap{padding:0 52px;}
-.pro{
-  margin:80px 0;border-radius:24px;overflow:hidden;position:relative;
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:900;
+  height:68px; padding:0 52px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(15,32,64,.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  animation:navIn .8s var(--ease) both;
+  transition:height .3s, background .3s;
+}
+@keyframes navIn { from{transform:translateY(-100%)} to{transform:translateY(0)} }
+
+.logo {
+  font-family:var(--fH); font-size:25px; font-weight:900;
+  letter-spacing:-1px; color:#fff;
+  display:flex; align-items:center; gap:10px;
+}
+.logo-box {
+  width:36px; height:36px; background:var(--orange); border-radius:10px;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px;
+  animation:iconRock 5s ease-in-out infinite;
+}
+@keyframes iconRock { 0%,100%{transform:rotate(0)} 40%{transform:rotate(-12deg)} 60%{transform:rotate(12deg)} }
+.logo em { color:var(--orange); font-style:normal; }
+
+.nav-c { display:flex; gap:4px; }
+.nav-c a {
+  color:rgba(255,255,255,.6); font-size:14px; font-weight:500;
+  padding:7px 16px; border-radius:30px; transition:all .2s;
+}
+.nav-c a:hover { color:#fff; background:rgba(255,255,255,.08); }
+
+.nav-r { display:flex; align-items:center; gap:10px; }
+
+.n-ghost {
+  padding:7px 20px; border-radius:30px;
+  border:1.5px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.8); font-size:14px; font-weight:500; transition:all .2s;
+}
+.n-ghost:hover { border-color:rgba(255,255,255,.5); color:#fff; }
+
+.n-solid {
+  padding:8px 22px; border-radius:30px;
+  background:var(--orange); color:#fff; font-size:14px; font-weight:700; transition:all .25s;
+}
+.n-solid:hover { transform:translateY(-2px); box-shadow:0 10px 28px var(--orange-glow); background:var(--orange-dk); }
+
+.n-pro {
+  padding:7px 18px; border-radius:30px;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.85); font-size:13px; font-weight:600;
+  display:flex; align-items:center; gap:6px; transition:all .25s;
+}
+.n-pro:hover { background:rgba(255,255,255,.18); transform:translateY(-2px); }
+
+/* ════════════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════════════ */
+.hero {
+  min-height:100svh; padding-top:68px;
+  position:relative; overflow:hidden;
+  background:var(--navy-dark);
+  display:flex; flex-direction:column;
+}
+.hero::after {
+  content:''; position:absolute; bottom:-80px; right:-60px;
+  width:500px; height:500px; background:var(--orange);
+  border-radius:50%; opacity:.06; filter:blur(60px); pointer-events:none;
+}
+.h-grid {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size:64px 64px;
+  animation:gridD 35s linear infinite;
+}
+@keyframes gridD { from{background-position:0 0} to{background-position:64px 64px} }
+
+.h-blob { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+.bA { width:480px; height:480px; background:radial-gradient(circle,rgba(249,115,22,.1),transparent 70%); top:-60px; right:100px; animation:bP 10s ease-in-out infinite; }
+.bB { width:320px; height:320px; background:radial-gradient(circle,rgba(30,60,114,.5),transparent 70%); bottom:100px; left:40px; animation:bP 14s ease-in-out infinite reverse; }
+@keyframes bP { 0%,100%{transform:scale(1) translate(0,0)} 50%{transform:scale(1.12) translate(15px,-20px)} }
+
+.hero-accent { position:absolute; top:0; right:0; width:5px; height:100%; background:linear-gradient(180deg,var(--orange),transparent); opacity:.5; }
+
+.hero-body {
+  position:relative; z-index:2; flex:1;
+  max-width:1280px; margin:0 auto; width:100%;
+  padding:80px 52px;
+  display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;
+}
+.hl { animation:hLI .9s var(--ease) .2s both; }
+.hr { animation:hRI .9s var(--ease) .4s both; }
+@keyframes hLI { from{opacity:0;transform:translateX(-40px)} to{opacity:1;transform:translateX(0)} }
+@keyframes hRI { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+.h-pill {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(249,115,22,.12); border:1px solid rgba(249,115,22,.3);
+  border-radius:30px; padding:5px 14px 5px 6px;
+  font-size:13px; font-weight:600; color:var(--orange); margin-bottom:28px;
+}
+.pdot {
+  width:22px; height:22px; background:var(--orange); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:10px; position:relative;
+}
+.pdot::after {
+  content:''; position:absolute; inset:-5px;
+  border:1.5px solid var(--orange); border-radius:50%;
+  animation:rP 2s ease-out infinite;
+}
+@keyframes rP { from{transform:scale(.75);opacity:.8} to{transform:scale(1.7);opacity:0} }
+
+.h1 { font-family:var(--fH); font-size:clamp(44px,5.2vw,74px); font-weight:900; line-height:.98; letter-spacing:-3px; color:#fff; margin-bottom:10px; }
+.h1-it { font-family:var(--fS); font-style:italic; font-weight:400; font-size:clamp(46px,5.5vw,78px); color:var(--orange); letter-spacing:-2px; display:block; margin-bottom:8px; }
+.h1-end { display:block; color:#fff; }
+
+.h-desc { font-size:17px; color:rgba(255,255,255,.55); line-height:1.75; max-width:440px; margin:28px 0 40px; }
+
+.h-btns { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.btn-cta {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:16px 36px; background:var(--orange); color:#fff;
+  font-family:var(--fH); font-size:16px; font-weight:800;
+  border-radius:50px; transition:all .3s var(--ease);
+  position:relative; overflow:hidden;
+}
+.btn-cta::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%); transform:translateX(-100%); transition:transform .5s; }
+.btn-cta:hover::after { transform:translateX(100%); }
+.btn-cta:hover { transform:translateY(-3px); box-shadow:0 18px 40px var(--orange-glow); background:var(--orange-dk); }
+
+.btn-gh {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:15px 28px; border:1.5px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.75); font-size:15px; font-weight:500;
+  border-radius:50px; transition:all .25s;
+}
+.btn-gh:hover { border-color:rgba(255,255,255,.5); color:#fff; background:rgba(255,255,255,.06); }
+
+.h-trust { display:flex; align-items:center; gap:20px; margin-top:48px; }
+.t-avs { display:flex; }
+.t-av { width:36px; height:36px; border-radius:50%; border:2px solid rgba(255,255,255,.2); background:linear-gradient(135deg,var(--navy-mid),var(--orange)); margin-left:-10px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; }
+.t-av:first-child { margin-left:0; }
+.t-stars { color:#fbbf24; font-size:14px; letter-spacing:1px; }
+.t-label { font-size:13px; color:rgba(255,255,255,.55); margin-top:2px; }
+.t-label strong { color:#fff; font-weight:600; }
+
+/* Hero Showcase */
+.showcase { position:relative; height:520px; }
+.sc-main { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:220px; height:220px; border-radius:50%; border:1px solid rgba(249,115,22,.2); display:flex; align-items:center; justify-content:center; }
+.sc-main::before { content:''; position:absolute; inset:-22px; border-radius:50%; border:1px dashed rgba(249,115,22,.12); animation:oSpin 22s linear infinite; }
+.sc-main::after  { content:''; position:absolute; inset:-52px; border-radius:50%; border:1px solid rgba(249,115,22,.06); animation:oSpin 40s linear infinite reverse; }
+@keyframes oSpin { to{transform:rotate(360deg)} }
+.sc-ctr { width:130px; height:130px; border-radius:50%; background:rgba(249,115,22,.12); border:1.5px solid rgba(249,115,22,.3); backdrop-filter:blur(20px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; box-shadow:0 0 60px rgba(249,115,22,.15); }
+.sc-ctr i { font-size:32px; color:var(--orange); }
+.sc-ctr span { font-family:var(--fH); font-size:11px; font-weight:700; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:1.5px; }
+
+/* Orbit chips */
+.oc { position:absolute; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); backdrop-filter:blur(14px); border-radius:14px; padding:11px 16px; display:flex; align-items:center; gap:10px; transition:all .3s; cursor:default; white-space:nowrap; }
+.oc:hover { border-color:rgba(249,115,22,.5); background:rgba(249,115,22,.1); transform:scale(1.05); }
+.oci { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.cy { background:rgba(251,191,36,.2); color:#fbbf24; }
+.cb { background:rgba(56,189,248,.2); color:#38bdf8; }
+.cg { background:rgba(34,197,94,.2); color:#22c55e; }
+.cr { background:rgba(249,115,22,.25); color:var(--orange); }
+.cp { background:rgba(167,139,250,.2); color:#a78bfa; }
+.co { background:rgba(248,113,113,.2); color:#f87171; }
+.ocl  { font-size:13px; font-weight:600; color:#fff; }
+.ocp { font-size:11px; color:rgba(255,255,255,.55); }
+.oc1 { top:5%;    left:50%;  animation:fAx 5s   ease-in-out infinite; }
+.oc2 { top:20%;   right:2%;  animation:fB  6s   ease-in-out infinite; }
+.oc3 { top:52%;   right:0%;  animation:fA  7s   ease-in-out infinite 1s; }
+.oc4 { bottom:10%;right:10%; animation:fB  5.5s ease-in-out infinite .5s; }
+.oc5 { bottom:5%; left:8%;   animation:fA  6.5s ease-in-out infinite 1.5s; }
+.oc6 { top:50%;   left:0%;   animation:fB  4.8s ease-in-out infinite .8s; }
+@keyframes fAx { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-12px)} }
+@keyframes fA  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes fB  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(12px)} }
+
+/* ════════════════════════════════════════════════════
+   TICKER
+════════════════════════════════════════════════════ */
+.ticker { background:var(--orange); height:48px; overflow:hidden; display:flex; align-items:center; z-index:3; }
+.tick-track { display:flex; animation:tick 22s linear infinite; white-space:nowrap; }
+.tick-item { display:inline-flex; align-items:center; gap:12px; padding:0 36px; font-family:var(--fH); font-size:14px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:1px; }
+.tick-sep { color:rgba(255,255,255,.4); font-size:18px; margin:0 4px; }
+@keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ════════════════════════════════════════════════════
+   SERVICES SECTION
+════════════════════════════════════════════════════ */
+.services { padding:120px 52px; background:var(--light); }
+.svc-inner { max-width:1280px; margin:0 auto; }
+
+.slabel { display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--orange); margin-bottom:18px; }
+.slabel::before { content:''; display:block; width:24px; height:2px; background:var(--orange); border-radius:2px; }
+
+.sh2 { font-family:var(--fH); font-size:clamp(34px,4vw,54px); font-weight:900; letter-spacing:-2px; line-height:1.02; color:var(--navy-dark); margin-bottom:16px; }
+.sh2 em { font-family:var(--fS); font-style:italic; font-weight:400; color:var(--orange); }
+.ssub { font-size:16px; color:var(--muted); max-width:480px; line-height:1.7; margin-bottom:70px; }
+
+/* ── BENTO GRID ── */
+.sg { display:grid; grid-template-columns:repeat(12,1fr); gap:16px; }
+
+/* Base card — colored backgrounds */
+.svc-card {
+  border-radius:var(--r); padding:34px 30px;
+  position:relative; overflow:hidden;
+  transition:all .38s var(--ease); cursor:default;
+  display:flex; flex-direction:column; justify-content:space-between;
+  border:none;
+}
+.svc-card:hover { transform:translateY(-10px); box-shadow:0 30px 70px rgba(0,0,0,.22); }
+
+/* shimmer sweep on hover */
+.svc-card::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.07),transparent 70%); transform:translateX(-100%); transition:transform .6s; pointer-events:none; }
+.svc-card:hover::after { transform:translateX(100%); }
+
+/* top accent bar */
+.svc-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; opacity:.75; transition:opacity .3s; pointer-events:none; }
+.svc-card:hover::before { opacity:1; }
+
+/* ── Individual card colors ── */
+.card-elec  { background:linear-gradient(145deg,#1a3a6b,#1d4ed8); }   /* Electrician  — electric blue */
+.card-plumb { background:linear-gradient(145deg,#0c4a2f,#16803d); }   /* Plumber      — forest green */
+.card-carp  { background:linear-gradient(145deg,#7c2d12,#c2410c); }   /* Carpenter    — warm brick   */
+.card-clean { background:linear-gradient(145deg,#134e4a,#0f766e); }   /* Cleaning     — deep teal    */
+.card-ac    { background:linear-gradient(145deg,#1e1b4b,#4338ca); }   /* AC Service   — indigo       */
+.card-paint { background:linear-gradient(145deg,#701a75,#a21caf); }   /* Painting     — violet       */
+.card-misc  { background:linear-gradient(145deg,#0c3047,#0369a1); }   /* Interior     — sky blue     */
+
+/* accent bar colors per service */
+.card-elec::before  { background:linear-gradient(90deg,#60a5fa,#bfdbfe); }
+.card-plumb::before { background:linear-gradient(90deg,#4ade80,#bbf7d0); }
+.card-carp::before  { background:linear-gradient(90deg,#fb923c,#fde68a); }
+.card-clean::before { background:linear-gradient(90deg,#2dd4bf,#99f6e4); }
+.card-ac::before    { background:linear-gradient(90deg,#a5b4fc,#e0e7ff); }
+.card-paint::before { background:linear-gradient(90deg,#e879f9,#f5d0fe); }
+.card-misc::before  { background:linear-gradient(90deg,#38bdf8,#bae6fd); }
+
+/* bento spans */
+.svc-card:nth-child(1) { grid-column:span 5; }
+.svc-card:nth-child(2) { grid-column:span 7; }
+.svc-card:nth-child(3) { grid-column:span 4; }
+.svc-card:nth-child(4) { grid-column:span 4; }
+.svc-card:nth-child(5) { grid-column:span 4; }
+.svc-card:nth-child(6) { grid-column:span 6; }
+.svc-card:nth-child(7) { grid-column:span 6; }
+
+.card-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; }
+.card-num { font-family:var(--fH); font-size:60px; font-weight:900; color:rgba(255,255,255,.07); line-height:1; }
+
+.card-icon {
+  width:56px; height:56px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+  background:rgba(255,255,255,.15); color:#fff;
+  transition:transform .35s var(--ease);
+  backdrop-filter:blur(6px);
+}
+.svc-card:hover .card-icon { transform:rotate(-8deg) scale(1.12); background:rgba(255,255,255,.22); }
+
+.card-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); border-radius:30px; padding:4px 12px; font-size:12px; font-weight:600; color:#fff; margin-bottom:10px; }
+
+.card-name { font-family:var(--fH); font-size:21px; font-weight:800; letter-spacing:-.5px; color:#fff; margin-bottom:10px; }
+.card-desc { font-size:14px; color:rgba(255,255,255,.62); line-height:1.75; margin-bottom:26px; flex:1; }
+
+.card-ft { display:flex; align-items:center; justify-content:space-between; }
+.card-price { display:flex; flex-direction:column; }
+.card-from { font-size:11px; color:rgba(255,255,255,.48); text-transform:uppercase; letter-spacing:.8px; }
+.card-val { font-family:var(--fH); font-size:26px; font-weight:900; color:#fff; letter-spacing:-1px; }
+
+.card-btn {
+  width:42px; height:42px; border-radius:11px;
+  border:1.5px solid rgba(255,255,255,.28); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; transition:all .3s var(--ease); text-decoration:none;
+}
+.svc-card:hover .card-btn { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.55); transform:rotate(45deg); }
+
+/* ════════════════════════════════════════════════════
+   HOW IT WORKS
+════════════════════════════════════════════════════ */
+.how { padding:120px 52px; background:var(--white); }
+.how-in { max-width:1280px; margin:0 auto; }
+.how-hd { margin-bottom:80px; }
+
+.steps { display:grid; grid-template-columns:repeat(4,1fr); position:relative; }
+.steps::before { content:''; position:absolute; top:38px; left:calc(12.5% + 20px); right:calc(12.5% + 20px); height:2px; background:linear-gradient(90deg,var(--orange),var(--navy-mid),var(--orange)); opacity:.2; }
+
+.step { padding:0 24px; text-align:center; transition:all .3s; }
+.step:hover { transform:translateY(-8px); }
+.step-b {
+  width:76px; height:76px; border-radius:20px;
+  background:var(--light); border:1.5px solid rgba(249,115,22,.2);
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:2px;
+  margin:0 auto 28px; transition:all .4s var(--ease);
+  box-shadow:0 4px 16px rgba(249,115,22,.08);
+}
+.step:hover .step-b { background:var(--orange); border-color:transparent; box-shadow:0 12px 40px var(--orange-glow); }
+.step-n { font-family:var(--fH); font-size:22px; font-weight:900; color:var(--orange); line-height:1; transition:color .3s; }
+.step:hover .step-n { color:#fff; }
+.step-mi { font-size:11px; color:#94a3b8; transition:color .3s; }
+.step:hover .step-mi { color:rgba(255,255,255,.7); }
+.step h3 { font-family:var(--fH); font-size:18px; font-weight:800; letter-spacing:-.3px; color:var(--navy-dark); margin-bottom:12px; }
+.step p { font-size:14px; color:var(--muted); line-height:1.75; }
+
+/* ════════════════════════════════════════════════════
+   STATS STRIP
+════════════════════════════════════════════════════ */
+.stats { background:var(--navy-dark); }
+.stats-in {
+  max-width:1280px; margin:0 auto;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border-left:1px solid rgba(255,255,255,.06);
+}
+.sb { padding:60px 48px; border-right:1px solid rgba(255,255,255,.06); border-top:1px solid rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.06); transition:all .3s; }
+.sb:hover { background:rgba(249,115,22,.05); }
+.sb-ic { font-size:22px; color:var(--orange); margin-bottom:16px; }
+.sb-num { font-family:var(--fH); font-size:54px; font-weight:900; letter-spacing:-3px; line-height:1; color:#fff; margin-bottom:8px; }
+.sb-num sup { font-size:22px; color:var(--orange); vertical-align:super; }
+.sb-desc { font-size:15px; color:rgba(255,255,255,.45); line-height:1.5; }
+
+/* ════════════════════════════════════════════════════
+   PRO BANNER
+════════════════════════════════════════════════════ */
+.pro-wrap { padding:0 52px; }
+.pro {
+  margin:80px 0; border-radius:24px; overflow:hidden; position:relative;
   background:var(--navy);
   border:1px solid rgba(249,115,22,.2);
-  display:grid;grid-template-columns:1fr auto;
-  align-items:center;gap:40px;padding:64px 72px;
+  display:grid; grid-template-columns:1fr auto;
+  align-items:center; gap:40px; padding:64px 72px;
 }
-.pro-img-bg {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center 20%;
-  filter:blur(22px) saturate(0.4) brightness(0.35);
-  opacity:0.55;
-  z-index:0;
-  transform:scale(1.05);
+.pro::before {
+  content:''; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:40px 40px; pointer-events:none;
 }
-.pro::before{content:'';position:absolute;inset:0;background:linear-gradient(105deg,rgba(15,32,64,0.92) 0%,rgba(15,32,64,0.75) 55%, rgba(15,32,64,0.88) 100%);z-index:1;}
-/* orange grid on top */
-.pro-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:2;}
-.pro-glow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.14),transparent 70%);top:-120px;right:-80px;pointer-events:none;z-index:2;}
-.pro-txt{position:relative;z-index:3;}
-.pro-ey{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(249,115,22,.7);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.pro-ey::before{content:'';width:20px;height:1.5px;background:rgba(249,115,22,.5);border-radius:2px;}
-.pro-h{font-family:var(--fH);font-size:38px;font-weight:900;letter-spacing:-2px;line-height:1.05;color:#fff;margin-bottom:14px;}
-.pro-h em{color:var(--orange);font-style:normal;}
-.pro-p{font-size:16px;color:rgba(255,255,255,.55);line-height:1.7;max-width:500px;}
-.pro-act{position:relative;z-index:3;flex-shrink:0;}
-.btn-pro{display:inline-flex;align-items:center;gap:12px;padding:18px 38px;background:var(--orange);color:#fff;font-family:var(--fH);font-size:16px;font-weight:800;border-radius:50px;transition:all .3s var(--ease);white-space:nowrap;}
-.btn-pro:hover{transform:translateY(-3px);box-shadow:0 18px 40px var(--orange-glow);background:var(--orange-dk);}
+.pro-glow { position:absolute; width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,.12),transparent 70%); top:-120px; right:-80px; pointer-events:none; }
+.pro-txt { position:relative; z-index:1; }
+.pro-ey { font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:rgba(249,115,22,.7); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.pro-ey::before { content:''; width:20px; height:1.5px; background:rgba(249,115,22,.5); border-radius:2px; }
+.pro-h { font-family:var(--fH); font-size:38px; font-weight:900; letter-spacing:-2px; line-height:1.05; color:#fff; margin-bottom:14px; }
+.pro-h em { color:var(--orange); font-style:normal; }
+.pro-p { font-size:16px; color:rgba(255,255,255,.55); line-height:1.7; max-width:500px; }
+.pro-act { position:relative; z-index:1; flex-shrink:0; }
+.btn-pro {
+  display:inline-flex; align-items:center; gap:12px;
+  padding:18px 38px; background:var(--orange); color:#fff;
+  font-family:var(--fH); font-size:16px; font-weight:800;
+  border-radius:50px; transition:all .3s var(--ease); white-space:nowrap;
+}
+.btn-pro:hover { transform:translateY(-3px); box-shadow:0 18px 40px var(--orange-glow); background:var(--orange-dk); }
 
 /* ════════════════════════════════════════════════════
-   FOOTER — cleaning image whispered behind
+   FOOTER
 ════════════════════════════════════════════════════ */
-footer{
-  position:relative;
-  overflow:hidden;
-  border-top:1px solid rgba(255,255,255,.06);
-  padding:80px 52px 32px;
+footer { background:var(--navy-dark); border-top:1px solid rgba(255,255,255,.06); padding:80px 52px 32px; }
+.ft-g {
+  max-width:1280px; margin:0 auto;
+  display:grid; grid-template-columns:2fr 1fr 1fr 1.4fr; gap:60px;
+  padding-bottom:60px; border-bottom:1px solid rgba(255,255,255,.06);
 }
-.footer-bg-img {
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center 40%;
-  filter:blur(32px) saturate(0.3) brightness(0.18);
-  opacity:0.65;
-  z-index:0;
-  transform:scale(1.06);
-}
-footer::before {
-  content:'';
-  position:absolute; inset:0;
-  background: linear-gradient(180deg,
-    rgba(15,32,64,0.97) 0%,
-    rgba(15,32,64,0.90) 60%,
-    rgba(15,32,64,0.97) 100%
-  );
-  z-index:1;
-}
-.ft-inner{ position:relative; z-index:2; }
-.ft-g{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1.4fr;gap:60px;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,.06);}
-.ft-bl{font-family:var(--fH);font-size:26px;font-weight:900;letter-spacing:-1px;color:#fff;display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;}
-.ft-bl em{color:var(--orange);font-style:normal;}
-.ft-br p{font-size:14px;color:rgba(255,255,255,.4);line-height:1.8;max-width:280px;margin-bottom:28px;}
-.ft-socs{display:flex;gap:10px;}
-.ft-soc{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.45);font-size:14px;transition:all .3s;}
-.ft-soc:hover{border-color:var(--orange);color:var(--orange);background:rgba(249,115,22,.08);transform:translateY(-3px);}
-.ft-col h4{font-family:var(--fH);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:2.5px;color:rgba(255,255,255,.28);margin-bottom:22px;}
-.ft-col ul{list-style:none;}
-.ft-col ul li{margin-bottom:13px;}
-.ft-col ul li a{color:rgba(255,255,255,.48);font-size:14px;transition:all .2s;display:flex;align-items:center;gap:8px;}
-.ft-col ul li a::before{content:'';width:0;height:1px;background:var(--orange);transition:width .2s;}
-.ft-col ul li a:hover{color:var(--orange);padding-left:4px;}
-.ft-col ul li a:hover::before{width:12px;}
-.ft-ci{display:flex;align-items:flex-start;gap:12px;color:rgba(255,255,255,.48);font-size:14px;margin-bottom:16px;}
-.ft-ci i{color:var(--orange);margin-top:2px;font-size:14px;flex-shrink:0;}
-.ft-ci a{color:rgba(255,255,255,.48);transition:color .2s;}
-.ft-ci a:hover{color:var(--orange);}
-.ft-bot{max-width:1280px;margin:28px auto 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.ft-bot p{font-size:13px;color:rgba(255,255,255,.22);}
-.ft-bot span{color:var(--orange);}
+.ft-bl { font-family:var(--fH); font-size:26px; font-weight:900; letter-spacing:-1px; color:#fff; display:inline-flex; align-items:center; gap:10px; margin-bottom:20px; }
+.ft-bl em { color:var(--orange); font-style:normal; }
+.ft-br p { font-size:14px; color:rgba(255,255,255,.4); line-height:1.8; max-width:280px; margin-bottom:28px; }
+.ft-socs { display:flex; gap:10px; }
+.ft-soc { width:38px; height:38px; border-radius:10px; border:1px solid rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.45); font-size:14px; transition:all .3s; }
+.ft-soc:hover { border-color:var(--orange); color:var(--orange); background:rgba(249,115,22,.08); transform:translateY(-3px); }
+.ft-col h4 { font-family:var(--fH); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:2.5px; color:rgba(255,255,255,.28); margin-bottom:22px; }
+.ft-col ul { list-style:none; }
+.ft-col ul li { margin-bottom:13px; }
+.ft-col ul li a { color:rgba(255,255,255,.48); font-size:14px; transition:all .2s; display:flex; align-items:center; gap:8px; }
+.ft-col ul li a::before { content:''; width:0; height:1px; background:var(--orange); transition:width .2s; }
+.ft-col ul li a:hover { color:var(--orange); padding-left:4px; }
+.ft-col ul li a:hover::before { width:12px; }
+.ft-ci { display:flex; align-items:flex-start; gap:12px; color:rgba(255,255,255,.48); font-size:14px; margin-bottom:16px; }
+.ft-ci i { color:var(--orange); margin-top:2px; font-size:14px; flex-shrink:0; }
+.ft-ci a { color:rgba(255,255,255,.48); transition:color .2s; }
+.ft-ci a:hover { color:var(--orange); }
+.ft-bot { max-width:1280px; margin:28px auto 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.ft-bot p { font-size:13px; color:rgba(255,255,255,.22); }
+.ft-bot span { color:var(--orange); }
 
-/* ── SCROLL REVEAL ── */
-.rv{opacity:0;transform:translateY(32px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
-.rv.on{opacity:1;transform:translateY(0);}
+/* ════════════════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════════════════ */
+.rv { opacity:0; transform:translateY(32px); transition:opacity .7s var(--ease), transform .7s var(--ease); }
+.rv.on { opacity:1; transform:translateY(0); }
 
-/* ── RESPONSIVE ── */
-@media(max-width:1100px){.svc-card:nth-child(n){grid-column:span 6;}}
+/* ════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════ */
+@media(max-width:1100px){
+  .svc-card:nth-child(n){grid-column:span 6;}
+}
+
 @media(max-width:900px){
   .hero-body{grid-template-columns:1fr;}
   .hr{display:none;}
@@ -416,42 +476,113 @@ footer::before {
   .pro{grid-template-columns:1fr;}
   .pro-wrap{padding:0 24px;}
 }
+
 @media(max-width:640px){
-  nav{padding:0 20px;}
+  /* ── NAV ── */
+  nav{padding:0 16px;height:56px;}
   .nav-c{display:none;}
-  .hero-body{padding:40px 20px;}
-  .services{padding:80px 20px;}
-  .how{padding:80px 20px;}
+  .n-pro{display:none;}
+  .n-ghost{padding:6px 12px;font-size:12px;}
+  .n-solid{padding:7px 14px;font-size:12px;}
+  .logo{font-size:20px;}
+  .logo-box{width:28px;height:28px;font-size:12px;}
+
+  /* ── HERO ── */
+  .hero-body{padding:28px 16px 48px;}
+  .h-pill{font-size:11px;padding:4px 10px 4px 5px;}
+  .h1{font-size:clamp(30px,9vw,42px);letter-spacing:-1.5px;line-height:1.05;}
+  .h1-it{font-size:clamp(32px,9.5vw,44px);}
+  .h-desc{font-size:14px;margin:16px 0 24px;max-width:100%;}
+  .h-btns{flex-direction:column;align-items:stretch;gap:10px;}
+  .btn-cta,.btn-gh{width:100%;justify-content:center;padding:13px 20px;font-size:15px;}
+  .h-trust{flex-wrap:wrap;gap:10px;margin-top:28px;}
+  .t-av{width:30px;height:30px;font-size:11px;}
+  .hr{display:none;}
+
+  /* ── SERVICES ── */
+  .services{padding:56px 16px;}
+  .sh2{font-size:clamp(24px,7vw,34px);letter-spacing:-1px;}
+  .ssub{font-size:14px;margin-bottom:36px;}
   .svc-card:nth-child(n){grid-column:span 12;}
-  .steps,.stats-in{grid-template-columns:1fr;}
-  .pro{padding:40px 28px;}
-  .pro-wrap{padding:0 20px;}
-  footer{padding:60px 20px 24px;}
-  .ft-g{grid-template-columns:1fr;}
-  .bg-img{opacity:0.08;}
+  .sg{gap:12px;}
+  .card-name{font-size:18px;}
+  .card-desc{font-size:13px;margin-bottom:18px;}
+  .card-val{font-size:22px;}
+  .card-icon{width:46px;height:46px;font-size:20px;}
+  .card-num{font-size:48px;}
+  .bg-img{opacity:0.05;}
+
+  /* ── HOW IT WORKS ── */
+  .how{padding:56px 16px;}
+  .steps{grid-template-columns:1fr 1fr;gap:20px;}
+  .step{padding:0 6px;}
+  .step-b{width:58px;height:58px;border-radius:14px;margin-bottom:14px;}
+  .step-n{font-size:17px;}
+  .step h3{font-size:14px;margin-bottom:8px;}
+  .step p{font-size:12px;line-height:1.6;}
+
+  /* ── STATS ── */
+  .stats-in{grid-template-columns:1fr 1fr;}
+  .sb{padding:28px 16px;}
+  .sb-num{font-size:36px;letter-spacing:-2px;}
+  .sb-num sup{font-size:16px;}
+  .sb-desc{font-size:12px;}
+  .sb-ic{font-size:18px;margin-bottom:10px;}
+
+  /* ── PRO BANNER ── */
+  .pro-wrap{padding:0 16px;}
+  .pro{padding:36px 24px;gap:20px;}
+  .pro-h{font-size:clamp(22px,6vw,30px);letter-spacing:-1px;}
+  .pro-p{font-size:14px;}
+  .btn-pro{width:100%;justify-content:center;padding:14px 20px;font-size:14px;}
+
+  /* ── FOOTER ── */
+  footer{padding:48px 16px 24px;}
+  .ft-g{grid-template-columns:1fr;gap:28px;}
+  .ft-bot{flex-direction:column;align-items:center;text-align:center;gap:6px;}
+  .ft-bot p{font-size:12px;}
+}
+
+@media(max-width:400px){
+  .h1{font-size:28px;}
+  .h1-it{font-size:30px;}
+  .steps{grid-template-columns:1fr;}
+  .sb-num{font-size:30px;}
 }
 </style>
 </head>
 <body>
 
-<div id="ld"><div class="ld-logo">Fix<em>zy</em></div><div class="ld-bar"><div class="ld-fill"></div></div></div>
+<!-- LOADER -->
+<div id="ld">
+  <div class="ld-logo">Fix<em>zy</em></div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+</div>
+
+<!-- CURSOR -->
 <div class="cur cur-d" id="cD"></div>
 <div class="cur cur-r" id="cR"></div>
 
-<!-- NAV -->
+<!-- ══════════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════════ -->
 <nav id="mainNav">
   <a href="#home" class="logo">
     <div class="logo-box"><i class="fas fa-screwdriver-wrench"></i></div>
     Fix<em>zy</em>
   </a>
+
   <div class="nav-c">
     <a href="#home">Home</a>
     <a href="#services">Services</a>
     <a href="#how">How It Works</a>
     <a href="#contact">Contact</a>
   </div>
+
   <div class="nav-r">
-    <a href="{% url 'worker_register' %}" class="n-pro"><i class="fas fa-hard-hat"></i> Join as Pro</a>
+    <a href="{% url 'worker_register' %}" class="n-pro">
+      <i class="fas fa-hard-hat"></i> Join as Pro
+    </a>
     {% if user.is_authenticated %}
       <a href="{% url 'user_dashboard' %}" class="n-ghost">Dashboard</a>
       <a href="{% url 'logout' %}" class="n-solid">Logout</a>
@@ -462,35 +593,56 @@ footer::before {
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- ══════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════ -->
 <section class="hero" id="home">
   <div class="h-grid"></div>
   <div class="h-blob bA"></div>
   <div class="h-blob bB"></div>
   <div class="hero-accent"></div>
+
   <div class="hero-body">
+    <!-- LEFT CONTENT -->
     <div class="hl">
       <div class="h-pill">
         <div class="pdot"><i class="fas fa-check"></i></div>
         Trusted by 12,000+ homes across India
       </div>
+
       <h1 class="h1">
         Home Repairs,
         <span class="h1-it">done right.</span>
         <span class="h1-end">At Your Door.</span>
       </h1>
-      <p class="h-desc">Fixzy connects you with verified electricians, plumbers, cleaners, painters &amp; more — in your neighbourhood, on your schedule, at honest prices.</p>
+
+      <p class="h-desc">
+        Fixzy connects you with verified electricians, plumbers, cleaners, painters &amp; more —
+        in your neighbourhood, on your schedule, at honest prices.
+      </p>
+
       <div class="h-btns">
         {% if user.is_authenticated and user.role == 'user' %}
-          <a href="{% url 'request_service' %}" class="btn-cta"><i class="fas fa-calendar-check"></i> Book a Service</a>
+          <a href="{% url 'request_service' %}" class="btn-cta">
+            <i class="fas fa-calendar-check"></i> Book a Service
+          </a>
         {% else %}
-          <a href="{% url 'login' %}" class="btn-cta"><i class="fas fa-bolt"></i> Get Started Free</a>
+          <!-- Not logged in: both buttons go to login page -->
+          <a href="{% url 'login' %}" class="btn-cta">
+            <i class="fas fa-bolt"></i> Get Started Free
+          </a>
         {% endif %}
-        <a href="#services" class="btn-gh"><i class="fas fa-arrow-down"></i> Explore Services</a>
+        <a href="#services" class="btn-gh">
+          <i class="fas fa-arrow-down"></i> Explore Services
+        </a>
       </div>
+
       <div class="h-trust">
         <div class="t-avs">
-          <div class="t-av">R</div><div class="t-av">S</div><div class="t-av">A</div><div class="t-av">M</div>
+          <div class="t-av">R</div>
+          <div class="t-av">S</div>
+          <div class="t-av">A</div>
+          <div class="t-av">M</div>
           <div class="t-av" style="background:rgba(249,115,22,.3);font-size:11px;">+99</div>
         </div>
         <div>
@@ -499,6 +651,8 @@ footer::before {
         </div>
       </div>
     </div>
+
+    <!-- RIGHT SHOWCASE -->
     <div class="hr">
       <div class="showcase">
         <div class="sc-main">
@@ -507,18 +661,38 @@ footer::before {
             <span id="scLb">Fixzy Pro</span>
           </div>
         </div>
-        <div class="oc oc1"><div class="oci cy"><i class="fas fa-bolt"></i></div><div><div class="ocl">Electrician</div><div class="ocp">From ₹499</div></div></div>
-        <div class="oc oc2"><div class="oci cb"><i class="fas fa-faucet"></i></div><div><div class="ocl">Plumber</div><div class="ocp">From ₹399</div></div></div>
-        <div class="oc oc3"><div class="oci cg"><i class="fas fa-broom"></i></div><div><div class="ocl">Cleaning</div><div class="ocp">From ₹299</div></div></div>
-        <div class="oc oc4"><div class="oci cr"><i class="fas fa-paint-roller"></i></div><div><div class="ocl">Painting</div><div class="ocp">From ₹899</div></div></div>
-        <div class="oc oc5"><div class="oci cp"><i class="fas fa-snowflake"></i></div><div><div class="ocl">AC Repair</div><div class="ocp">From ₹699</div></div></div>
-        <div class="oc oc6"><div class="oci co"><i class="fas fa-hammer"></i></div><div><div class="ocl">Carpenter</div><div class="ocp">From ₹599</div></div></div>
+        <div class="oc oc1">
+          <div class="oci cy"><i class="fas fa-bolt"></i></div>
+          <div><div class="ocl">Electrician</div><div class="ocp">From ₹499</div></div>
+        </div>
+        <div class="oc oc2">
+          <div class="oci cb"><i class="fas fa-faucet"></i></div>
+          <div><div class="ocl">Plumber</div><div class="ocp">From ₹399</div></div>
+        </div>
+        <div class="oc oc3">
+          <div class="oci cg"><i class="fas fa-broom"></i></div>
+          <div><div class="ocl">Cleaning</div><div class="ocp">From ₹299</div></div>
+        </div>
+        <div class="oc oc4">
+          <div class="oci cr"><i class="fas fa-paint-roller"></i></div>
+          <div><div class="ocl">Painting</div><div class="ocp">From ₹899</div></div>
+        </div>
+        <div class="oc oc5">
+          <div class="oci cp"><i class="fas fa-snowflake"></i></div>
+          <div><div class="ocl">AC Repair</div><div class="ocp">From ₹699</div></div>
+        </div>
+        <div class="oc oc6">
+          <div class="oci co"><i class="fas fa-hammer"></i></div>
+          <div><div class="ocl">Carpenter</div><div class="ocp">From ₹599</div></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- TICKER -->
+<!-- ══════════════════════════════════════════════════
+     TICKER
+══════════════════════════════════════════════════ -->
 <div class="ticker" aria-hidden="true">
   <div class="tick-track">
     <span class="tick-item"><i class="fas fa-bolt"></i> Electrician <span class="tick-sep">·</span></span>
@@ -528,6 +702,7 @@ footer::before {
     <span class="tick-item"><i class="fas fa-snowflake"></i> AC Service <span class="tick-sep">·</span></span>
     <span class="tick-item"><i class="fas fa-hammer"></i> Carpenter <span class="tick-sep">·</span></span>
     <span class="tick-item"><i class="fas fa-shield-halved"></i> Verified Pros <span class="tick-sep">·</span></span>
+    <!-- duplicate for seamless loop -->
     <span class="tick-item"><i class="fas fa-bolt"></i> Electrician <span class="tick-sep">·</span></span>
     <span class="tick-item"><i class="fas fa-faucet"></i> Plumber <span class="tick-sep">·</span></span>
     <span class="tick-item"><i class="fas fa-broom"></i> Deep Cleaning <span class="tick-sep">·</span></span>
@@ -539,19 +714,10 @@ footer::before {
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     SERVICES  — all 4 photos ghosted in background
+     SERVICES
 ══════════════════════════════════════════════════ -->
 <section id="services">
 <div class="services">
-
-  <!-- 4 blurred photo backgrounds, one in each quadrant -->
-  <div class="svc-bg-layer">
-    <img class="bg-img bg-img-tl" src="{% static 'images/electrical.jpg' %}" alt="">
-    <img class="bg-img bg-img-tr" src="{% static 'images/Plumber.jpg' %}"   alt="">
-    <img class="bg-img bg-img-bl" src="{% static 'images/Carpenter.jpg' %}" alt="">
-    <img class="bg-img bg-img-br" src="{% static 'images/clean.jpg' %}"     alt="">
-  </div>
-
   <div class="svc-inner">
     <div class="slabel">What We Offer</div>
     <h2 class="sh2">Every service <em>your home</em><br>will ever need</h2>
@@ -589,108 +755,218 @@ footer::before {
               <span class="card-val">₹{{ service.price }}</span>
             </div>
             {% if user.is_authenticated and user.role == 'user' %}
-              <a href="{% url 'request_service' %}?service={{ service.id }}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+              <a href="{% url 'request_service' %}?service={{ service.id }}" class="card-btn">
+                <i class="fas fa-arrow-right"></i>
+              </a>
             {% else %}
-              <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+              <!-- Not logged in: arrow goes to login -->
+              <a href="{% url 'login' %}" class="card-btn">
+                <i class="fas fa-arrow-right"></i>
+              </a>
             {% endif %}
           </div>
         </div>
         {% endfor %}
 
       {% else %}
+        <!-- ── STATIC FALLBACK CARDS ── -->
+
+        <!-- 1. Electrician -->
         <div class="svc-card card-elec rv">
-          <div class="card-top"><div class="card-icon"><i class="fas fa-bolt"></i></div><div class="card-num">01</div></div>
+          <div class="card-top">
+            <div class="card-icon"><i class="fas fa-bolt"></i></div>
+            <div class="card-num">01</div>
+          </div>
           <div class="card-badge"><i class="fas fa-star"></i> Most Booked</div>
           <h3 class="card-name">Electrician</h3>
           <p class="card-desc">Certified wiring, switchboard fixes, fan installations and electrical repairs done safely by licensed professionals.</p>
-          <div class="card-ft"><div class="card-price"><span class="card-from">Starting from</span><span class="card-val">₹499</span></div><a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a></div>
+          <div class="card-ft">
+            <div class="card-price">
+              <span class="card-from">Starting from</span>
+              <span class="card-val">₹499</span>
+            </div>
+            <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+          </div>
         </div>
+
+        <!-- 2. Plumber -->
         <div class="svc-card card-plumb rv">
-          <div class="card-top"><div class="card-icon"><i class="fas fa-faucet"></i></div><div class="card-num">02</div></div>
+          <div class="card-top">
+            <div class="card-icon"><i class="fas fa-faucet"></i></div>
+            <div class="card-num">02</div>
+          </div>
           <h3 class="card-name">Plumber</h3>
           <p class="card-desc">Leak repairs, pipe fitting, drainage unblocking and full bathroom plumbing handled quickly by expert plumbers.</p>
-          <div class="card-ft"><div class="card-price"><span class="card-from">Starting from</span><span class="card-val">₹399</span></div><a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a></div>
+          <div class="card-ft">
+            <div class="card-price">
+              <span class="card-from">Starting from</span>
+              <span class="card-val">₹399</span>
+            </div>
+            <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+          </div>
         </div>
+
+        <!-- 3. Carpenter -->
         <div class="svc-card card-carp rv">
-          <div class="card-top"><div class="card-icon"><i class="fas fa-hammer"></i></div><div class="card-num">03</div></div>
+          <div class="card-top">
+            <div class="card-icon"><i class="fas fa-hammer"></i></div>
+            <div class="card-num">03</div>
+          </div>
           <h3 class="card-name">Carpenter</h3>
           <p class="card-desc">Custom furniture, door repair, shelving and wardrobe fitting — all your woodwork needs in one booking.</p>
-          <div class="card-ft"><div class="card-price"><span class="card-from">Starting from</span><span class="card-val">₹599</span></div><a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a></div>
+          <div class="card-ft">
+            <div class="card-price">
+              <span class="card-from">Starting from</span>
+              <span class="card-val">₹599</span>
+            </div>
+            <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+          </div>
         </div>
+
+        <!-- 4. Cleaning -->
         <div class="svc-card card-clean rv">
-          <div class="card-top"><div class="card-icon"><i class="fas fa-broom"></i></div><div class="card-num">04</div></div>
+          <div class="card-top">
+            <div class="card-icon"><i class="fas fa-broom"></i></div>
+            <div class="card-num">04</div>
+          </div>
           <h3 class="card-name">Deep Cleaning</h3>
           <p class="card-desc">Full-home sanitization, kitchen scrubbing and bathroom disinfection using professional eco-friendly equipment.</p>
-          <div class="card-ft"><div class="card-price"><span class="card-from">Starting from</span><span class="card-val">₹299</span></div><a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a></div>
+          <div class="card-ft">
+            <div class="card-price">
+              <span class="card-from">Starting from</span>
+              <span class="card-val">₹299</span>
+            </div>
+            <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+          </div>
         </div>
+
+        <!-- 5. AC Service -->
         <div class="svc-card card-ac rv">
-          <div class="card-top"><div class="card-icon"><i class="fas fa-snowflake"></i></div><div class="card-num">05</div></div>
+          <div class="card-top">
+            <div class="card-icon"><i class="fas fa-snowflake"></i></div>
+            <div class="card-num">05</div>
+          </div>
           <h3 class="card-name">AC Service</h3>
           <p class="card-desc">Gas refilling, deep cleaning, installation and all-brand AC repair by certified, experienced technicians.</p>
-          <div class="card-ft"><div class="card-price"><span class="card-from">Starting from</span><span class="card-val">₹699</span></div><a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a></div>
+          <div class="card-ft">
+            <div class="card-price">
+              <span class="card-from">Starting from</span>
+              <span class="card-val">₹699</span>
+            </div>
+            <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+          </div>
         </div>
+
+        <!-- 6. Painting -->
         <div class="svc-card card-paint rv">
-          <div class="card-top"><div class="card-icon"><i class="fas fa-paint-roller"></i></div><div class="card-num">06</div></div>
+          <div class="card-top">
+            <div class="card-icon"><i class="fas fa-paint-roller"></i></div>
+            <div class="card-num">06</div>
+          </div>
           <h3 class="card-name">Painting</h3>
           <p class="card-desc">Interior and exterior painting, waterproofing and texture finishes with free colour consultation included.</p>
-          <div class="card-ft"><div class="card-price"><span class="card-from">Starting from</span><span class="card-val">₹899</span></div><a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a></div>
+          <div class="card-ft">
+            <div class="card-price">
+              <span class="card-from">Starting from</span>
+              <span class="card-val">₹899</span>
+            </div>
+            <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+          </div>
         </div>
+
+        <!-- 7. Interior & More -->
         <div class="svc-card card-misc rv">
-          <div class="card-top"><div class="card-icon"><i class="fas fa-couch"></i></div><div class="card-num">07</div></div>
+          <div class="card-top">
+            <div class="card-icon"><i class="fas fa-couch"></i></div>
+            <div class="card-num">07</div>
+          </div>
           <h3 class="card-name">Interior & More</h3>
           <p class="card-desc">TV mounting, curtain fitting, false ceiling and modular kitchen — all home improvement needs covered.</p>
-          <div class="card-ft"><div class="card-price"><span class="card-from">Starting from</span><span class="card-val">₹349</span></div><a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a></div>
+          <div class="card-ft">
+            <div class="card-price">
+              <span class="card-from">Starting from</span>
+              <span class="card-val">₹349</span>
+            </div>
+            <a href="{% url 'login' %}" class="card-btn"><i class="fas fa-arrow-right"></i></a>
+          </div>
         </div>
-      {% endif %}
 
+      {% endif %}
     </div>
   </div>
 </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════
-     HOW IT WORKS — electrician image behind
+     HOW IT WORKS
 ══════════════════════════════════════════════════ -->
 <section class="how" id="how">
-  <!-- blurred background -->
-  <div class="how-bg">
-    <img class="how-bg-img" src="{% static 'images/electrical.jpg' %}" alt="">
-  </div>
-  <div class="how-bg-tint-l"></div>
-  <div class="how-bg-tint-r"></div>
-
   <div class="how-in">
     <div class="how-hd rv">
       <div class="slabel">Simple Process</div>
-      <h2 class="sh2">Four steps to a <span style="font-family:var(--fS);font-style:italic;font-weight:400;color:var(--orange)">perfectly fixed</span> home</h2>
+      <h2 class="sh2">Four steps to a
+        <span style="font-family:var(--fS);font-style:italic;font-weight:400;color:var(--orange)">perfectly fixed</span>
+        home
+      </h2>
     </div>
     <div class="steps">
-      <div class="step rv"><div class="step-b"><div class="step-n">01</div><div class="step-mi"><i class="fas fa-search"></i></div></div><h3>Pick a Service</h3><p>Browse our curated list and choose exactly what your home needs right now.</p></div>
-      <div class="step rv"><div class="step-b"><div class="step-n">02</div><div class="step-mi"><i class="fas fa-calendar"></i></div></div><h3>Set Date & Time</h3><p>Choose a slot that works for you — mornings, evenings or weekends, all available.</p></div>
-      <div class="step rv"><div class="step-b"><div class="step-n">03</div><div class="step-mi"><i class="fas fa-user-check"></i></div></div><h3>Pro Arrives</h3><p>A background-verified expert shows up on time with all tools needed for the job.</p></div>
-      <div class="step rv"><div class="step-b"><div class="step-n">04</div><div class="step-mi"><i class="fas fa-star"></i></div></div><h3>Pay & Review</h3><p>Pay only after the job is done to your satisfaction. Then rate your experience.</p></div>
+      <div class="step rv">
+        <div class="step-b"><div class="step-n">01</div><div class="step-mi"><i class="fas fa-search"></i></div></div>
+        <h3>Pick a Service</h3>
+        <p>Browse our curated list and choose exactly what your home needs right now.</p>
+      </div>
+      <div class="step rv">
+        <div class="step-b"><div class="step-n">02</div><div class="step-mi"><i class="fas fa-calendar"></i></div></div>
+        <h3>Set Date & Time</h3>
+        <p>Choose a slot that works for you — mornings, evenings or weekends, all available.</p>
+      </div>
+      <div class="step rv">
+        <div class="step-b"><div class="step-n">03</div><div class="step-mi"><i class="fas fa-user-check"></i></div></div>
+        <h3>Pro Arrives</h3>
+        <p>A background-verified expert shows up on time with all tools needed for the job.</p>
+      </div>
+      <div class="step rv">
+        <div class="step-b"><div class="step-n">04</div><div class="step-mi"><i class="fas fa-star"></i></div></div>
+        <h3>Pay & Review</h3>
+        <p>Pay only after the job is done to your satisfaction. Then rate your experience.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- STATS -->
+<!-- ══════════════════════════════════════════════════
+     STATS
+══════════════════════════════════════════════════ -->
 <div class="stats">
   <div class="stats-in">
-    <div class="sb rv"><div class="sb-ic"><i class="fas fa-users"></i></div><div class="sb-num" id="s1">12<sup>K+</sup></div><div class="sb-desc">Happy customers served across India</div></div>
-    <div class="sb rv"><div class="sb-ic"><i class="fas fa-user-shield"></i></div><div class="sb-num" id="s2">500<sup>+</sup></div><div class="sb-desc">Verified and trained professionals</div></div>
-    <div class="sb rv"><div class="sb-ic"><i class="fas fa-star"></i></div><div class="sb-num" id="s3">4.9<sup>★</sup></div><div class="sb-desc">Average rating from 3,800+ reviews</div></div>
-    <div class="sb rv"><div class="sb-ic"><i class="fas fa-clock"></i></div><div class="sb-num" id="s4">2<sup>hr</sup></div><div class="sb-desc">Average time from booking to arrival</div></div>
+    <div class="sb rv">
+      <div class="sb-ic"><i class="fas fa-users"></i></div>
+      <div class="sb-num" id="s1">12<sup>K+</sup></div>
+      <div class="sb-desc">Happy customers served across India</div>
+    </div>
+    <div class="sb rv">
+      <div class="sb-ic"><i class="fas fa-user-shield"></i></div>
+      <div class="sb-num" id="s2">500<sup>+</sup></div>
+      <div class="sb-desc">Verified and trained professionals</div>
+    </div>
+    <div class="sb rv">
+      <div class="sb-ic"><i class="fas fa-star"></i></div>
+      <div class="sb-num" id="s3">4.9<sup>★</sup></div>
+      <div class="sb-desc">Average rating from 3,800+ reviews</div>
+    </div>
+    <div class="sb rv">
+      <div class="sb-ic"><i class="fas fa-clock"></i></div>
+      <div class="sb-num" id="s4">2<sup>hr</sup></div>
+      <div class="sb-desc">Average time from booking to arrival</div>
+    </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     PRO BANNER — carpenter image as dark atmospheric BG
+     PRO BANNER
 ══════════════════════════════════════════════════ -->
 <div class="pro-wrap rv">
   <div class="pro">
-    <!-- real photo behind the dark overlay -->
-    <img class="pro-img-bg" src="{% static 'images/Carpenter.jpg' %}" alt="">
-    <div class="pro-grid"></div>
     <div class="pro-glow"></div>
     <div class="pro-txt">
       <div class="pro-ey">For Professionals</div>
@@ -698,104 +974,164 @@ footer::before {
       <p class="pro-p">Join our network of verified service professionals. Set your own hours, get consistent bookings, and build a loyal customer base — all through one simple platform.</p>
     </div>
     <div class="pro-act">
-      <a href="{% url 'worker_register' %}" class="btn-pro"><i class="fas fa-user-tie"></i> Register as a Pro</a>
+      <a href="{% url 'worker_register' %}" class="btn-pro">
+        <i class="fas fa-user-tie"></i> Register as a Pro
+      </a>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════
-     FOOTER — cleaning image as atmospheric dark BG
+     FOOTER
 ══════════════════════════════════════════════════ -->
 <footer id="contact">
-  <img class="footer-bg-img" src="{% static 'images/clean.jpg' %}" alt="">
-  <div class="ft-inner">
-    <div class="ft-g">
-      <div class="ft-br">
-        <div class="ft-bl"><div class="logo-box" style="width:32px;height:32px;border-radius:8px;font-size:14px;animation:none;"><i class="fas fa-screwdriver-wrench"></i></div>Fix<em>zy</em></div>
-        <p>Your trusted partner for every home service need. Professional, insured, and always nearby.</p>
-        <div class="ft-socs">
-          <a href="#" class="ft-soc"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="ft-soc"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="ft-soc"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="ft-soc"><i class="fab fa-linkedin-in"></i></a>
-          <a href="#" class="ft-soc"><i class="fab fa-youtube"></i></a>
+  <div class="ft-g">
+    <!-- Brand -->
+    <div class="ft-br">
+      <div class="ft-bl">
+        <div class="logo-box" style="width:32px;height:32px;border-radius:8px;font-size:14px;animation:none;">
+          <i class="fas fa-screwdriver-wrench"></i>
         </div>
+        Fix<em>zy</em>
       </div>
-      <div class="ft-col"><h4>Navigate</h4><ul>
+      <p>Your trusted partner for every home service need. Professional, insured, and always nearby.</p>
+      <div class="ft-socs">
+        <a href="#" class="ft-soc"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="ft-soc"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="ft-soc"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="ft-soc"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="ft-soc"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+
+    <!-- Navigate -->
+    <div class="ft-col">
+      <h4>Navigate</h4>
+      <ul>
         <li><a href="#home">Home</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#how">How It Works</a></li>
         <li><a href="#contact">Contact</a></li>
-      </ul></div>
-      <div class="ft-col"><h4>Services</h4><ul>
+      </ul>
+    </div>
+
+    <!-- Services -->
+    <div class="ft-col">
+      <h4>Services</h4>
+      <ul>
         <li><a href="{% url 'login' %}">Electrician</a></li>
         <li><a href="{% url 'login' %}">Plumber</a></li>
         <li><a href="{% url 'login' %}">Carpenter</a></li>
         <li><a href="{% url 'login' %}">Deep Cleaning</a></li>
         <li><a href="{% url 'login' %}">AC Repair</a></li>
         <li><a href="{% url 'login' %}">Painting</a></li>
-      </ul></div>
-      <div class="ft-col"><h4>Contact</h4>
-        <div class="ft-ci"><i class="fas fa-phone"></i><a href="tel:+911234567890">+91 12345 67890</a></div>
-        <div class="ft-ci"><i class="fas fa-envelope"></i><a href="mailto:hello@fixzy.in">hello@fixzy.in</a></div>
-        <div class="ft-ci"><i class="fas fa-location-dot"></i><span>Palakkad,Kerala,India</span></div>
-        <div class="ft-ci"><i class="fas fa-clock"></i><span>Mon – Sat &nbsp;8 AM – 8 PM</span></div>
-      </div>
+      </ul>
     </div>
-    <div class="ft-bot">
-      <p>© 2026 <span>Fixzy</span> Home Services. All rights reserved.</p>
-      <p>Designed with <span>♥</span> for better homes</p>
+
+    <!-- Contact -->
+    <div class="ft-col">
+      <h4>Contact</h4>
+      <div class="ft-ci"><i class="fas fa-phone"></i><a href="tel:+911234567890">+91 12345 67890</a></div>
+      <div class="ft-ci"><i class="fas fa-envelope"></i><a href="mailto:hello@fixzy.in">hello@fixzy.in</a></div>
+      <div class="ft-ci"><i class="fas fa-location-dot"></i><span>Mumbai, Maharashtra, India</span></div>
+      <div class="ft-ci"><i class="fas fa-clock"></i><span>Mon – Sat &nbsp;8 AM – 8 PM</span></div>
     </div>
+  </div>
+
+  <div class="ft-bot">
+    <p>© 2026 <span>Fixzy</span> Home Services. All rights reserved.</p>
+    <p>Designed with <span>♥</span> for better homes</p>
   </div>
 </footer>
 
+<!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
 <script>
-window.addEventListener('load',()=>{ setTimeout(()=>document.getElementById('ld').classList.add('gone'),1400); });
-const cD=document.getElementById('cD'),cR=document.getElementById('cR');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{ mx=e.clientX;my=e.clientY;cD.style.transform=`translate(${mx-4}px,${my-4}px)`; });
-(function loop(){ rx+=(mx-rx)*.13;ry+=(my-ry)*.13;cR.style.transform=`translate(${rx}px,${ry}px)`;requestAnimationFrame(loop); })();
-document.querySelectorAll('a,button,.svc-card,.oc,.step').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cR.classList.add('h'));
-  el.addEventListener('mouseleave',()=>cR.classList.remove('h'));
+/* ── Loader ── */
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('ld').classList.add('gone'), 1400);
 });
-const nav=document.getElementById('mainNav');
-window.addEventListener('scroll',()=>{
-  if(window.scrollY>60){nav.style.height='56px';nav.style.background='rgba(10,20,48,.98)';}
-  else{nav.style.height='68px';nav.style.background='rgba(15,32,64,.95)';}
+
+/* ── Cursor ── */
+const cD = document.getElementById('cD');
+const cR = document.getElementById('cR');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cD.style.transform = `translate(${mx - 4}px, ${my - 4}px)`;
 });
-const rvEls=document.querySelectorAll('.rv');
-const ro=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      const idx=[...rvEls].indexOf(e.target)%4;
-      e.target.style.transitionDelay=(idx*0.09)+'s';
+(function loop() {
+  rx += (mx - rx) * .13;
+  ry += (my - ry) * .13;
+  cR.style.transform = `translate(${rx}px, ${ry}px)`;
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a, button, .svc-card, .oc, .step').forEach(el => {
+  el.addEventListener('mouseenter', () => cR.classList.add('h'));
+  el.addEventListener('mouseleave', () => cR.classList.remove('h'));
+});
+
+/* ── Navbar shrink on scroll ── */
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 60) {
+    nav.style.height = '56px';
+    nav.style.background = 'rgba(10,20,48,.98)';
+  } else {
+    nav.style.height = '68px';
+    nav.style.background = 'rgba(15,32,64,.95)';
+  }
+});
+
+/* ── Scroll reveal ── */
+const rvEls = document.querySelectorAll('.rv');
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = [...rvEls].indexOf(e.target) % 4;
+      e.target.style.transitionDelay = (idx * 0.09) + 's';
       e.target.classList.add('on');
       ro.unobserve(e.target);
     }
   });
-},{threshold:0.1});
-rvEls.forEach(el=>ro.observe(el));
-const icons=['fa-screwdriver-wrench','fa-bolt','fa-faucet','fa-broom','fa-hammer','fa-snowflake','fa-paint-roller'];
-const labels=['Fixzy Pro','Electrician','Plumber','Cleaning','Carpenter','AC Service','Painting'];
-const scIc=document.getElementById('scIc'),scLb=document.getElementById('scLb');
-let ci=0;
-setInterval(()=>{ ci=(ci+1)%icons.length;scIc.className='fas '+icons[ci];scLb.textContent=labels[ci]; },2000);
-function countUp(el,target,suf,dec){
-  let v=0;const step=target/55;
-  const t=setInterval(()=>{ v+=step;if(v>=target){v=target;clearInterval(t);}el.innerHTML=(dec?v.toFixed(1):Math.floor(v))+'<sup>'+suf+'</sup>'; },22);
+}, { threshold: 0.1 });
+rvEls.forEach(el => ro.observe(el));
+
+/* ── Showcase icon cycling ── */
+const icons  = ['fa-screwdriver-wrench','fa-bolt','fa-faucet','fa-broom','fa-hammer','fa-snowflake','fa-paint-roller'];
+const labels = ['Fixzy Pro','Electrician','Plumber','Cleaning','Carpenter','AC Service','Painting'];
+const scIc = document.getElementById('scIc');
+const scLb = document.getElementById('scLb');
+let ci = 0;
+setInterval(() => {
+  ci = (ci + 1) % icons.length;
+  scIc.className = 'fas ' + icons[ci];
+  scLb.textContent = labels[ci];
+}, 2000);
+
+/* ── Counter animation ── */
+function countUp(el, target, suf, dec) {
+  let v = 0;
+  const step = target / 55;
+  const t = setInterval(() => {
+    v += step;
+    if (v >= target) { v = target; clearInterval(t); }
+    el.innerHTML = (dec ? v.toFixed(1) : Math.floor(v)) + '<sup>' + suf + '</sup>';
+  }, 22);
 }
-const sObs=new IntersectionObserver(entries=>{
-  if(entries[0].isIntersecting){
-    countUp(document.getElementById('s1'),12,'K+',false);
-    countUp(document.getElementById('s2'),500,'+',false);
-    countUp(document.getElementById('s3'),4.9,'★',true);
-    countUp(document.getElementById('s4'),2,'hr',false);
+const sObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    countUp(document.getElementById('s1'), 12,  'K+', false);
+    countUp(document.getElementById('s2'), 500, '+',  false);
+    countUp(document.getElementById('s3'), 4.9, '★',  true);
+    countUp(document.getElementById('s4'), 2,   'hr', false);
     sObs.disconnect();
   }
-},{threshold:0.5});
-const strip=document.querySelector('.stats');
-if(strip)sObs.observe(strip);
+}, { threshold: 0.5 });
+const strip = document.querySelector('.stats');
+if (strip) sObs.observe(strip);
 </script>
 </body>
 </html>
