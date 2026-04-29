@@ -254,6 +254,10 @@ textarea.form-control{resize:vertical;min-height:100px;}
             <div class="fz-text" id="fzText">Click to upload or drag &amp; drop</div>
             <div class="fz-hint">JPG, PNG up to 5MB</div>
           </div>
+          <!-- Image Preview -->
+          <div id="imagePreview" style="display:none;margin-top:12px;">
+            <img id="previewImg" src="" alt="Image Preview" style="max-width:100%;max-height:200px;border-radius:10px;border:1px solid var(--border);">
+          </div>
           {% if form.issue_image.errors %}
             <ul class="errorlist">{% for e in form.issue_image.errors %}<li>{{ e }}</li>{% endfor %}</ul>
           {% endif %}
@@ -289,10 +293,21 @@ document.addEventListener('DOMContentLoaded', function() {
   const fileInput = document.querySelector('input[type="file"]');
   const fzText    = document.getElementById('fzText');
   const fileZone  = document.getElementById('fileZone');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  
   if (fileInput) {
     fileInput.addEventListener('change', function() {
       const file = this.files[0];
-      if (!file) return;
+      if (!file) {
+        // Reset if no file
+        fzText.textContent = 'Click to upload or drag & drop';
+        fileZone.classList.remove('has-file');
+        fileZone.querySelector('.fz-ic i').className = 'fas fa-cloud-arrow-up';
+        imagePreview.style.display = 'none';
+        return;
+      }
+      
       if (file.size > 5 * 1024 * 1024) {
         alert('File size should be less than 5MB');
         this.value = ''; return;
@@ -301,9 +316,19 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Only JPG and PNG files are allowed');
         this.value = ''; return;
       }
+      
+      // Show file name
       fzText.textContent = file.name;
       fileZone.classList.add('has-file');
       fileZone.querySelector('.fz-ic i').className = 'fas fa-check-circle';
+      
+      // Show image preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImg.src = e.target.result;
+        imagePreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
     });
   }
 });
