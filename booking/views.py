@@ -121,7 +121,7 @@ def my_requests(request):
 def request_detail(request, request_id):
     """View for users to see details of a specific request"""
     service_request = get_object_or_404(ServiceRequest, id=request_id, user=request.user)
-    return render(request, "booking/request_detail.html", {"request": service_request})
+    return render(request, "booking/request_detail.html", {"service_request": service_request})
 
 @login_required
 def cancel_request(request, request_id):

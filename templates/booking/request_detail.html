@@ -142,24 +142,24 @@ a{text-decoration:none;}
 
     <!-- Status header -->
     <div class="status-header
-      {% if request.status == 'pending' %}sh-pending
-      {% elif request.status == 'assigned' %}sh-assigned
-      {% elif request.status == 'in_progress' %}sh-in_progress
-      {% elif request.status == 'completed' %}sh-completed
+      {% if service_request.status == 'pending' %}sh-pending
+      {% elif service_request.status == 'assigned' %}sh-assigned
+      {% elif service_request.status == 'in_progress' %}sh-in_progress
+      {% elif service_request.status == 'completed' %}sh-completed
       {% else %}sh-cancelled{% endif %}">
       <div class="sh-left">
-        <div class="sh-req-id">Request #{{ request.id }}</div>
-        <div class="sh-svc-name">{{ request.service.name }}</div>
+        <div class="sh-req-id">Request #{{ service_request.id }}</div>
+        <div class="sh-svc-name">{{ service_request.service.name }}</div>
       </div>
       <div class="sh-badge">
         <i class="fas
-          {% if request.status == 'pending' %}fa-clock
-          {% elif request.status == 'assigned' %}fa-user-check
-          {% elif request.status == 'in_progress' %}fa-play-circle
-          {% elif request.status == 'completed' %}fa-check-circle
+          {% if service_request.status == 'pending' %}fa-clock
+          {% elif service_request.status == 'assigned' %}fa-user-check
+          {% elif service_request.status == 'in_progress' %}fa-play-circle
+          {% elif service_request.status == 'completed' %}fa-check-circle
           {% else %}fa-times-circle{% endif %}">
         </i>
-        {{ request.get_status_display }}
+        {{ service_request.get_status_display }}
       </div>
     </div>
 
@@ -172,52 +172,52 @@ a{text-decoration:none;}
 
         <!-- Step 1: Requested -->
         <div class="progress-step">
-          <div class="step-circle {% if request.status != 'cancelled' %}done{% endif %}">
+          <div class="step-circle {% if service_request.status != 'cancelled' %}done{% endif %}">
             <i class="fas fa-check" style="font-size:12px;"></i>
           </div>
-          <div class="step-lbl {% if request.status != 'cancelled' %}done{% endif %}">Requested</div>
+          <div class="step-lbl {% if service_request.status != 'cancelled' %}done{% endif %}">Requested</div>
         </div>
 
         <!-- Step 2: Assigned -->
         <div class="progress-step">
           <div class="step-circle
-            {% if request.status == 'assigned' or request.status == 'in_progress' or request.status == 'completed' %}done
-            {% elif request.status == 'pending' %}active{% endif %}">
-            {% if request.status == 'assigned' or request.status == 'in_progress' or request.status == 'completed' %}
+            {% if service_request.status == 'assigned' or service_request.status == 'in_progress' or service_request.status == 'completed' %}done
+            {% elif service_request.status == 'pending' %}active{% endif %}">
+            {% if service_request.status == 'assigned' or service_request.status == 'in_progress' or service_request.status == 'completed' %}
               <i class="fas fa-check" style="font-size:12px;"></i>
             {% else %}2{% endif %}
           </div>
           <div class="step-lbl
-            {% if request.status == 'assigned' or request.status == 'in_progress' or request.status == 'completed' %}done
-            {% elif request.status == 'pending' %}active{% endif %}">Assigned</div>
+            {% if service_request.status == 'assigned' or service_request.status == 'in_progress' or service_request.status == 'completed' %}done
+            {% elif service_request.status == 'pending' %}active{% endif %}">Assigned</div>
         </div>
 
         <!-- Step 3: In Progress -->
         <div class="progress-step">
           <div class="step-circle
-            {% if request.status == 'in_progress' or request.status == 'completed' %}done
-            {% elif request.status == 'assigned' %}active{% endif %}">
-            {% if request.status == 'in_progress' or request.status == 'completed' %}
+            {% if service_request.status == 'in_progress' or service_request.status == 'completed' %}done
+            {% elif service_request.status == 'assigned' %}active{% endif %}">
+            {% if service_request.status == 'in_progress' or service_request.status == 'completed' %}
               <i class="fas fa-check" style="font-size:12px;"></i>
             {% else %}3{% endif %}
           </div>
           <div class="step-lbl
-            {% if request.status == 'in_progress' or request.status == 'completed' %}done
-            {% elif request.status == 'assigned' %}active{% endif %}">In Progress</div>
+            {% if service_request.status == 'in_progress' or service_request.status == 'completed' %}done
+            {% elif service_request.status == 'assigned' %}active{% endif %}">In Progress</div>
         </div>
 
         <!-- Step 4: Completed -->
         <div class="progress-step">
           <div class="step-circle
-            {% if request.status == 'completed' %}done
-            {% elif request.status == 'in_progress' %}active{% endif %}">
-            {% if request.status == 'completed' %}
+            {% if service_request.status == 'completed' %}done
+            {% elif service_request.status == 'in_progress' %}active{% endif %}">
+            {% if service_request.status == 'completed' %}
               <i class="fas fa-check" style="font-size:12px;"></i>
             {% else %}4{% endif %}
           </div>
           <div class="step-lbl
-            {% if request.status == 'completed' %}done
-            {% elif request.status == 'in_progress' %}active{% endif %}">Completed</div>
+            {% if service_request.status == 'completed' %}done
+            {% elif service_request.status == 'in_progress' %}active{% endif %}">Completed</div>
         </div>
 
       </div>
@@ -232,28 +232,28 @@ a{text-decoration:none;}
         <!-- Service details -->
         <div class="info-section">
           <div class="sec-title"><i class="fas fa-screwdriver-wrench"></i> Service Details</div>
-          <div class="info-row"><span class="info-lbl">Service</span><span class="info-val">{{ request.service.name }}</span></div>
-          <div class="info-row"><span class="info-lbl">Category</span><span class="info-val">{{ request.service.get_category_display }}</span></div>
-          <div class="info-row"><span class="info-lbl">Price</span><span class="info-val orange">₹{{ request.service.price }}</span></div>
-          <div class="info-row"><span class="info-lbl">Description</span><span class="info-val">{{ request.service.description|truncatechars:80 }}</span></div>
+          <div class="info-row"><span class="info-lbl">Service</span><span class="info-val">{{ service_request.service.name }}</span></div>
+          <div class="info-row"><span class="info-lbl">Category</span><span class="info-val">{{ service_request.service.get_category_display }}</span></div>
+          <div class="info-row"><span class="info-lbl">Price</span><span class="info-val orange">₹{{ service_request.service.price }}</span></div>
+          <div class="info-row"><span class="info-lbl">Description</span><span class="info-val">{{ service_request.service.description|truncatechars:80 }}</span></div>
         </div>
 
         <!-- Schedule -->
         <div class="info-section">
           <div class="sec-title"><i class="fas fa-calendar"></i> Schedule</div>
-          <div class="info-row"><span class="info-lbl">Requested</span><span class="info-val">{{ request.created_at|date:"d M Y, h:i A" }}</span></div>
-          {% if request.preferred_date %}
-          <div class="info-row"><span class="info-lbl">Preferred Date</span><span class="info-val">{{ request.preferred_date|date:"d M Y" }}</span></div>
+          <div class="info-row"><span class="info-lbl">Requested</span><span class="info-val">{{ service_request.created_at|date:"d M Y, h:i A" }}</span></div>
+          {% if service_request.preferred_date %}
+          <div class="info-row"><span class="info-lbl">Preferred Date</span><span class="info-val">{{ service_request.preferred_date|date:"d M Y" }}</span></div>
           {% endif %}
-          {% if request.preferred_time %}
-          <div class="info-row"><span class="info-lbl">Preferred Time</span><span class="info-val">{{ request.preferred_time|time:"h:i A" }}</span></div>
+          {% if service_request.preferred_time %}
+          <div class="info-row"><span class="info-lbl">Preferred Time</span><span class="info-val">{{ service_request.preferred_time|time:"h:i A" }}</span></div>
           {% endif %}
         </div>
 
         <!-- Location -->
         <div class="info-section">
           <div class="sec-title"><i class="fas fa-location-dot"></i> Location</div>
-          <div class="info-row"><span class="info-lbl">Address</span><span class="info-val">{{ request.address }}</span></div>
+          <div class="info-row"><span class="info-lbl">Address</span><span class="info-val">{{ service_request.address }}</span></div>
         </div>
 
         <!-- Payment status -->
@@ -261,18 +261,18 @@ a{text-decoration:none;}
           <div class="sec-title"><i class="fas fa-indian-rupee-sign"></i> Payment</div>
           <div class="info-row">
             <span class="info-lbl">Amount</span>
-            <span class="info-val orange">₹{{ request.service.price }}</span>
+            <span class="info-val orange">₹{{ service_request.service.price }}</span>
           </div>
           <div class="info-row">
             <span class="info-lbl">Status</span>
             <span class="info-val">
-              {% if request.payment %}
-                {% if request.payment.status == 'completed' %}
+              {% if service_request.payment %}
+                {% if service_request.payment.status == 'completed' %}
                   <span style="color:#16a34a;font-weight:700;"><i class="fas fa-check-circle"></i> Paid</span>
                 {% else %}
                   <span style="color:var(--orange);">Pending</span>
                 {% endif %}
-              {% elif request.subscription %}
+              {% elif service_request.subscription %}
                 <span style="color:#7c3aed;"><i class="fas fa-crown"></i> Subscription</span>
               {% else %}
                 <span style="color:#94a3b8;">Not paid</span>
@@ -285,16 +285,16 @@ a{text-decoration:none;}
 
       <!-- Worker info -->
       <div class="sec-title" style="margin-bottom:12px;"><i class="fas fa-user-tie"></i> Assigned Worker</div>
-      {% if request.assigned_worker %}
+      {% if service_request.assigned_worker %}
       <div class="worker-card">
         <div class="worker-av"><i class="fas fa-user-tie"></i></div>
         <div>
-          <div class="worker-name">{{ request.assigned_worker.username }}</div>
+          <div class="worker-name">{{ service_request.assigned_worker.username }}</div>
           <div class="worker-meta">
-            <span><i class="fas fa-phone"></i> {{ request.assigned_worker.phone|default:"No phone" }}</span>
-            {% if request.assigned_worker.worker_profile %}
-            <span><i class="fas fa-briefcase"></i> {{ request.assigned_worker.worker_profile.experience }} yrs exp</span>
-            <span><i class="fas fa-star"></i> {{ request.assigned_worker.worker_profile.average_rating|floatformat:1 }} rating</span>
+            <span><i class="fas fa-phone"></i> {{ service_request.assigned_worker.phone|default:"No phone" }}</span>
+            {% if service_request.assigned_worker.worker_profile %}
+            <span><i class="fas fa-briefcase"></i> {{ service_request.assigned_worker.worker_profile.experience }} yrs exp</span>
+            <span><i class="fas fa-star"></i> {{ service_request.assigned_worker.worker_profile.average_rating|floatformat:1 }} rating</span>
             {% endif %}
           </div>
         </div>
@@ -304,31 +304,31 @@ a{text-decoration:none;}
       {% endif %}
 
       <!-- Notes -->
-      {% if request.notes %}
+      {% if service_request.notes %}
       <div class="sec-title" style="margin:20px 0 10px;"><i class="fas fa-sticky-note"></i> Additional Notes</div>
-      <div class="notes-box"><i class="fas fa-quote-left" style="color:var(--orange);margin-right:8px;font-size:12px;"></i>{{ request.notes }}</div>
+      <div class="notes-box"><i class="fas fa-quote-left" style="color:var(--orange);margin-right:8px;font-size:12px;"></i>{{ service_request.notes }}</div>
       {% endif %}
 
       <!-- Issue image -->
-      {% if request.issue_image %}
+      {% if service_request.issue_image %}
       <div class="sec-title" style="margin:20px 0 10px;"><i class="fas fa-camera"></i> Issue Image</div>
       <div class="issue-img-wrap">
-        <img src="{{ request.issue_image.url }}" alt="Issue Image" class="issue-img">
+        <img src="{{ service_request.issue_image.url }}" alt="Issue Image" class="issue-img">
       </div>
       {% endif %}
 
       <!-- Action buttons -->
       <div class="action-row">
-        {% if request.status == 'pending' %}
-        <a href="{% url 'cancel_request' request.id %}" class="btn-action btn-red"
+        {% if service_request.status == 'pending' %}
+        <a href="{% url 'cancel_request' service_request.id %}" class="btn-action btn-red"
            onclick="return confirm('Cancel this booking?')">
           <i class="fas fa-times"></i> Cancel Request
         </a>
         {% endif %}
 
-        {% if request.status == 'completed' %}
-          {% if not request.payment %}
-          <a href="{% url 'payment_page' request.id %}" class="btn-action btn-orange">
+        {% if service_request.status == 'completed' %}
+          {% if not service_request.payment %}
+          <a href="{% url 'payment_page' service_request.id %}" class="btn-action btn-orange">
             <i class="fas fa-credit-card"></i> Pay Now
           </a>
           {% endif %}
@@ -351,7 +351,7 @@ a{text-decoration:none;}
 <script>
 // Animate progress bar fill
 document.addEventListener('DOMContentLoaded', function() {
-  const status = '{{ request.status }}';
+  const status = '{{ service_request.status }}';
   const fills  = { pending:0, assigned:33, in_progress:66, completed:100, cancelled:0 };
   const pct    = fills[status] || 0;
   setTimeout(function() {
