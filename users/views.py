@@ -106,25 +106,25 @@ def worker_register_view(request):
             if not experience: missing.append('experience')
             
             messages.error(request, f"All fields are required! Missing: {', '.join(missing)}")
-            return redirect('worker_register')
+            return render(request, 'users/worker_register.html')
         
         if password1 != password2:
             messages.error(request, "Passwords do not match!")
-            return redirect('worker_register')
+            return render(request, 'users/worker_register.html')
         
         if len(password1) < 8:
             messages.error(request, "Password must be at least 8 characters long!")
-            return redirect('worker_register')
+            return render(request, 'users/worker_register.html')
         
         # Check if username already exists
         if CustomUser.objects.filter(username=username).exists():
             messages.error(request, "Username already taken! Please choose another.")
-            return redirect('worker_register')
+            return render(request, 'users/worker_register.html')
         
         # Check if email already exists
         if CustomUser.objects.filter(email=email).exists():
             messages.error(request, "Email already registered! Please use another email.")
-            return redirect('worker_register')
+            return render(request, 'users/worker_register.html')
         
         try:
             # Create user with worker role
@@ -157,10 +157,10 @@ def worker_register_view(request):
             
         except IntegrityError as e:
             messages.error(request, f"Registration failed: Database error. Please try again.")
-            return redirect('worker_register')
+            return render(request, 'users/worker_register.html')
         except Exception as e:
             messages.error(request, f"Registration failed: {str(e)}")
-            return redirect('worker_register')
+            return render(request, 'users/worker_register.html')
     
     return render(request, 'users/worker_register.html')
 

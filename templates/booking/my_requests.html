@@ -76,6 +76,7 @@ a{text-decoration:none;}
 .detail-ic{width:28px;height:28px;border-radius:8px;background:var(--orange-lt);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:11px;flex-shrink:0;margin-top:1px;}
 .detail-lbl{font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
 .detail-val{font-size:13px;font-weight:600;color:var(--navy);}
+.request-thumb{width:100%;height:auto;max-height:180px;object-fit:cover;border-radius:16px;border:1px solid var(--border);margin-top:14px;}
 
 /* WORKER INFO */
 .worker-box{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:13px 16px;margin:14px 0;display:flex;align-items:center;gap:12px;transition:all .2s;}
@@ -190,6 +191,16 @@ a{text-decoration:none;}
             <div class="detail-val">{{ request.address|truncatechars:55 }}</div>
           </div>
         </div>
+
+        {% if request.issue_image %}
+        <div class="detail-row">
+          <div class="detail-ic"><i class="fas fa-camera"></i></div>
+          <div>
+            <div class="detail-lbl">Issue Image</div>
+            <img src="{{ request.issue_image.url }}" alt="Issue image for request #{{ request.id }}" class="request-thumb">
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Worker info -->
         {% if request.assigned_worker %}

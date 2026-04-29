@@ -252,10 +252,8 @@ select{
 
       <form method="POST" novalidate id="regForm">
         {% csrf_token %}
-        <input type="hidden" name="role" value="user">
 
         {% for field in form %}
-        {% if field.name != 'role' %}
 
           {% if field.name == 'password1' %}
           <!-- Password with strength meter -->
