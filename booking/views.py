@@ -40,8 +40,17 @@ def request_service(request):
             else:
                 messages.success(request, 'Service request submitted successfully!')
             
-            service_request.save()
-            return redirect('user_dashboard')
+            try:
+                service_request.save()
+                print(f"ServiceRequest saved with ID: {service_request.id}, issue_image: {service_request.issue_image}")
+                return redirect('user_dashboard')
+            except Exception as e:
+                messages.error(request, 'Error saving service request.')
+                print("Error saving service request:", e)
+        else:
+            messages.error(request, 'Form is invalid. Please check your input.')
+            print("Form errors:", form.errors)
+            print("Non-field errors:", form.non_field_errors())
     else:
         form = ServiceRequestForm()
     
