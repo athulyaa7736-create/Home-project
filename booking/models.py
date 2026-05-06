@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from services.models import Service
-
+from cloudinary.models import CloudinaryField
 
 User = settings.AUTH_USER_MODEL
 
@@ -18,7 +18,8 @@ class ServiceRequest(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='service_requests')
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     address = models.TextField()
-    issue_image = models.ImageField(upload_to="issues/", null=True, blank=True)
+    # issue_image = models.ImageField(upload_to="issues/", null=True, blank=True)
+    issue_image = CloudinaryField('issues/', blank=True, null=True)
     
     # Add these fields if you want them
     notes = models.TextField(blank=True, help_text="Any special instructions")
