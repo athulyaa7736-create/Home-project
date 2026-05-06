@@ -192,7 +192,7 @@ a{text-decoration:none;}
           </div>
         </div>
 
-        {% load cloudinary %}
+        <!-- {% load cloudinary %}
         {% if request.issue_image %}
         <div class="detail-row">
           <div class="detail-ic"><i class="fas fa-camera"></i></div>
@@ -201,7 +201,21 @@ a{text-decoration:none;}
             <img src="{% cloudinary_url request.issue_image %}" alt="Issue image for request #{{ request.id }}" class="request-thumb">
           </div>
         </div>
-        {% endif %}
+        {% endif %} -->
+
+         {% load cloudinary %}
+         {% for service_request in service_requests %}
+           {% if service_request.issue_image %}
+           <div class="detail-row">
+             <div class="detail-ic"><i class="fas fa-camera"></i></div>
+             <div>
+               <div class="detail-lbl">Issue Image</div>
+               <img src="{% cloudinary_url service_request.issue_image %}" alt="Issue image #{{ service_request.id }}" class="request-thumb">
+             </div>
+           </div>
+           {% endif %}
+         {% endfor %}
+ 
 
         <!-- Worker info -->
         {% if request.assigned_worker %}

@@ -123,8 +123,8 @@ def my_requests(request):
     if request.user.role != "user":
         return redirect("login")
     
-    requests = ServiceRequest.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, "booking/my_requests.html", {"requests": requests})
+    service_requests = ServiceRequest.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, "booking/my_requests.html", {"service_requests": service_requests})
 
 @login_required
 def request_detail(request, request_id):
