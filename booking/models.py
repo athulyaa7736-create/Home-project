@@ -19,7 +19,7 @@ class ServiceRequest(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
     address = models.TextField()
     # issue_image = models.ImageField(upload_to="issues/", null=True, blank=True)
-    issue_image = CloudinaryField('issues/', blank=True, null=True)
+    issue_image = CloudinaryField('image', folder='issues/', blank=True, null=True)
     
     # Add these fields if you want them
     notes = models.TextField(blank=True, help_text="Any special instructions")

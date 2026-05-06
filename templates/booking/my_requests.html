@@ -192,13 +192,13 @@ a{text-decoration:none;}
           </div>
         </div>
 
+        {% load cloudinary %}
         {% if request.issue_image %}
         <div class="detail-row">
           <div class="detail-ic"><i class="fas fa-camera"></i></div>
           <div>
             <div class="detail-lbl">Issue Image</div>
-            {% load cloudinary %}
-            <img src="{{ request.issue_image.url }}" alt="Issue image for request #{{ request.id }}" class="request-thumb">
+            <img src="{% cloudinary_url request.issue_image %}" alt="Issue image for request #{{ request.id }}" class="request-thumb">
           </div>
         </div>
         {% endif %}
